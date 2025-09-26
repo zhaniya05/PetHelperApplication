@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
+
+import com.example.pethelper.entity.User;
 
 @Getter
 @Setter
@@ -17,12 +19,20 @@ public class Pet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long petId;
+
     private String petName;
+
     private int petAge;
-    private Date petBd;
+
+    private LocalDate petBd;
+
     private String petType;
+
     private String petBreed;
+
     private String petHealth;
 
-
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
