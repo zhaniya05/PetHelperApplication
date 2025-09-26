@@ -23,8 +23,11 @@ public class UserDto {
 
     private String email;
 
-    private List<PetDto> pets;
+    private String password;
+
+    private List<Long> petIds;
 
     public UserDto(Long userId, String userName, String email) {
     }
-}
+
+    }

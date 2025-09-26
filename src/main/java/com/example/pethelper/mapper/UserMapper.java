@@ -1,26 +1,27 @@
 package com.example.pethelper.mapper;
 
-import com.example.pethelper.dto.PetDto;
-import com.example.pethelper.dto.UserDto;
-import com.example.pethelper.entity.Pet;
-import com.example.pethelper.entity.User;
 
+import com.example.pethelper.dto.UserDto;
+import com.example.pethelper.entity.User;
+import com.example.pethelper.entity.Pet;
+
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class UserMapper {
     public static UserDto mapToUserDto(User user){
 
-        UserDto userDto = new UserDto();
-        userDto.setUserId(user.getUserId());
-        userDto.setUserName(user.getUserName());
-        userDto.setEmail(user.getEmail());
+        List<Long> petIds = user.getPets() != null
+                ? user.getPets().stream().map(Pet::getPetId).collect(Collectors.toList())
+                : null;
 
-        if (user.getPets() != null) {
-            userDto.setPets(user.getPets().stream()
-                    .map(PetMapper::mapToPetDto)
-                    .collect(Collectors.toList()));
-        }
-        return userDto;
+        return new UserDto(
+                user.getUserId(),
+                user.getUserName(),
+                user.getEmail(),
+                user.getPassword(),
+                petIds
+        );
     }
 
     public static User mapToUser(UserDto userDto) {
@@ -28,6 +29,7 @@ public class UserMapper {
         user.setUserId(userDto.getUserId());
         user.setUserName(userDto.getUserName());
         user.setEmail(userDto.getEmail());
+        user.setPets(null);
         return user;
     }
 }

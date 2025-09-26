@@ -5,26 +5,48 @@ import com.example.pethelper.entity.User;
 import com.example.pethelper.mapper.UserMapper;
 import com.example.pethelper.repository.UserRepository;
 import com.example.pethelper.service.UserService;
+import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
-    public UserDto addUser(UserDto userDto) {
+    public UserDto register(UserDto userDto) {
+        if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already registered");
+        }
         User user = UserMapper.mapToUser(userDto);
         User savedUser = userRepository.save(user);
         return UserMapper.mapToUserDto(savedUser);
     }
+
+    @Override
+    public UserDto login(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (!user.getPassword().equals(password)) {
+            throw new RuntimeException("Invalid credentials");
+        }
+        return UserMapper.mapToUserDto(user);
+    }
+    @Override
+    public UserDto addUser(UserDto userDto) {
+        User user = UserMapper.mapToUser(userDto);
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        User savedUser = userRepository.save(user);
+        return UserMapper.mapToUserDto(savedUser);
+    }
+
 
     @Override
     public UserDto getUserById(Long id) {

@@ -20,4 +20,5 @@ public class PetDto {
     private String petType;
     private String petBreed;
     private String petHealth;
+    private Long userId;
 }

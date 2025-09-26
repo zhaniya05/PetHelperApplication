@@ -2,6 +2,9 @@ package com.example.pethelper.mapper;
 
 import com.example.pethelper.dto.PetDto;
 import com.example.pethelper.entity.Pet;
+import com.example.pethelper.entity.User;
+
+import java.util.Locale;
 
 public class PetMapper {
     public static PetDto mapToPetDto(Pet pet){
@@ -12,11 +15,12 @@ public class PetMapper {
                 pet.getPetBd(),
                 pet.getPetType(),
                 pet.getPetBreed(),
-                pet.getPetHealth()
+                pet.getPetHealth(),
+                pet.getUser() != null ? pet.getUser().getUserId() : null
         );
     }
 
-    public static Pet mapToPet(PetDto petDto) {
+    public static Pet mapToPet(PetDto petDto, User user) {
         return new Pet(
                 petDto.getPetId(),
                 petDto.getPetName(),
@@ -24,7 +28,8 @@ public class PetMapper {
                 petDto.getPetBd(),
                 petDto.getPetType(),
                 petDto.getPetBreed(),
-                petDto.getPetHealth()
+                petDto.getPetHealth(),
+                user
         );
     }
 }
