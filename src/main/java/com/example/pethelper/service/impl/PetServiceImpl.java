@@ -59,19 +59,4 @@ public class PetServiceImpl implements PetService {
         Pet updatedPetObj = petRepository.save(pet);
         return PetMapper.mapToPetDto(updatedPetObj);
     }
-
-    @Override
-    public void deletePet(Long petId) {
-        Pet pet = petRepository.findById(petId).orElseThrow(() ->
-                new ResourceNotFoundException("Pet does not exist by given id" + petId));
-        petRepository.deleteById(petId);
-    }
-
-    @Override
-    public List<PetDto> getPetsByUser(Long userId) {
-        return petRepository.findByUserUserId(userId)
-                .stream()
-                .map(PetMapper::mapToPetDto)
-                .collect(Collectors.toList());
-    }
 }

@@ -27,4 +27,7 @@ public class UserDto {
 
     private List<Long> petIds;
 
+    public UserDto(Long userId, String userName, String email) {
+    }
+
     }

@@ -2,59 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Pets</title>
+    <title>Title</title>
 </head>
 <body>
-<div class="container my-2">
-    <div class="header-container">
-        <h1>My Pets</h1>
-    </div>
-
-    <div>
-        <a th:href="@{/viewProfile/{id}(id=${user.userId})}">View Profile</a>
-    </div>
-
-    <form method="get" th:action="@{/main}">
-        <!--TABLE-->
-        <table border="1" class="table table-bordered">
-            <thead>
-            <tr>
-                <th>Pet Id</th>
-                <th>Pet Name</th>
-                <th>Pet Age</th>
-                <th>Pet Birthday</th>
-                <th>Pet Type</th>
-                <th>Pet Breed</th>
-                <th>Pet Health Condition</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="pet : ${listPets}">
-                <td th:text="${pet?.petId}"></td>
-                <td th:text="${pet?.petName}"></td>
-                <td th:text="${pet?.petAge}"></td>
-                <td th:text="${pet?.petBd}"></td>
-                <td th:text="${pet?.petType}"></td>
-                <td th:text="${pet?.petBreed}"></td>
-<!--                <td>-->
-<!--                    <a href="#" onclick="confirmDelete(this)"-->
-<!--                       th:data-url="@{/pets/delete/{id}(id=${pet.petId})}"-->
-<!--                       class="btn btn-primary">Delete</a>-->
-<!--                </td>-->
-            </tr>
-            </tbody>
-        </table>
-    </form>
-</div>
-
-<!--<script>-->
-<!--    function confirmDelete(element) {-->
-<!--        const url = element.getAttribute('data-url');-->
-<!--        if (confirm("Are you sure you want to delete this user?")) {-->
-<!--            window.location.href = url;-->
-<!--        }-->
-<!--    }-->
-<!--</script>-->
 
 </body>
 </html>

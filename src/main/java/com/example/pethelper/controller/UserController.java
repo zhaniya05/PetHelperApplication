@@ -1,16 +1,13 @@
 package com.example.pethelper.controller;
 
 import com.example.pethelper.dto.UserDto;
-import com.example.pethelper.entity.User;
 import com.example.pethelper.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/api/users")
 public class UserController {
 
@@ -20,13 +17,15 @@ public class UserController {
         this.userService = userService;
     }
 
+    @PostMapping
+    public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto) {
+        return ResponseEntity.ok(userService.addUser(userDto));
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
-
-
 
 
     @GetMapping
@@ -44,13 +43,5 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/viewProfile/{id}")
-    public String view_profile(@PathVariable Long id,
-                               Model model) {
-        UserDto user = userService.getUserById(id);
-        model.addAttribute("user", user);
-        return "view-profile";
     }
 }

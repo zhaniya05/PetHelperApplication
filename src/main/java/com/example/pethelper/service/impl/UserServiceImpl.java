@@ -5,9 +5,7 @@ import com.example.pethelper.entity.User;
 import com.example.pethelper.mapper.UserMapper;
 import com.example.pethelper.repository.UserRepository;
 import com.example.pethelper.service.UserService;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,30 +21,30 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-   // @Transactional
     public UserDto register(UserDto userDto) {
         if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
             throw new RuntimeException("Email already registered");
         }
-        if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already registered");
-        }
         User user = UserMapper.mapToUser(userDto);
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         User savedUser = userRepository.save(user);
         return UserMapper.mapToUserDto(savedUser);
     }
 
     @Override
-    public UserDto login(String username, String rawPassword) {
-        User user = userRepository.findByUserName(username)
+    public UserDto login(String email, String password) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+        if (!user.getPassword().equals(password)) {
             throw new RuntimeException("Invalid credentials");
         }
-
         return UserMapper.mapToUserDto(user);
+    }
+    @Override
+    public UserDto addUser(UserDto userDto) {
+        User user = UserMapper.mapToUser(userDto);
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        User savedUser = userRepository.save(user);
+        return UserMapper.mapToUserDto(savedUser);
     }
 
 
@@ -80,11 +78,5 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
-    }
-
-    @Override
-    public UserDto findByUsername(String username) {
-        return UserMapper.mapToUserDto(userRepository.findByUserName(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username)));
     }
 }

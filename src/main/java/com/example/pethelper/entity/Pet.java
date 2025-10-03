@@ -17,9 +17,7 @@ import com.example.pethelper.entity.User;
 @Table(name = "pets")
 public class Pet {
     @Id
-    // @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="MySequenceGenerator")
-    @SequenceGenerator(allocationSize=1, schema="public",  name="MySequenceGenerator", sequenceName = "mysequence")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long petId;
 
     private String petName;

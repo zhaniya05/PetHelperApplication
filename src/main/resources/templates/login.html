@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(to bottom, #f9f9f9, #ffb7ce);
+            background: linear-gradient(to bottom, #f9f9f9, #d1e9f7);
             color: #333;
             margin: 0;
             display: flex;
@@ -31,12 +31,12 @@
             border-radius: 50%;
             object-fit: cover;
             margin-bottom: 10px;
-            border: 4px solid #ffb7ce
+            border: 4px solid #3b82f6;
         }
 
         .header h1 {
             font-size: 24px;
-            color: #ffb7ce;
+            color: #3b82f6;
             margin-bottom: 5px;
         }
 
@@ -66,13 +66,13 @@
         }
 
         .login-form input:focus {
-            border-color: #ffb7ce;
+            border-color: #3b82f6;
             outline: none;
         }
 
         .login-button {
             padding: 10px 20px;
-            background: #ffb7ce;
+            background: #3b82f6;
             color: #fff;
             border: none;
             border-radius: 8px;
@@ -82,7 +82,7 @@
         }
 
         .login-button:hover {
-            background: #ffb7ce;
+            background: #2c6fe4;
         }
 
         .footer {
@@ -100,10 +100,11 @@
         <p>Login to your account</p>
     </div>
 
-    <form th:action="@{/auth/login}" method="post">
+    <!-- Форма логина для Spring Security -->
+    <form th:action="@{/login}" method="post">
         <div class="login-form">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            <label for="username">Email:</label>
+            <input type="text" id="username" name="username" placeholder="Enter your email" required>
 
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" placeholder="Enter your password" required>
@@ -112,13 +113,14 @@
         </div>
     </form>
 
+    <!-- Отображение ошибки при неудачном входе -->
     <div th:if="${param.error}" style="color: red; margin-top: 10px;">
-        <p>Invalid username or password</p>
+        <p>Invalid email or password</p>
     </div>
 
     <div class="footer">
         <p>🐾 Powered by PetHelper 🐾</p>
-        Don't have an account? <a th:href="@{/auth/register}">Sign up</a>
+        Don't have an account? <a th:href="@{/register}">Sign up</a>
     </div>
 </div>
 </body>
