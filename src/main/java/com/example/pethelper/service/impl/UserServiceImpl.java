@@ -25,9 +25,9 @@ public class UserServiceImpl implements UserService {
     @Override
    // @Transactional
     public UserDto register(UserDto userDto) {
-//        if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
-//            throw new RuntimeException("Email already registered");
-//        }
+        if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already registered");
+        }
         if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
             throw new RuntimeException("Email already registered");
         }
