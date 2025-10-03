@@ -19,8 +19,8 @@
 
     <form method="get" th:action="@{/main}">
         <!--TABLE-->
-        <table border="1" class="table table-bordered">
-            <thead>
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
             <tr>
                 <th>Pet Id</th>
                 <th>Pet Name</th>
@@ -29,6 +29,7 @@
                 <th>Pet Type</th>
                 <th>Pet Breed</th>
                 <th>Pet Health Condition</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -39,11 +40,21 @@
                 <td th:text="${pet?.petBd}"></td>
                 <td th:text="${pet?.petType}"></td>
                 <td th:text="${pet?.petBreed}"></td>
+                <td th:text="${pet?.petHealth}"></td>
                 <td>
+                    <!-- Edit -->
+                    <a th:href="@{/pets/edit/{id}(id=${pet.petId})}"
+                       class="btn btn-sm btn-warning">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+
+                    <!-- Delete -->
                     <a href="javascript:void(0)"
                        onclick="confirmDelete(this)"
                        th:data-url="@{/pets/delete/{id}(id=${pet.petId})}"
-                       class="btn btn-danger">Delete</a>
+                       class="btn btn-sm btn-danger">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </a>
                 </td>
             </tr>
             </tbody>

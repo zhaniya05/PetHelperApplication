@@ -28,6 +28,8 @@ public class User {
 
     private String password;
 
+    private String role = "ROLE_USER";
+
     @OneToMany(mappedBy="user", cascade= CascadeType.ALL, fetch= FetchType.EAGER, orphanRemoval = true)
     private List<Pet> pets;
 

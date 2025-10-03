@@ -83,14 +83,36 @@ public class PetController {
         return "redirect:/pets/main";
     }
 
+    @GetMapping("/edit/{id}")
+    public String showEditPetForm(@PathVariable("id") Long petId, Model model) {
+        PetDto pet = petService.getPetById(petId);
+        model.addAttribute("pet", pet);
+        return "edit-pet";
+    }
 
-//
-//    @PutMapping("{id}")
-//    public ResponseEntity<PetDto> updatePet(@PathVariable("id") Long petId,
-//                                            @RequestBody PetDto updatedPet) {
-//        PetDto petDto = petService.updatePet(petId, updatedPet);
-//        return ResponseEntity.ok(petDto);
-//    }
+    @PostMapping("/update/{id}")
+    public String updatePet(@PathVariable("id") Long petId,
+                            @RequestParam String name,
+                            @RequestParam int age,
+                            @RequestParam LocalDate birthday,
+                            @RequestParam String type,
+                            @RequestParam String breed,
+                            @RequestParam String health) {
+        PetDto updatedPet = new PetDto();
+        updatedPet.setPetName(name);
+        updatedPet.setPetAge(age);
+        updatedPet.setPetBd(birthday);
+        updatedPet.setPetType(type);
+        updatedPet.setPetBreed(breed);
+        updatedPet.setPetHealth(health);
+
+        petService.updatePet(petId, updatedPet);
+        return "redirect:/pets/main";
+    }
+
+
+
+
 
 
 }

@@ -62,10 +62,11 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public void deletePet(Long petId) {
-        Pet pet = petRepository.findById(petId).orElseThrow(() ->
-                new ResourceNotFoundException("Pet does not exist by given id" + petId));
-        petRepository.deleteById(petId);
+        Pet pet = petRepository.findById(petId)
+                .orElseThrow(() -> new ResourceNotFoundException("Pet not found with id: " + petId));
+        petRepository.delete(pet);
     }
+
 
     @Override
     public List<PetDto> getPetsByUser(Long userId) {
