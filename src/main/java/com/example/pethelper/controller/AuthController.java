@@ -52,7 +52,7 @@ public class AuthController {
                         HttpSession session,
                         Model model) {
         try {
-            UserDto userDto = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
+            UserDto userDto = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
             session.setAttribute("userId", userDto.getUserId());
             return "redirect:/main";
         } catch (RuntimeException e) {

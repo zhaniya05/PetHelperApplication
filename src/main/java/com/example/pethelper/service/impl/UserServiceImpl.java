@@ -28,9 +28,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
             throw new RuntimeException("Email already registered");
         }
-        if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already registered");
-        }
+
         User user = UserMapper.mapToUser(userDto);
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         User savedUser = userRepository.save(user);
@@ -38,8 +36,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto login(String username, String rawPassword) {
-        User user = userRepository.findByUserName(username)
+    public UserDto login(String email, String rawPassword) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
@@ -86,5 +84,11 @@ public class UserServiceImpl implements UserService {
     public UserDto findByUsername(String username) {
         return UserMapper.mapToUserDto(userRepository.findByUserName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username)));
+    }
+
+    @Override
+    public UserDto findByEmail(String email) {
+        return UserMapper.mapToUserDto(userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email)));
     }
 }

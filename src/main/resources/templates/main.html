@@ -10,6 +10,8 @@
         <h1>My Pets</h1>
     </div>
 
+    <a th:href = "@{/pets/add/pet}" class="btn btn-primary btn-sm mb-3">Add Pet</a>
+
     <div>
         <a th:href="@{/viewProfile/{id}(id=${user.userId})}">View Profile</a>
     </div>
