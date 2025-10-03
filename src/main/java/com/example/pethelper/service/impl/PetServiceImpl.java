@@ -8,6 +8,7 @@ import com.example.pethelper.mapper.PetMapper;
 import com.example.pethelper.repository.PetRepository;
 import com.example.pethelper.repository.UserRepository;
 import com.example.pethelper.service.PetService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,7 @@ public class PetServiceImpl implements PetService {
                 .collect(Collectors.toList());
     }
 
+
     @Override
     public PetDto updatePet(Long petId, PetDto updatedPet) {
         Pet pet = petRepository.findById(petId).orElseThrow(() ->
@@ -61,11 +63,13 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
+    @Transactional
     public void deletePet(Long petId) {
         Pet pet = petRepository.findById(petId)
                 .orElseThrow(() -> new ResourceNotFoundException("Pet not found with id: " + petId));
         petRepository.delete(pet);
     }
+
 
 
     @Override

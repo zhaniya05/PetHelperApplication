@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login to PetHelper</title>
+    <title>Login to FurEver</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
 <div class="login-container">
     <div class="header">
-        <img th:src="@{/images/logo.png}" alt="logo" class="logo">
-        <h1>PetHelper</h1>
+        <img th:src="@{/css/images/logo.jpg}" alt="logo" class="logo">
+        <h1>FurEver</h1>
         <p>Login to your account</p>
     </div>
 
     <form th:action="@{/auth/login}" method="post">
         <div class="login-form">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            <label for="username">Email:</label>
+            <input type="text" id="username" name="username" placeholder="Enter your email" required>
 
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" placeholder="Enter your password" required>
@@ -31,7 +31,7 @@
     </div>
 
     <div class="footer">
-        <p>🐾 Powered by PetHelper 🐾</p>
+        <p>🐾 Powered by FurEver 🐾</p>
         Don't have an account? <a th:href="@{/auth/register}">Sign up</a>
     </div>
 </div>

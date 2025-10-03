@@ -20,7 +20,9 @@ public class UserMapper {
                 user.getUserName(),
                 user.getEmail(),
                 user.getPassword(),
-                petIds
+                user.getRole(),
+                petIds,
+                user.getProfilePicture()
         );
     }
 
@@ -29,7 +31,9 @@ public class UserMapper {
         user.setUserId(userDto.getUserId());
         user.setUserName(userDto.getUserName());
         user.setEmail(userDto.getEmail());
+        userDto.setProfilePicture(user.getProfilePicture());
         user.setPets(null);
+        user.setRole(user.getRole());
         return user;
     }
 }

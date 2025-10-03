@@ -53,35 +53,40 @@ public class PetController {
 
         return "redirect:/pets/main";
     }
-//
-//    @GetMapping("{id}")
-//    public ResponseEntity<PetDto> getPetById(@PathVariable("id") Long petId) {
-//        PetDto petDto = petService.getPetById(petId);
-//        return ResponseEntity.ok(petDto);
-//    }
-//
-//    @GetMapping
-//    public ResponseEntity<List<PetDto>> getAllPets() {
-//        List<PetDto> pets = petService.getAllPets();
-//        return ResponseEntity.ok(pets);
-//    }
 
 
     @GetMapping("/main")
     public String getUserPets(Model model, Authentication authentication) {
         String email = authentication.getName();
         UserDto user = userService.findByEmail(email);
-        List<PetDto> pets = petService.getPetsByUser(user.getUserId());
+
+        List<PetDto> pets;
+
+        if ("ROLE_ADMIN".equals(user.getRole())) {
+            pets = petService.getAllPets();
+        } else {
+            pets = petService.getPetsByUser(user.getUserId());
+        }
+
         model.addAttribute("listPets", pets);
         model.addAttribute("user", user);
         return "main";
     }
 
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deletePet(@PathVariable("id") Long petId) {
-        petService.deletePet(petId);
-        return "redirect:/pets/main";
+        System.out.println("🔄 DELETE CONTROLLER: Starting deletion for petId: " + petId);
+        try {
+            this.petService.deletePet(petId);
+            System.out.println("✅ DELETE CONTROLLER: Successfully deleted petId: " + petId);
+            return "redirect:/pets/main";
+        } catch (Exception e) {
+            System.out.println("❌ DELETE CONTROLLER: Error deleting petId " + petId + ": " + e.getMessage());
+            e.printStackTrace();
+            return "redirect:/pets/main?error=true";
+        }
     }
+
 
     @GetMapping("/edit/{id}")
     public String showEditPetForm(@PathVariable("id") Long petId, Model model) {
@@ -92,27 +97,9 @@ public class PetController {
 
     @PostMapping("/update/{id}")
     public String updatePet(@PathVariable("id") Long petId,
-                            @RequestParam String name,
-                            @RequestParam int age,
-                            @RequestParam LocalDate birthday,
-                            @RequestParam String type,
-                            @RequestParam String breed,
-                            @RequestParam String health) {
-        PetDto updatedPet = new PetDto();
-        updatedPet.setPetName(name);
-        updatedPet.setPetAge(age);
-        updatedPet.setPetBd(birthday);
-        updatedPet.setPetType(type);
-        updatedPet.setPetBreed(breed);
-        updatedPet.setPetHealth(health);
-
+                            @ModelAttribute("pet") PetDto updatedPet) {
         petService.updatePet(petId, updatedPet);
         return "redirect:/pets/main";
     }
-
-
-
-
-
 
 }

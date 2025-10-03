@@ -4,8 +4,24 @@
     <meta charset="UTF-8">
     <title>My Pets</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 </head>
 <body>
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="#" class="nav-brand">PetCare</a>
+        <div class="nav-profile">
+            <a th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">
+                <img th:src="@{${user.profilePicture != null ? user.profilePicture : '/css/images/default-avatar.jpg'}}"
+                     alt="Profile"
+                     class="avatar"
+                     onerror="this.src='/css/images/default-avatar.jpg'">
+            </a>
+        </div>
+    </div>
+</nav>
+
 <div class="container my-2">
     <div class="header-container">
         <h1>My Pets</h1>
@@ -14,11 +30,10 @@
     <a th:href = "@{/pets/add/pet}" class="btn btn-primary btn-sm mb-3">Add Pet</a>
 
     <div>
-        <a th:href="@{/viewProfile/{id}(id=${user.userId})}">View Profile</a>
+        <a th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">View Profile</a>
     </div>
 
-    <form method="get" th:action="@{/main}">
-        <!--TABLE-->
+    <form method="get" th:action="@{/pets/main}">
         <table class="table table-bordered table-hover">
             <thead class="table-dark">
             <tr>
@@ -49,12 +64,24 @@
                     </a>
 
                     <!-- Delete -->
-                    <a href="javascript:void(0)"
-                       onclick="confirmDelete(this)"
-                       th:data-url="@{/pets/delete/{id}(id=${pet.petId})}"
-                       class="btn btn-sm btn-danger">
-                        <i class="fas fa-trash-alt"></i> Delete
-                    </a>
+<!--                    <a th:href="@{/pets/delete/{id}(id=${pet.petId})}"-->
+<!--                       class="btn btn-sm btn-danger"-->
+<!--                       onclick="return confirm('Are you sure you want to delete this pet?')">-->
+<!--                        <i class="fas fa-trash-alt"></i> Delete-->
+<!--                    </a>-->
+<!--                    <form th:action="@{/pets/delete/{id}(id=${pet.petId})}" method="post" style="display: inline;">-->
+<!--                        <button type="submit" class="btn btn-primary"-->
+<!--                                onclick="return confirm('Are you sure you want to delete this pet?')">-->
+<!--                            Delete-->
+<!--                        </button>-->
+<!--                    </form>-->
+                    <form th:action="@{/pets/delete/{id}(id=${pet.petId})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('Are you sure you want to delete this pet?')">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </button>
+                    </form>
+
                 </td>
             </tr>
             </tbody>
@@ -63,12 +90,19 @@
 </div>
 
 <script>
+    // function confirmDelete(element) {
+    //     const url = element.getAttribute("th:data-url");
+    //     if (confirm("Are you sure you want to delete this pet?")) {
+    //         window.location.href = url;
+    //     }
+    // }
     function confirmDelete(element) {
-        const url = element.getAttribute('data-url');
+        const url = element.getAttribute("data-url"); // ✅ правильный атрибут
         if (confirm("Are you sure you want to delete this pet?")) {
             window.location.href = url;
         }
     }
+
 </script>
 
 </body>
