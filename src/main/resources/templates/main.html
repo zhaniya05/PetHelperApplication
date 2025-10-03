@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>My Pets</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
 <div class="container my-2">
@@ -38,25 +39,26 @@
                 <td th:text="${pet?.petBd}"></td>
                 <td th:text="${pet?.petType}"></td>
                 <td th:text="${pet?.petBreed}"></td>
-<!--                <td>-->
-<!--                    <a href="#" onclick="confirmDelete(this)"-->
-<!--                       th:data-url="@{/pets/delete/{id}(id=${pet.petId})}"-->
-<!--                       class="btn btn-primary">Delete</a>-->
-<!--                </td>-->
+                <td>
+                    <a href="javascript:void(0)"
+                       onclick="confirmDelete(this)"
+                       th:data-url="@{/pets/delete/{id}(id=${pet.petId})}"
+                       class="btn btn-danger">Delete</a>
+                </td>
             </tr>
             </tbody>
         </table>
     </form>
 </div>
 
-<!--<script>-->
-<!--    function confirmDelete(element) {-->
-<!--        const url = element.getAttribute('data-url');-->
-<!--        if (confirm("Are you sure you want to delete this user?")) {-->
-<!--            window.location.href = url;-->
-<!--        }-->
-<!--    }-->
-<!--</script>-->
+<script>
+    function confirmDelete(element) {
+        const url = element.getAttribute('data-url');
+        if (confirm("Are you sure you want to delete this pet?")) {
+            window.location.href = url;
+        }
+    }
+</script>
 
 </body>
 </html>
