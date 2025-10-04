@@ -27,7 +27,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final String uploadDir = "C:\\Users\\baite\\IdeaProjects\\PetHelper\\src\\main\\resources\\static\\css\\uploads\\";
+    //private final String uploadDir = "C:\\Users\\baite\\IdeaProjects\\PetHelper\\src\\main\\resources\\static\\css\\uploads\\";
+    private final String uploadDir = "C:\\Users\\baite\\IdeaProjects\\PetHelper\\uploads\\";
 
 
     @Override
@@ -120,7 +121,7 @@ public class UserServiceImpl implements UserService {
         // Возвращаем путь для доступа через веб
         //return "C:\\\\Users\\\\baite\\\\IdeaProjects\\\\PetHelper\\src\\main\\resources\\static\\css\\uploads\\"" + fileName;
 
-        return "/css/uploads/" + fileName;
+        return "/uploads/" + fileName;
     }
 
     @Override
