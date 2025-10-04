@@ -73,16 +73,15 @@ public class PetController {
         return "main";
     }
 
-    @PostMapping("/delete/{id}")
+    @GetMapping("/delete/{id}")
     public String deletePet(@PathVariable("id") Long petId) {
-        System.out.println("🔄 DELETE CONTROLLER: Starting deletion for petId: " + petId);
+        System.out.println("🔄 DELETE: Attempting to delete pet with ID: " + petId);
         try {
-            this.petService.deletePet(petId);
-            System.out.println("✅ DELETE CONTROLLER: Successfully deleted petId: " + petId);
+            petService.deletePet(petId);
+            System.out.println("✅ DELETE: Successfully deleted pet with ID: " + petId);
             return "redirect:/pets/main";
         } catch (Exception e) {
-            System.out.println("❌ DELETE CONTROLLER: Error deleting petId " + petId + ": " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("❌ DELETE: Error deleting pet: " + e.getMessage());
             return "redirect:/pets/main?error=true";
         }
     }

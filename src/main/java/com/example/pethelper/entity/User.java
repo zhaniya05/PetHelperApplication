@@ -30,8 +30,8 @@ public class User {
 
     private String role = "ROLE_USER";
 
-    @OneToMany(mappedBy="user", cascade= CascadeType.ALL, fetch= FetchType.EAGER, orphanRemoval = true)
-    private List<Pet> pets;
+   @OneToMany(mappedBy="user", fetch = FetchType.LAZY) // Используйте LAZY для производительности
+ List<Pet> pets;
 
     private String profilePicture;
 

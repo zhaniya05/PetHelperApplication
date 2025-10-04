@@ -118,8 +118,6 @@ public class UserServiceImpl implements UserService {
         Path filePath = Paths.get(uploadDir + fileName);
         Files.copy(avatarFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-        // Возвращаем путь для доступа через веб
-        //return "C:\\\\Users\\\\baite\\\\IdeaProjects\\\\PetHelper\\src\\main\\resources\\static\\css\\uploads\\"" + fileName;
 
         return "/uploads/" + fileName;
     }

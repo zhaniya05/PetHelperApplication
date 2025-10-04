@@ -10,6 +10,8 @@ import com.example.pethelper.repository.UserRepository;
 import com.example.pethelper.service.PetService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +20,9 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class PetServiceImpl implements PetService {
+
+    private static final Logger log = LoggerFactory.getLogger(PetServiceImpl.class);
+
 
     private PetRepository petRepository;
     private UserRepository userRepository;
@@ -65,9 +70,10 @@ public class PetServiceImpl implements PetService {
     @Override
     @Transactional
     public void deletePet(Long petId) {
-        Pet pet = petRepository.findById(petId)
-                .orElseThrow(() -> new ResourceNotFoundException("Pet not found with id: " + petId));
-        petRepository.delete(pet);
+//        Pet pet = petRepository.findById(petId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Pet not found with id: " + petId));
+        petRepository.deleteById(petId);
+        petRepository.flush();
     }
 
 

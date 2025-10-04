@@ -1,34 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Add Pet</title>
+  <meta charset="UTF-8">
+  <title>Add Pet</title>
   <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
+<div class="container">
+  <div class="header-container">
+    <h1>Add New Pet</h1>
+  </div>
 
-<div class="form-container">
-  <h2>Create</h2>
-  <form action="/pets/add/pet" method="POST">
-    <div class= "form-group">
-      <label for="name">Name</label>
-      <input type="text" id="name" name="name" required />
+  <form th:action="@{/pets/add/pet}" method="post" class="login-form">
+    <div class="form-group">
+      <label for="name">Pet Name</label>
+      <input type="text" id="name" name="name" placeholder="Enter pet name" required>
     </div>
 
     <div class="form-group">
-      <label for="age">Age</label>
-      <input type="text" id="age" name="age" required />
+      <label for="age">Pet Age</label>
+      <input type="number" id="age" name="age" placeholder="Enter pet age" required>
     </div>
 
     <div class="form-group">
-      <label for="birthday">Birthday</label>
-      <input type="date" id="birthday" name="birthday" required />
+      <label for="birthday">Pet Birthday</label>
+      <input type="date" id="birthday" name="birthday">
     </div>
 
-
     <div class="form-group">
-      <label for="type">Type</label>
-      <select id="Type" name="type" required>
+      <label for="type">Pet Type</label>
+      <select id="type" name="type" required>
+        <option value="">Select pet type</option>
         <option value="Dog">Dog</option>
         <option value="Cat">Cat</option>
         <option value="Fish">Fish</option>
@@ -43,19 +45,19 @@
     </div>
 
     <div class="form-group">
-      <label for="breed">Breed</label>
-      <input type="text" id="breed" name="breed" required />
+      <label for="breed">Pet Breed</label>
+      <input type="text" id="breed" name="breed" placeholder="e.g. Labrador, Persian" required>
     </div>
 
-<!--    <label for="placePhotos">Photo:</label>-->
-<!--    <input type="file" id="placePhotos" name="photo" accept="image/*" />-->
-
-    <div class="form-group">
-      <input type="submit" value="Create" />
+    <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+      <button type="submit" class="btn btn-primary">
+        Create Pet
+      </button>
+      <a th:href="@{/pets/main}" class="btn btn-danger">
+        Cancel
+      </a>
     </div>
   </form>
 </div>
-</div>
-</body>
 </body>
 </html>
