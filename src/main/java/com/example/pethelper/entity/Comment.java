@@ -7,37 +7,27 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "posts")
-public class Post {
+@Table(name = "comments")
+public class Comment {
+
     @Id
     // @GeneratedValue(strategy = GenerationType.IDENTITY)
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="MySequenceGenerator")
     @SequenceGenerator(allocationSize=1, schema="public",  name="MySequenceGenerator", sequenceName = "mysequence")
-    private Long postId;
+    private Long commentId;
 
-    private String postContent;
+    private String commentContent;
 
-    @ElementCollection
-    @CollectionTable(
-            name = "post_photos",
-            joinColumns = @JoinColumn(name = "post_id")
-    )
-    @Column(name = "photo_url")
-    private List<String> postPhotos = new ArrayList<>();
-
-    private int postLikes;
-
-    private LocalDate postDate;
+    private LocalDate commentDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
 }

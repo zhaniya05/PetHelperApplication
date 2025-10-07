@@ -33,6 +33,12 @@ public class User {
    @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
  List<Pet> pets;
 
+   @OneToMany(mappedBy="user", fetch=FetchType.LAZY)
+   List<Post> posts;
+
+   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+   List<Comment> comments;
+
     private String profilePicture;
 
 }
