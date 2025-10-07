@@ -30,7 +30,7 @@ public class User {
 
     private String role = "ROLE_USER";
 
-   @OneToMany(mappedBy="user", fetch = FetchType.LAZY) // Используйте LAZY для производительности
+   @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
  List<Pet> pets;
 
     private String profilePicture;
