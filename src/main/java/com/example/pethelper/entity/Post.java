@@ -25,7 +25,13 @@ public class Post {
 
     private String postContent;
 
-    // List<String> postPhotos;
+    @ElementCollection
+    @CollectionTable(
+            name = "post_photos",
+            joinColumns = @JoinColumn(name = "post_id")
+    )
+    @Column(name = "photo_url")
+    private List<String> postPhotos = new ArrayList<>();
 
     private int postLikes;
 
