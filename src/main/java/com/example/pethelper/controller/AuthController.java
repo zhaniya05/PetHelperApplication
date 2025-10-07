@@ -66,4 +66,5 @@ public class AuthController {
         session.invalidate();
         return ResponseEntity.ok("Logged out");
     }
+    
 }
