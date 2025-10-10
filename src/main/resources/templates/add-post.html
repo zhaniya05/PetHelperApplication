@@ -2,9 +2,430 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Create Post</title>
+    <title>Create Post - PawPal</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Стили для страницы создания поста */
+        .create-post-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .header-container {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .header-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #ffb7ce, #ff8fab);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            box-shadow: 0 8px 25px rgba(255, 107, 149, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header-icon i {
+            font-size: 40px;
+            color: white;
+        }
+
+        .header-container h1 {
+            font-size: 42px;
+            background: linear-gradient(135deg, #ff6390, #ff8fab);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .header-subtitle {
+            color: #666;
+            font-size: 18px;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Форма */
+        .post-form {
+            background: linear-gradient(135deg, #ffffff, #fffafc);
+            padding: 50px;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(255, 107, 149, 0.1);
+            border: 2px solid #fff0f5;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group {
+            margin-bottom: 40px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            color: #ff6390;
+            margin-bottom: 15px;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-label i {
+            font-size: 20px;
+            background: linear-gradient(135deg, #ffb7ce, #ff8fab);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 25px;
+            border: 2px solid #ffeef4;
+            border-radius: 20px;
+            font-size: 16px;
+            line-height: 1.7;
+            resize: vertical;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            font-family: 'Arial', sans-serif;
+            min-height: 150px;
+            box-shadow: inset 0 2px 10px rgba(255, 183, 206, 0.1);
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #ffb7ce;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(255, 183, 206, 0.2),
+            inset 0 2px 10px rgba(255, 183, 206, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-textarea::placeholder {
+            color: #ccc;
+            font-style: italic;
+        }
+
+        .character-count {
+            text-align: right;
+            margin-top: 12px;
+            font-size: 14px;
+            color: #999;
+            font-weight: 500;
+        }
+
+        .character-count .count {
+            color: #ff6390;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        /* Область загрузки файлов */
+        .file-upload-area {
+            border: 3px dashed #ffb7ce;
+            border-radius: 20px;
+            padding: 60px 30px;
+            text-align: center;
+            background: linear-gradient(135deg, #fffafc, #fff5f8);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-upload-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .file-upload-area:hover::before {
+            left: 100%;
+        }
+
+        .file-upload-area:hover {
+            border-color: #ff8fab;
+            background: linear-gradient(135deg, #fff5f8, #ffeef4);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 107, 149, 0.15);
+        }
+
+        .file-upload-area.dragover {
+            border-color: #ff6390;
+            background: linear-gradient(135deg, #ffeef4, #ffe4ec);
+            transform: scale(1.02);
+        }
+
+        .upload-placeholder i {
+            font-size: 64px;
+            background: linear-gradient(135deg, #ffb7ce, #ff8fab);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .upload-placeholder h3 {
+            color: #ff6390;
+            margin-bottom: 12px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .upload-placeholder p {
+            color: #888;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .upload-support {
+            font-size: 14px;
+            color: #aaa;
+            font-style: italic;
+        }
+
+        .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Превью файлов */
+        .file-preview {
+            margin-top: 25px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 20px;
+        }
+
+        .preview-item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 3px solid #fff5f8;
+        }
+
+        .preview-item:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(255, 107, 149, 0.3);
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .preview-item:hover .preview-image {
+            transform: scale(1.1);
+        }
+
+        .preview-remove {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: linear-gradient(135deg, #ff6b6b, #ff5252);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        .preview-item:hover .preview-remove {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .preview-remove:hover {
+            background: linear-gradient(135deg, #ff5252, #ff3838);
+            transform: scale(1.1);
+        }
+
+        /* Кнопки действий */
+        .form-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 50px;
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            padding: 18px 36px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 15px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.4s ease;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-large::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-large:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ffb7ce, #ff8fab);
+            color: white;
+            box-shadow: 0 8px 25px rgba(255, 107, 149, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(255, 107, 149, 0.6);
+            background: linear-gradient(135deg, #ff8fab, #ff6b95);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            color: #666;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #e9ecef, #dee2e6);
+            color: #333;
+        }
+
+        /* Анимации */
+        .post-form {
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .create-post-container {
+                padding: 0 15px;
+                margin: 20px auto;
+            }
+
+            .post-form {
+                padding: 30px 20px;
+            }
+
+            .header-container h1 {
+                font-size: 32px;
+            }
+
+            .header-icon {
+                width: 80px;
+                height: 80px;
+            }
+
+            .header-icon i {
+                font-size: 32px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .btn-large {
+                width: 100%;
+                justify-content: center;
+                padding: 16px 24px;
+            }
+
+            .file-preview {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 15px;
+            }
+
+            .file-upload-area {
+                padding: 40px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-container h1 {
+                font-size: 28px;
+            }
+
+            .header-subtitle {
+                font-size: 16px;
+            }
+
+            .form-label {
+                font-size: 16px;
+            }
+
+            .form-textarea {
+                padding: 20px;
+                font-size: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
 <nav class="navbar">
@@ -22,38 +443,180 @@
     </div>
 </nav>
 
-<div class="container">
+<div class="create-post-container">
     <div class="header-container">
-        <h1>Add New Post 🐾</h1>
+        <h1>Create New Post</h1>
+        <p class="header-subtitle">Share your pet's special moments with the community 🐾</p>
     </div>
 
     <form th:action="@{/posts/add}"
           th:object="${post}"
           method="post"
           enctype="multipart/form-data"
-          class="login-form">
+          class="post-form">
 
+        <!-- Контент поста -->
         <div class="form-group">
-            <label for="postContent">Post Content:</label>
-            <textarea id="postContent" th:field="*{postContent}" rows="4"
-                      placeholder="Write something about your pet..." required></textarea>
+            <label for="postContent" class="form-label">
+                <i class="fa-solid fa-pen-fancy"></i>
+                Your Story
+            </label>
+            <textarea id="postContent"
+                      th:field="*{postContent}"
+                      rows="5"
+                      placeholder="What's on your mind? Share your pet's story, ask for advice, or just show off their cuteness... 🐶🐱"
+                      class="form-textarea"
+                      maxlength="500"
+                      required></textarea>
+            <div class="character-count">
+                <span class="count">0</span>/500 characters
+            </div>
         </div>
 
+        <!-- Загрузка фото -->
         <div class="form-group">
-            <label for="photos">Upload Photos:</label>
-            <input type="file" id="photos" name="photos" multiple accept="image/*">
-            <small>You can select multiple photos (max 10)</small>
+            <label for="photos" class="form-label">
+                <i class="fa-solid fa-camera-retro"></i>
+                Photo Gallery
+            </label>
+            <div class="file-upload-area" id="fileUploadArea">
+                <div class="upload-placeholder">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <h3>Drag & Drop Your Memories Here</h3>
+                    <p>or click to browse your files</p>
+                    <span class="upload-support">Supports: JPG, PNG, GIF • Maximum 10 files</span>
+                </div>
+                <input type="file"
+                       id="photos"
+                       name="photos"
+                       multiple
+                       accept="image/*"
+                       class="file-input">
+            </div>
+            <div class="file-preview" id="filePreview"></div>
         </div>
 
-        <div class="form-group" style="text-align: center; margin-top: 20px;">
-            <button type="submit" class="btn btn-primary">
-                <i class="fa-solid fa-plus"></i> Add Post
+        <!-- Кнопки действий -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-large">
+                <i class="fa-solid fa-rocket"></i>
+                Publish Post
             </button>
-            <a th:href="@{/posts}" class="btn btn-danger">
-                <i class="fa-solid fa-arrow-left"></i> Cancel
+            <a th:href="@{/posts}" class="btn btn-secondary btn-large">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Feed
             </a>
         </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const textarea = document.getElementById('postContent');
+        const characterCount = document.querySelector('.character-count .count');
+        const fileInput = document.getElementById('photos');
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const filePreview = document.getElementById('filePreview');
+
+        // Инициализация счетчика символов
+        characterCount.textContent = textarea.value.length;
+
+        // Счетчик символов
+        textarea.addEventListener('input', function() {
+            const count = this.value.length;
+            characterCount.textContent = count;
+
+            if (count > 450) {
+                characterCount.style.color = '#ff6b6b';
+            } else if (count > 400) {
+                characterCount.style.color = '#ff8fab';
+            } else {
+                characterCount.style.color = '#ff6390';
+            }
+        });
+
+        // Drag & Drop функциональность
+        ['dragover', 'dragenter'].forEach(event => {
+            fileUploadArea.addEventListener(event, function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+        });
+
+        ['dragleave', 'dragend', 'drop'].forEach(event => {
+            fileUploadArea.addEventListener(event, function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+        });
+
+        fileUploadArea.addEventListener('drop', function(e) {
+            const files = e.dataTransfer.files;
+            fileInput.files = files;
+            updateFilePreview();
+        });
+
+        fileInput.addEventListener('change', updateFilePreview);
+
+        function updateFilePreview() {
+            filePreview.innerHTML = '';
+            const files = fileInput.files;
+
+            if (files.length > 10) {
+                alert('🚫 Maximum 10 files allowed. Please select fewer files.');
+                fileInput.value = '';
+                return;
+            }
+
+            if (files.length > 0) {
+                fileUploadArea.style.borderStyle = 'solid';
+                fileUploadArea.style.background = 'linear-gradient(135deg, #f0fff4, #f0f8ff)';
+            } else {
+                fileUploadArea.style.borderStyle = 'dashed';
+                fileUploadArea.style.background = 'linear-gradient(135deg, #fffafc, #fff5f8)';
+            }
+
+            Array.from(files).forEach((file, index) => {
+                if (!file.type.startsWith('image/')) {
+                    alert(`⚠️ File "${file.name}" is not an image and will be skipped.`);
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewItem = document.createElement('div');
+                    previewItem.className = 'preview-item';
+                    previewItem.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview" class="preview-image">
+                        <button type="button" class="preview-remove" data-index="${index}">
+                            <i class="fa-solid fa-times"></i>
+                        </button>
+                    `;
+                    filePreview.appendChild(previewItem);
+
+                    // Удаление превью
+                    previewItem.querySelector('.preview-remove').addEventListener('click', function() {
+                        removeFile(index);
+                    });
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function removeFile(index) {
+            const dt = new DataTransfer();
+            const files = fileInput.files;
+
+            for (let i = 0; i < files.length; i++) {
+                if (i !== index) {
+                    dt.items.add(files[i]);
+                }
+            }
+
+            fileInput.files = dt.files;
+            updateFilePreview();
+        }
+    });
+</script>
 </body>
 </html>

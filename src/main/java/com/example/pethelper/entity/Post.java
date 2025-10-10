@@ -9,6 +9,8 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -37,17 +39,27 @@ public class Post {
 
     private LocalDate postDate;
 
-  //  private boolean liked;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Comment> comments;
 
     @PrePersist
     public void prePersist() {
         this.postDate = LocalDate.now();
+    }
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<PostLike> likes = new HashSet<>();
+
+    public boolean isLikedByUser(User user) {
+        return likes.stream().anyMatch(like -> like.getUser().equals(user));
+    }
+
+    public int getLikeCount() {
+        return likes.size();
     }
 }

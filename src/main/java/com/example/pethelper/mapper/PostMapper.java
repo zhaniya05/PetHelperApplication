@@ -13,8 +13,10 @@ public class PostMapper {
         dto.setPostPhotos(post.getPostPhotos());
         dto.setPostLikes(post.getPostLikes());
         dto.setPostDate(post.getPostDate());
+        dto.setUserId(post.getUser() != null ? post.getUser().getUserId() : null);
       //  dto.setLiked(false);
         dto.setUserName(post.getUser() != null ? post.getUser().getUserName() : null);
+        dto.setLikeCount(post.getLikeCount());
         return dto;
     }
 

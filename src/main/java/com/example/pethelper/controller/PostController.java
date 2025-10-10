@@ -49,23 +49,26 @@ public class PostController {
     @GetMapping
     public String showPosts(Model model, Authentication authentication) {
         UserDto user = userService.findByEmail(authentication.getName());
-        List<PostDto> posts = postService.getAllPosts();
+
+        // Передаем email в сервис для получения информации о лайках
+        List<PostDto> posts = postService.getAllPosts(authentication.getName());
+
         model.addAttribute("posts", posts);
         model.addAttribute("user", user);
         return "posts";
     }
 
-    @PostMapping("/{id}/like")
-    public String likePost(@PathVariable Long id) {
-        postService.saveLike(id);
-        return "redirect:/posts";
-    }
-
-    @PostMapping("/{id}/unlike")
-    public String unlikePost(@PathVariable Long id) {
-        postService.removeLike(id);
-        return "redirect:/posts";
-    }
+//    @PostMapping("/{id}/like")
+//    public String likePost(@PathVariable Long id) {
+//        postService.saveLike(id);
+//        return "redirect:/posts";
+//    }
+//
+//    @PostMapping("/{id}/unlike")
+//    public String unlikePost(@PathVariable Long id) {
+//        postService.removeLike(id);
+//        return "redirect:/posts";
+//    }
 
     @GetMapping("/add")
     public String showAddPostForm(Model model, Authentication authentication) {
@@ -128,76 +131,23 @@ public class PostController {
     }
 
 
-    @GetMapping("/delete/{id}")
-    public String deletePost(@PathVariable Long id) {
-        postService.deletePost(id);
+    @PostMapping("/delete/{id}")
+    public String deletePost(@PathVariable Long id, Authentication authentication, Model model) {
+        UserDto user = userService.findByEmail(authentication.getName());
+        Long userId = user.getUserId();
+
+        PostDto post = postService.getPostById(id);
+        Long postUserId = post.getUserId();
+        postService.deletePost(postUserId, userId, id);
+        model.addAttribute("userId", userId);
+        model.addAttribute("postUserId", postUserId);
+        return "redirect:/posts";
+    }
+
+    @PostMapping("/{postId}/like")
+    public String toggleLike(@PathVariable Long postId, Authentication authentication) {
+        String email = authentication.getName(); // это EMAIL
+        postService.toggleLike(postId, email);
         return "redirect:/posts";
     }
 }
-
-
-
-
-//import com.example.pethelper.dto.PetDto;
-//import com.example.pethelper.dto.PostDto;
-//import com.example.pethelper.dto.UserDto;
-//import com.example.pethelper.entity.Post;
-//import com.example.pethelper.service.PostService;
-//import com.example.pethelper.service.UserService;
-//import com.fasterxml.jackson.annotation.JsonAnyGetter;
-//import lombok.AllArgsConstructor;
-//import org.springframework.security.core.Authentication;
-//import org.springframework.stereotype.Controller;
-//import org.springframework.ui.Model;
-//import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.PostMapping;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RequestParam;
-//
-//import java.time.LocalDate;
-//import java.util.List;
-//
-//@Controller
-//@RequestMapping("/posts")
-//@AllArgsConstructor
-//public class PostController {
-//
-//   private final PostService postService;
-//   private final UserService userService;
-//
-//   @GetMapping
-//   public String listPosts(Model model, Authentication authentication) {
-//
-//       UserDto userDto = userService.findByEmail(authentication.getName());
-//
-//       List<PostDto> posts = postService.getAllPosts();
-//       model.addAttribute("posts", posts);
-//
-//       return "posts";
-//   }
-//
-//
-//    @GetMapping("/add/post")
-//    public String showAddPetForm() {
-//        return "post-form";
-//    }
-//
-//    @PostMapping("/add/post")
-//    public String addPet(Authentication authentication,
-//                         @RequestParam String title,
-//                         @RequestParam String content){
-//        String email = authentication.getName();
-//        UserDto user = userService.findByEmail(email);
-//        PetDto p = new PetDto();
-//        p.setPetName(name);
-//        p.setPetAge(age);
-//        p.setPetBd(birthday);
-//        p.setPetBreed(breed);
-//        p.setPetType(type);
-//        p.setUserId(user.getUserId());
-//        petService.createPet(p);
-//
-//        return "redirect:/pets/main";
-//    }
-//
-//}

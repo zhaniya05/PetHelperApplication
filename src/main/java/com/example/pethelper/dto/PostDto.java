@@ -15,8 +15,8 @@ public class PostDto {
     private List<String> postPhotos;
     private int postLikes;
     private LocalDate postDate;
-   // private boolean liked;
     private String userName;
     private Long userId;
-
+    private int likeCount;
+    private boolean likedByCurrentUser;
 }
