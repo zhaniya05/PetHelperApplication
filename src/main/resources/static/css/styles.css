@@ -234,3 +234,19 @@ body {
     margin: 0;
     padding: 0;
 }
+.filter-form {
+    margin-bottom: 20px;
+}
+
+.filters {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.filter-input, .filter-select {
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+

@@ -31,6 +31,33 @@
 
 
     <form method="get" th:action="@{/pets/main}">
+        <form th:action="@{/pets/main}" method="get" class="filter-form">
+            <div class="filters">
+                <input type="text" name="keyword" placeholder="Search by name or breed"
+                       th:value="${keyword}" class="filter-input"/>
+
+                <select name="type" class="filter-select">
+                    <option value="">All Types</option>
+                    <option value="Dog" th:selected="${type == 'Dog'}">Dog</option>
+                    <option value="Cat" th:selected="${type == 'Cat'}">Cat</option>
+                    <option value="Bird" th:selected="${type == 'Bird'}">Bird</option>
+                    <option value="Other" th:selected="${type == 'Other'}">Other</option>
+                </select>
+
+                <select name="sort" class="filter-select">
+                    <option value="">Sort by</option>
+                    <option value="name" th:selected="${sort == 'name'}">Name (A-Z)</option>
+                    <option value="age" th:selected="${sort == 'age'}">Age (youngest first)</option>
+                    <option value="birthday" th:selected="${sort == 'birthday'}">Birthday (newest first)</option>
+                </select>
+
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-search"></i> Apply
+                </button>
+
+                <a th:href="@{/pets/main}" class="btn btn-secondary">Reset</a>
+            </div>
+        </form>
         <table class="table table-bordered table-hover">
             <thead class="table-dark">
             <tr>

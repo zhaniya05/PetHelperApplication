@@ -56,7 +56,11 @@ public class PetController {
 
 
     @GetMapping("/main")
-    public String getUserPets(Model model, Authentication authentication) {
+    public String getUserPets(@RequestParam(required = false) String keyword,
+                              @RequestParam(required = false) String type,
+                              @RequestParam(required = false) String sort,
+                              Model model,
+                              Authentication authentication) {
         String email = authentication.getName();
         UserDto user = userService.findByEmail(email);
 
@@ -68,8 +72,44 @@ public class PetController {
             pets = petService.getPetsByUser(user.getUserId());
         }
 
+        // 🔍 Поиск
+        if (keyword != null && !keyword.isBlank()) {
+            pets = pets.stream()
+                    .filter(p -> (p.getPetName() != null && p.getPetName().toLowerCase().contains(keyword.toLowerCase())) ||
+                            (p.getPetBreed() != null && p.getPetBreed().toLowerCase().contains(keyword.toLowerCase())))
+                    .toList();
+        }
+
+        // 🐾 Фильтрация по типу
+        if (type != null && !type.isBlank()) {
+            pets = pets.stream()
+                    .filter(p -> p.getPetType() != null && p.getPetType().equalsIgnoreCase(type))
+                    .toList();
+        }
+
+        // 🔢 Сортировка
+        if (sort != null && !sort.isBlank()) {
+            switch (sort) {
+                case "name" -> pets = pets.stream()
+                        .sorted((a, b) -> a.getPetName().compareToIgnoreCase(b.getPetName()))
+                        .toList();
+                case "age" -> pets = pets.stream()
+                        .sorted((a, b) -> Integer.compare(a.getPetAge(), b.getPetAge()))
+                        .toList();
+                case "birthday" -> pets = pets.stream()
+                        .sorted((a, b) -> b.getPetBd().compareTo(a.getPetBd()))
+                        .toList();
+            }
+        }
+
         model.addAttribute("listPets", pets);
         model.addAttribute("user", user);
+
+        // Чтобы форма сохраняла значения после отправки
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("type", type);
+        model.addAttribute("sort", sort);
+
         return "main";
     }
 
