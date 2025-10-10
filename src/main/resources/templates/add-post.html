@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Post</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<nav class="navbar">
+    <div class="nav-container">
+        <a th:href="@{/posts}" class="nav-brand">Posts</a>
+        <a th:href="@{/pets/main}" class="nav-brand">PawPal</a>
+        <div class="nav-profile">
+            <a th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">
+                <img th:src="@{${user.profilePicture != null ? user.profilePicture : '/css/images/default-avatar.jpg'}}"
+                     alt="Profile"
+                     class="avatar"
+                     onerror="this.src='/css/images/default-avatar.jpg'">
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="header-container">
+        <h1>Add New Post 🐾</h1>
+    </div>
+
+    <form th:action="@{/posts/add}"
+          th:object="${post}"
+          method="post"
+          enctype="multipart/form-data"
+          class="login-form">
+
+        <div class="form-group">
+            <label for="postContent">Post Content:</label>
+            <textarea id="postContent" th:field="*{postContent}" rows="4"
+                      placeholder="Write something about your pet..." required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="photos">Upload Photos:</label>
+            <input type="file" id="photos" name="photos" multiple accept="image/*">
+            <small>You can select multiple photos (max 10)</small>
+        </div>
+
+        <div class="form-group" style="text-align: center; margin-top: 20px;">
+            <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i> Add Post
+            </button>
+            <a th:href="@{/posts}" class="btn btn-danger">
+                <i class="fa-solid fa-arrow-left"></i> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

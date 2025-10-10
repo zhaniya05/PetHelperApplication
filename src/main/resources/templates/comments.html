@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Comments</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+<nav class="navbar">
+    <div class="nav-container">
+        <a th:href="@{/posts}" class="nav-brand">Posts</a>
+        <a th:href="@{/pets/main}" class="nav-brand">PawPal</a>
+        <div class="nav-profile">
+            <a th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">
+                <img th:src="@{${user.profilePicture != null ? user.profilePicture : '/css/images/default-avatar.jpg'}}"
+                     alt="Profile"
+                     class="avatar"
+                     onerror="this.src='/css/images/default-avatar.jpg'">
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="header-container">
+        <h1>Comments</h1>
+    </div>
+
+
+    <form class="comment-form" th:action="@{'/posts/' + ${postId} + '/comments'}" method="post">
+        <textarea name="commentContent" placeholder="Add Comment..." required></textarea>
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+
+    <div class="comments-list">
+        <div th:each="comment : ${comments}" class="comment-card">
+            <div class="comment-header">
+                <span class="comment-author" th:text="${comment.userName}">Username</span>
+                <span class="comment-date" th:text="${comment.commentDate}">Data</span>
+            </div>
+            <p class="comment-text" th:text="${comment.commentContent}">blablabla...</p>
+
+
+            <div class="comment-actions" th:if="${comment.userId == currentUserId}">
+                <a th:href="@{'/posts/' + ${postId} + '/comments/' + ${comment.commentId}}"
+                   class="btn btn-danger btn-sm"
+                   onclick="return confirm('Delete ?')">
+                    <i class="fa-solid fa-trash"></i> Delete
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

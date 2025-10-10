@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Posts</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body>
+<nav class="navbar">
+    <div class="nav-container">
+        <a th:href="@{/posts}" class="nav-brand">Posts</a>
+        <a th:href="@{/pets/main}" class="nav-brand">PawPal</a>
+        <div class="nav-profile">
+            <a th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">
+                <img th:src="@{${user.profilePicture != null ? user.profilePicture : '/css/images/default-avatar.jpg'}}"
+                     alt="Profile"
+                     class="avatar"
+                     onerror="this.src='/css/images/default-avatar.jpg'">
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-2">
+    <div class="add-post-container" style="text-align: center; margin-bottom: 30px;">
+        <a th:href="@{/posts/add}" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Add New Post
+        </a>
+    </div>
+    <div th:each="post : ${posts}" class="post-card">
+        <div class="post-header">
+            <div class="post-user" th:text="${post.userName}">username</div>
+            <div class="post-date" th:text="${#temporals.format(post.postDate, 'dd MMM yyyy')}">date</div>
+        </div>
+
+        <div class="post-content" th:text="${post.postContent}">Post content here</div>
+
+        <div th:if="${post.postPhotos != null}">
+            <div th:each="photo : ${post.postPhotos}">
+                <img th:src="@{${photo}}" alt="Post Photo" class="post-photo"/>
+            </div>
+        </div>
+
+        <div class="post-actions">
+<!--            <form th:action="@{/posts/{id}/like(id=${post.postId})}" method="post" style="display:inline;">-->
+<!--                <button type="submit" class="like-btn" th:classappend="${post.liked} ? 'active'">-->
+<!--                    ❤️-->
+<!--                </button>-->
+<!--            </form>-->
+
+<!--            <form th:action="@{/posts/{id}/unlike(id=${post.postId})}" method="post" style="display:inline;">-->
+<!--                <button type="submit" class="like-btn">-->
+<!--                    🤍-->
+<!--                </button>-->
+<!--            </form>-->
+
+            <a th:href="@{/posts/{id}/comments(id=${post.postId})}" class="comment-btn">
+                Comment
+            </a>
+
+
+            <span th:text="${post.postLikes} + ' likes'">0 likes</span>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

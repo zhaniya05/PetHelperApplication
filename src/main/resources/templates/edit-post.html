@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Post</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body>
+<nav class="navbar">
+    <div class="nav-container">
+        <a th:href="@{/posts}" class="nav-brand">Posts</a>
+        <a th:href="@{/pets/main}" class="nav-brand">PawPal</a>
+        <div class="nav-profile">
+            <a th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">
+                <img th:src="@{${user.profilePicture != null ? user.profilePicture : '/css/images/default-avatar.jpg'}}"
+                     alt="Profile"
+                     class="avatar"
+                     onerror="this.src='/css/images/default-avatar.jpg'">
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="header-container">
+        <h1>Edit Post 🐾</h1>
+    </div>
+
+    <form th:action="@{/posts/edit/{id}(id=${post.postId})}"
+          th:object="${post}"
+          method="post"
+          enctype="multipart/form-data"
+          class="login-form">
+
+        <!-- Контент поста -->
+        <div class="form-group">
+            <label for="postContent">Post Content:</label>
+            <textarea id="postContent" th:field="*{postContent}" rows="4"
+                      placeholder="Edit your post content..." required></textarea>
+        </div>
+
+        <!-- Текущие фото -->
+        <div th:if="${post.postPhotos != null and !post.postPhotos.isEmpty()}">
+            <label>Current Photos:</label>
+            <div class="photo-container">
+                <div th:each="photo, iterStat : ${post.postPhotos}" class="photo-item">
+                    <img th:src="@{${photo}}" alt="Post Photo" class="post-photo">
+
+                    <form th:action="@{/posts/{postId}/photos/delete(postId=${post.postId})}"
+                          method="post"
+                          style="margin-top:5px;">
+                        <input type="hidden" name="photoUrl" th:value="${photo}">
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Новые фото -->
+        <div class="form-group">
+            <label for="newPhotos">Upload New Photos:</label>
+            <input type="file" id="newPhotos" name="photos" multiple accept="image/*">
+        </div>
+
+        <!-- Кнопки -->
+        <div class="form-group" style="text-align: center; margin-top: 20px;">
+            <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-save"></i> Save Changes
+            </button>
+            <a th:href="@{/posts}" class="btn btn-danger">
+                <i class="fa-solid fa-arrow-left"></i> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+
+</body>
+</html>

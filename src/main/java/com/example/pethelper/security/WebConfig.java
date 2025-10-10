@@ -9,5 +9,9 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:C:/Users/baite/IdeaProjects/PetHelper/uploads/");
+
+        registry.addResourceHandler("/post_photos/**")
+                .addResourceLocations("file:post_photos/");
     }
+
 }

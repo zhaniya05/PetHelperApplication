@@ -8,9 +8,24 @@
 
 </head>
 <body>
+<!--<nav class="navbar">-->
+<!--    <div class="nav-container">-->
+<!--        <a th:href="@{/pets/main}" class="nav-brand">FurEver</a>-->
+<!--        <div class="nav-profile">-->
+<!--            <a th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">-->
+<!--                <img th:src="@{${user.profilePicture != null ? user.profilePicture : '/css/images/default-avatar.jpg'}}"-->
+<!--                     alt="Profile"-->
+<!--                     class="avatar"-->
+<!--                     onerror="this.src='/css/images/default-avatar.jpg'">-->
+<!--            </a>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</nav>-->
+
 <nav class="navbar">
     <div class="nav-container">
-        <a th:href="@{/pets/main}" class="nav-brand">FurEver</a>
+        <a th:href="@{/posts}" class="nav-brand">Posts</a>
+        <a th:href="@{/pets/main}" class="nav-brand">PawPal</a>
         <div class="nav-profile">
             <a th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">
                 <img th:src="@{${user.profilePicture != null ? user.profilePicture : '/css/images/default-avatar.jpg'}}"
@@ -40,9 +55,17 @@
                     <option value="">All Types</option>
                     <option value="Dog" th:selected="${type == 'Dog'}">Dog</option>
                     <option value="Cat" th:selected="${type == 'Cat'}">Cat</option>
-                    <option value="Bird" th:selected="${type == 'Bird'}">Bird</option>
+                    <option value="Fish" th:selected="${type == 'Fish'}">Fish</option>
+                    <option value="Cow" th:selected="${type == 'Cow'}">Cow</option>
+                    <option value="Horse" th:selected="${type == 'Horse'}">Horse</option>
+                    <option value="Snake" th:selected="${type == 'Snake'}">Snake</option>
+                    <option value="Insect" th:selected="${type == 'Insect'}">Insect</option>
+                    <option value="Hamster" th:selected="${type == 'Hamster'}">Hamster</option>
+                    <option value="Rabbit" th:selected="${type == 'Rabbit'}">Rabbit</option>
+                    <option value="Parrot" th:selected="${type == 'Parrot'}">Parrot</option>
                     <option value="Other" th:selected="${type == 'Other'}">Other</option>
                 </select>
+
 
                 <select name="sort" class="filter-select">
                     <option value="">Sort by</option>

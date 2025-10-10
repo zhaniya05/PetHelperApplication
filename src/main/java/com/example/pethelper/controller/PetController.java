@@ -72,7 +72,6 @@ public class PetController {
             pets = petService.getPetsByUser(user.getUserId());
         }
 
-        // 🔍 Поиск
         if (keyword != null && !keyword.isBlank()) {
             pets = pets.stream()
                     .filter(p -> (p.getPetName() != null && p.getPetName().toLowerCase().contains(keyword.toLowerCase())) ||
@@ -80,14 +79,26 @@ public class PetController {
                     .toList();
         }
 
-        // 🐾 Фильтрация по типу
+        if (type != null && !type.isBlank()) {
+            if (type.equalsIgnoreCase("Other")) {
+                List<String> knownTypes = List.of("Dog", "Cat", "Fish", "Cow", "Horse", "Snake", "Insect", "Hamster", "Rabbit", "Parrot");
+                pets = pets.stream()
+                        .filter(p -> p.getPetType() == null || !knownTypes.contains(p.getPetType()))
+                        .toList();
+            } else {
+                pets = pets.stream()
+                        .filter(p -> p.getPetType() != null && p.getPetType().equalsIgnoreCase(type))
+                        .toList();
+            }
+        }
+
+
         if (type != null && !type.isBlank()) {
             pets = pets.stream()
                     .filter(p -> p.getPetType() != null && p.getPetType().equalsIgnoreCase(type))
                     .toList();
         }
 
-        // 🔢 Сортировка
         if (sort != null && !sort.isBlank()) {
             switch (sort) {
                 case "name" -> pets = pets.stream()
@@ -105,7 +116,7 @@ public class PetController {
         model.addAttribute("listPets", pets);
         model.addAttribute("user", user);
 
-        // Чтобы форма сохраняла значения после отправки
+
         model.addAttribute("keyword", keyword);
         model.addAttribute("type", type);
         model.addAttribute("sort", sort);

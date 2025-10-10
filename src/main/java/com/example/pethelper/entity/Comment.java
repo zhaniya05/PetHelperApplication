@@ -34,4 +34,8 @@ public class Comment {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    @PrePersist
+    public void prePersist() {
+        this.commentDate = LocalDate.now();
+    }
 }

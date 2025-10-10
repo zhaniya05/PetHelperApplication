@@ -33,14 +33,21 @@ public class Post {
     @Column(name = "photo_url")
     private List<String> postPhotos = new ArrayList<>();
 
-    private int postLikes;
+    private int postLikes = 0;
 
     private LocalDate postDate;
+
+  //  private boolean liked;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "comments", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     List<Comment> comments;
+
+    @PrePersist
+    public void prePersist() {
+        this.postDate = LocalDate.now();
+    }
 }
