@@ -40,4 +40,7 @@ public class Post {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "comments", fetch = FetchType.LAZY)
+    List<Comment> comments;
 }
