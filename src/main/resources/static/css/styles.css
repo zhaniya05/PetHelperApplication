@@ -613,3 +613,255 @@ body {
 .like-btn.active i {
     color: #e74c3c;
 }
+/* Стили для фильтров */
+.filters-container {
+    background: linear-gradient(135deg, #ffffff, #fff5f8);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(255, 107, 149, 0.1);
+    border: 2px solid #fff5f8;
+}
+
+.filter-form {
+    margin: 0;
+}
+
+.filter-group {
+    display: flex;
+    gap: 15px;
+    align-items: end;
+    flex-wrap: wrap;
+}
+
+.filter-field {
+    display: flex;
+    flex-direction: column;
+    min-width: 160px;
+    flex: 1;
+}
+
+.filter-field label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #ff6390;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.filter-field label::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 12px;
+}
+
+.filter-field:nth-child(1) label::before {
+    content: "🔍";
+}
+
+.filter-field:nth-child(2) label::before {
+    content: "📅";
+}
+
+.filter-field:nth-child(3) label::before {
+    content: "❤️";
+}
+
+.filter-field:nth-child(4) label::before {
+    content: "↕️";
+}
+
+.filter-input, .filter-select {
+    padding: 12px 15px;
+    border: 2px solid #ffb7ce;
+    border-radius: 12px;
+    font-size: 14px;
+    background: #ffffff;
+    color: #555;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 183, 206, 0.2);
+}
+
+.filter-input:focus, .filter-select:focus {
+    outline: none;
+    border-color: #ff6390;
+    box-shadow: 0 4px 15px rgba(255, 107, 149, 0.3);
+    transform: translateY(-2px);
+}
+
+.filter-input::placeholder {
+    color: #ccc;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #e9ecef, #dee2e6);
+    color: #6c757d;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    box-shadow: 0 3px 10px rgba(108, 117, 125, 0.2);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+    background: linear-gradient(135deg, #dee2e6, #ced4da);
+    color: #495057;
+}
+
+/* Активные фильтры */
+.active-filters {
+    background: linear-gradient(135deg, #e3f2fd, #f0f8ff);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 25px;
+    border-left: 5px solid #74c0fc;
+    box-shadow: 0 3px 12px rgba(116, 192, 252, 0.2);
+}
+
+.active-filters h4 {
+    color: #4dabf7;
+    margin-bottom: 15px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.active-filters h4::before {
+    content: "🎯";
+    font-size: 18px;
+}
+
+.filter-tags {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filter-tag {
+    background: linear-gradient(135deg, #74c0fc, #4dabf7);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    box-shadow: 0 3px 10px rgba(77, 171, 247, 0.3);
+    transition: all 0.3s ease;
+}
+
+.filter-tag:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(77, 171, 247, 0.4);
+}
+
+.filter-tag a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    margin-left: 5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.filter-tag a:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+/* Анимации для фильтров */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.filters-container {
+    animation: slideDown 0.5s ease-out;
+}
+
+/* Адаптивность для фильтров */
+@media (max-width: 768px) {
+    .filters-container {
+        padding: 20px 15px;
+        margin-bottom: 20px;
+    }
+
+    .filter-group {
+        gap: 12px;
+    }
+
+    .filter-field {
+        min-width: 100%;
+    }
+
+    .filter-actions {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .filter-tags {
+        gap: 8px;
+    }
+
+    .filter-tag {
+        font-size: 13px;
+        padding: 6px 12px;
+    }
+}
+
+
+.filter-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff6390' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+
+.filter-input[type="text"] {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffb7ce' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3ccircle cx='11' cy='11' r='8'%3e%3c/circle%3e%3cpath d='m21 21-4.3-4.3'%3e%3c/path%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: left 12px center;
+    background-size: 16px;
+    padding-left: 40px;
+}
+
+/* Подсветка активных фильтров */
+.filter-input:not(:placeholder-shown),
+.filter-select:not([value=""]) {
+    background-color: #fffafc;
+    border-color: #ff8fab;
+}

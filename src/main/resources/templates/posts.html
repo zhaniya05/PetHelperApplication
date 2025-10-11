@@ -23,6 +23,92 @@
     </div>
 </nav>
 
+<div class="filters-container">
+    <form th:action="@{/posts}" method="get" class="filter-form">
+        <div class="filter-group">
+            <!-- Поиск -->
+            <div class="filter-field">
+                <label>Search Posts</label>
+                <input type="text"
+                       name="search"
+                       th:value="${search}"
+                       placeholder="Type to search..."
+                       class="filter-input">
+            </div>
+
+            <!-- Фильтр по дате -->
+            <div class="filter-field">
+                <label>Date Filter</label>
+                <select name="date" class="filter-select">
+                    <option value="">All Time</option>
+                    <option value="today" th:selected="${date == 'today'}">📅 Today</option>
+                    <option value="week" th:selected="${date == 'week'}">📅 This Week</option>
+                    <option value="month" th:selected="${date == 'month'}">📅 This Month</option>
+                    <option value="year" th:selected="${date == 'year'}">📅 This Year</option>
+                </select>
+            </div>
+
+            <!-- Фильтр по лайкам -->
+            <div class="filter-field">
+                <label>Likes Filter</label>
+                <select name="likes" class="filter-select">
+                    <option value="">All Likes</option>
+                    <option value="none" th:selected="${likes == 'none'}">💔 No Likes</option>
+                    <option value="some" th:selected="${likes == 'some'}">❤️ Some Likes (1-4)</option>
+                    <option value="trending" th:selected="${likes == 'trending'}">🔥 Trending (5+)</option>
+                    <option value="popular" th:selected="${likes == 'popular'}">🌟 Popular (10+)</option>
+                    <option value="viral" th:selected="${likes == 'viral'}">🚀 Viral (20+)</option>
+                </select>
+            </div>
+
+            <!-- Сортировка -->
+            <div class="filter-field">
+                <label>Sort By</label>
+                <select name="sort" class="filter-select">
+                    <option value="">Default</option>
+                    <option value="date_desc" th:selected="${sort == 'date_desc'}">🆕 Newest First</option>
+                    <option value="date_asc" th:selected="${sort == 'date_asc'}">📜 Oldest First</option>
+                    <option value="likes_desc" th:selected="${sort == 'likes_desc'}">❤️ Most Liked</option>
+                    <option value="likes_asc" th:selected="${sort == 'likes_asc'}">💙 Least Liked</option>
+                    <option value="alphabetical" th:selected="${sort == 'alphabetical'}">🔤 Alphabetical</option>
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-filter"></i> Apply Filters
+                </button>
+                <a th:href="@{/posts}" class="btn btn-secondary">
+                    <i class="fa-solid fa-rotate-left"></i> Clear All
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Активные фильтры -->
+<div th:if="${search != null || date != null || likes != null || sort != null}" class="active-filters">
+    <h4>Active Filters:</h4>
+    <div class="filter-tags">
+        <span th:if="${search != null}" class="filter-tag">
+            🔍 Search: "<span th:text="${search}"></span>"
+            <a th:href="@{/posts(date=${date}, likes=${likes}, sort=${sort})}" title="Remove search">×</a>
+        </span>
+        <span th:if="${date != null}" class="filter-tag">
+            📅 Date: <span th:text="${date}"></span>
+            <a th:href="@{/posts(search=${search}, likes=${likes}, sort=${sort})}" title="Remove date filter">×</a>
+        </span>
+        <span th:if="${likes != null}" class="filter-tag">
+            ❤️ Likes: <span th:text="${likes}"></span>
+            <a th:href="@{/posts(search=${search}, date=${date}, sort=${sort})}" title="Remove likes filter">×</a>
+        </span>
+        <span th:if="${sort != null}" class="filter-tag">
+            ↕️ Sort: <span th:text="${sort}"></span>
+            <a th:href="@{/posts(search=${search}, date=${date}, likes=${likes})}" title="Remove sorting">×</a>
+        </span>
+    </div>
+</div>
+
 <div class="posts-container">
     <!-- Кнопка добавления нового поста -->
     <div class="add-post-container">

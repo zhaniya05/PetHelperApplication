@@ -551,47 +551,86 @@
         });
 
         fileUploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
             const files = e.dataTransfer.files;
-            fileInput.files = files;
-            updateFilePreview();
+            handleFiles(files);
         });
 
-        fileInput.addEventListener('change', updateFilePreview);
+        fileInput.addEventListener('change', function(e) {
+            handleFiles(this.files);
+        });
+
+        function handleFiles(files) {
+            // Ограничение на количество файлов
+            if (files.length > 10) {
+                alert('🚫 Maximum 10 files allowed. Please select fewer files.');
+                return;
+            }
+
+            // Проверка типов файлов
+            const validFiles = Array.from(files).filter(file => {
+                if (!file.type.startsWith('image/')) {
+                    alert(`⚠️ File "${file.name}" is not an image and will be skipped.`);
+                    return false;
+                }
+                return true;
+            });
+
+            // Обновляем input files
+            const dt = new DataTransfer();
+            validFiles.forEach(file => dt.items.add(file));
+            fileInput.files = dt.files;
+
+            updateFilePreview();
+        }
 
         function updateFilePreview() {
             filePreview.innerHTML = '';
             const files = fileInput.files;
 
-            if (files.length > 10) {
-                alert('🚫 Maximum 10 files allowed. Please select fewer files.');
-                fileInput.value = '';
-                return;
-            }
-
             if (files.length > 0) {
                 fileUploadArea.style.borderStyle = 'solid';
                 fileUploadArea.style.background = 'linear-gradient(135deg, #f0fff4, #f0f8ff)';
+
+                // Обновляем текст в области загрузки
+                const placeholder = fileUploadArea.querySelector('.upload-placeholder');
+                if (placeholder) {
+                    placeholder.innerHTML = `
+                    <i class="fa-solid fa-check-circle"></i>
+                    <h3>${files.length} file(s) selected</h3>
+                    <p>Click to change or drag & drop new files</p>
+                    <span class="upload-support">Supports: JPG, PNG, GIF • Maximum 10 files</span>
+                `;
+                }
             } else {
                 fileUploadArea.style.borderStyle = 'dashed';
                 fileUploadArea.style.background = 'linear-gradient(135deg, #fffafc, #fff5f8)';
+
+                // Возвращаем оригинальный текст
+                const placeholder = fileUploadArea.querySelector('.upload-placeholder');
+                if (placeholder) {
+                    placeholder.innerHTML = `
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <h3>Drag & Drop Your Memories Here</h3>
+                    <p>or click to browse your files</p>
+                    <span class="upload-support">Supports: JPG, PNG, GIF • Maximum 10 files</span>
+                `;
+                }
             }
 
+            // Создаем превью для каждого файла
             Array.from(files).forEach((file, index) => {
-                if (!file.type.startsWith('image/')) {
-                    alert(`⚠️ File "${file.name}" is not an image and will be skipped.`);
-                    return;
-                }
-
                 const reader = new FileReader();
+
                 reader.onload = function(e) {
                     const previewItem = document.createElement('div');
                     previewItem.className = 'preview-item';
                     previewItem.innerHTML = `
-                        <img src="${e.target.result}" alt="Preview" class="preview-image">
-                        <button type="button" class="preview-remove" data-index="${index}">
-                            <i class="fa-solid fa-times"></i>
-                        </button>
-                    `;
+                    <img src="${e.target.result}" alt="Preview" class="preview-image">
+                    <button type="button" class="preview-remove" data-index="${index}">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                `;
                     filePreview.appendChild(previewItem);
 
                     // Удаление превью
@@ -599,6 +638,7 @@
                         removeFile(index);
                     });
                 };
+
                 reader.readAsDataURL(file);
             });
         }
@@ -607,6 +647,7 @@
             const dt = new DataTransfer();
             const files = fileInput.files;
 
+            // Собираем все файлы кроме удаленного
             for (let i = 0; i < files.length; i++) {
                 if (i !== index) {
                     dt.items.add(files[i]);
@@ -616,6 +657,13 @@
             fileInput.files = dt.files;
             updateFilePreview();
         }
+
+        // Добавляем обработчик клика на всю область загрузки
+        fileUploadArea.addEventListener('click', function(e) {
+            if (e.target === this || e.target.closest('.upload-placeholder')) {
+                fileInput.click();
+            }
+        });
     });
 </script>
 </body>

@@ -8,7 +8,7 @@ import java.util.List;
 public interface PostService {
 
     List<PostDto> getAllPosts(String currentUserEmail);
-    // List<PostDto> getAllPosts(String currentUserEmail, String search, String dateFilter, String likesFilter, String sort);
+    List<PostDto> getAllPosts(String currentUserEmail, String search, String dateFilter, String likesFilter, String sort);
     PostDto createPost(PostDto postDto);
     PostDto getPostById(Long postId);
     void deletePost(Long postUserId, Long userId, Long postId);

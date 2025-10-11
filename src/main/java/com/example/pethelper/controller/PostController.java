@@ -47,14 +47,25 @@ public class PostController {
 //    }
 
     @GetMapping
-    public String showPosts(Model model, Authentication authentication) {
+    public String showPosts(@RequestParam(required = false) String search,
+                            @RequestParam(required = false) String date,
+                            @RequestParam(required = false) String likes,
+                            @RequestParam(required = false) String sort,
+                            Model model,
+                            Authentication authentication) {
+
         UserDto user = userService.findByEmail(authentication.getName());
 
-        // Передаем email в сервис для получения информации о лайках
-        List<PostDto> posts = postService.getAllPosts(authentication.getName());
+
+        List<PostDto> posts = postService.getAllPosts(authentication.getName(), search, date, likes, sort);
 
         model.addAttribute("posts", posts);
         model.addAttribute("user", user);
+        model.addAttribute("search", search);
+        model.addAttribute("date", date);
+        model.addAttribute("likes", likes);
+        model.addAttribute("sort", sort);
+
         return "posts";
     }
 

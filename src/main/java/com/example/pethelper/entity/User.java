@@ -31,7 +31,7 @@ public class User {
     private String role = "ROLE_USER";
 
    @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
- List<Pet> pets;
+   List<Pet> pets;
 
    @OneToMany(mappedBy="user", fetch=FetchType.LAZY)
    List<Post> posts;
@@ -39,6 +39,15 @@ public class User {
    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
    List<Comment> comments;
 
-    private String profilePicture;
+
+   private String profilePicture;
+
+
+   @OneToMany(mappedBy = "follower")
+   private List<Follow> followingList;
+
+   @OneToMany(mappedBy = "following")
+   private List<Follow> followersList;
+
 
 }
