@@ -12,6 +12,14 @@
     <div class="nav-container">
         <a th:href="@{/posts}" class="nav-brand">Posts</a>
         <a th:href="@{/pets/main}" class="nav-brand">PawPal</a>
+
+        <div class="notif-icon">
+            <a th:href="@{/follow/requests}" title="Follow Requests">
+                <i class="fa-solid fa-bell" style="font-size: 20px; color: white;"></i>
+                <span th:if="${pendingRequestsCount > 0}" th:text="${pendingRequestsCount}" class="notif-badge"></span>
+            </a>
+        </div>
+
         <div class="nav-profile">
             <a th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">
                 <img th:src="@{${user.profilePicture != null ? user.profilePicture : '/css/images/default-avatar.jpg'}}"
@@ -23,90 +31,109 @@
     </div>
 </nav>
 
+<!-- Расширенные фильтры -->
 <div class="filters-container">
     <form th:action="@{/posts}" method="get" class="filter-form">
         <div class="filter-group">
-            <!-- Поиск -->
+            <!-- 🔍 Поиск -->
             <div class="filter-field">
-                <label>Search Posts</label>
-                <input type="text"
-                       name="search"
-                       th:value="${search}"
-                       placeholder="Type to search..."
+                <label>Search</label>
+                <input type="text" name="search" th:value="${filterRequest.search}"
+                       placeholder="Search posts or users..." class="filter-input">
+            </div>
+
+            <!-- 👤 Автор -->
+            <div class="filter-field">
+                <label>Author</label>
+                <input type="text" name="userName" th:value="${filterRequest.userName}"
+                       placeholder="Filter by author..." class="filter-input">
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <!-- 📅 Диапазон дат -->
+            <div class="filter-field">
+                <label>From Date</label>
+                <input type="date" name="startDate" th:value="${filterRequest.startDate}"
                        class="filter-input">
             </div>
 
-            <!-- Фильтр по дате -->
             <div class="filter-field">
-                <label>Date Filter</label>
+                <label>To Date</label>
+                <input type="date" name="endDate" th:value="${filterRequest.endDate}"
+                       class="filter-input">
+            </div>
+
+            <!-- Быстрые фильтры дат -->
+            <div class="filter-field">
+                <label>Quick Date</label>
                 <select name="date" class="filter-select">
                     <option value="">All Time</option>
-                    <option value="today" th:selected="${date == 'today'}">📅 Today</option>
-                    <option value="week" th:selected="${date == 'week'}">📅 This Week</option>
-                    <option value="month" th:selected="${date == 'month'}">📅 This Month</option>
-                    <option value="year" th:selected="${date == 'year'}">📅 This Year</option>
+                    <option value="today" th:selected="${filterRequest.date == 'today'}">Today</option>
+                    <option value="week" th:selected="${filterRequest.date == 'week'}">This Week</option>
+                    <option value="month" th:selected="${filterRequest.date == 'month'}">This Month</option>
+                    <option value="year" th:selected="${filterRequest.date == 'year'}">This Year</option>
+                    <option value="last_week" th:selected="${filterRequest.date == 'last_week'}">Last Week</option>
                 </select>
             </div>
+        </div>
 
-            <!-- Фильтр по лайкам -->
+        <div class="filter-group">
+            <!-- ❤️ Диапазон лайков -->
             <div class="filter-field">
-                <label>Likes Filter</label>
-                <select name="likes" class="filter-select">
-                    <option value="">All Likes</option>
-                    <option value="none" th:selected="${likes == 'none'}">💔 No Likes</option>
-                    <option value="some" th:selected="${likes == 'some'}">❤️ Some Likes (1-4)</option>
-                    <option value="trending" th:selected="${likes == 'trending'}">🔥 Trending (5+)</option>
-                    <option value="popular" th:selected="${likes == 'popular'}">🌟 Popular (10+)</option>
-                    <option value="viral" th:selected="${likes == 'viral'}">🚀 Viral (20+)</option>
-                </select>
+                <label>Min Likes</label>
+                <input type="number" name="minLikes" th:value="${filterRequest.minLikes}"
+                       placeholder="0" min="0" class="filter-input">
             </div>
 
-            <!-- Сортировка -->
+            <div class="filter-field">
+                <label>Max Likes</label>
+                <input type="number" name="maxLikes" th:value="${filterRequest.maxLikes}"
+                       placeholder="100" min="0" class="filter-input">
+            </div>
+
+            <!-- Быстрые фильтры лайков -->
+            <div class="filter-field">
+                <label>Quick Likes</label>
+                <select name="likes" class="filter-select">
+                    <option value="">Any Likes</option>
+                    <option value="none" th:selected="${filterRequest.likes == 'none'}">No Likes</option>
+                    <option value="some" th:selected="${filterRequest.likes == 'some'}">Some (1-4)</option>
+                    <option value="trending" th:selected="${filterRequest.likes == 'trending'}">Trending (5+)</option>
+                    <option value="popular" th:selected="${filterRequest.likes == 'popular'}">Popular (10+)</option>
+                    <option value="viral" th:selected="${filterRequest.likes == 'viral'}">Viral (20+)</option>
+                    <option value="top_rated" th:selected="${filterRequest.likes == 'top_rated'}">Top Rated (15+)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <!-- 🔄 Комбинированная сортировка -->
             <div class="filter-field">
                 <label>Sort By</label>
                 <select name="sort" class="filter-select">
-                    <option value="">Default</option>
-                    <option value="date_desc" th:selected="${sort == 'date_desc'}">🆕 Newest First</option>
-                    <option value="date_asc" th:selected="${sort == 'date_asc'}">📜 Oldest First</option>
-                    <option value="likes_desc" th:selected="${sort == 'likes_desc'}">❤️ Most Liked</option>
-                    <option value="likes_asc" th:selected="${sort == 'likes_asc'}">💙 Least Liked</option>
-                    <option value="alphabetical" th:selected="${sort == 'alphabetical'}">🔤 Alphabetical</option>
+                    <option value="">Newest First</option>
+                    <option value="likes_desc,date_desc" th:selected="${filterRequest.sort == 'likes_desc,date_desc'}">Most Likes (then Newest)</option>
+                    <option value="date_desc,likes_desc" th:selected="${filterRequest.sort == 'date_desc,likes_desc'}">Newest (then Most Likes)</option>
+                    <option value="likes_desc" th:selected="${filterRequest.sort == 'likes_desc'}">Most Likes</option>
+                    <option value="likes_asc" th:selected="${filterRequest.sort == 'likes_asc'}">Least Likes</option>
+                    <option value="date_desc" th:selected="${filterRequest.sort == 'date_desc'}">Newest First</option>
+                    <option value="date_asc" th:selected="${filterRequest.sort == 'date_asc'}">Oldest First</option>
+                    <option value="alphabetical" th:selected="${filterRequest.sort == 'alphabetical'}">Alphabetical</option>
+                    <option value="user_name" th:selected="${filterRequest.sort == 'user_name'}">Author Name</option>
                 </select>
             </div>
 
             <div class="filter-actions">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fa-solid fa-filter"></i> Apply Filters
+                    <i class="fa-solid fa-filter"></i> Apply All Filters
                 </button>
-                <a th:href="@{/posts}" class="btn btn-secondary">
+                <button type="button" onclick="window.location.href='/posts'" class="btn btn-secondary">
                     <i class="fa-solid fa-rotate-left"></i> Clear All
-                </a>
+                </button>
             </div>
         </div>
     </form>
-</div>
-
-<!-- Активные фильтры -->
-<div th:if="${search != null || date != null || likes != null || sort != null}" class="active-filters">
-    <h4>Active Filters:</h4>
-    <div class="filter-tags">
-        <span th:if="${search != null}" class="filter-tag">
-            🔍 Search: "<span th:text="${search}"></span>"
-            <a th:href="@{/posts(date=${date}, likes=${likes}, sort=${sort})}" title="Remove search">×</a>
-        </span>
-        <span th:if="${date != null}" class="filter-tag">
-            📅 Date: <span th:text="${date}"></span>
-            <a th:href="@{/posts(search=${search}, likes=${likes}, sort=${sort})}" title="Remove date filter">×</a>
-        </span>
-        <span th:if="${likes != null}" class="filter-tag">
-            ❤️ Likes: <span th:text="${likes}"></span>
-            <a th:href="@{/posts(search=${search}, date=${date}, sort=${sort})}" title="Remove likes filter">×</a>
-        </span>
-        <span th:if="${sort != null}" class="filter-tag">
-            ↕️ Sort: <span th:text="${sort}"></span>
-            <a th:href="@{/posts(search=${search}, date=${date}, likes=${likes})}" title="Remove sorting">×</a>
-        </span>
-    </div>
 </div>
 
 <div class="posts-container">
@@ -120,9 +147,15 @@
     <!-- Список постов -->
     <div th:each="post : ${posts}" class="post-card">
         <div class="post-header">
+<!--            <div class="post-user">-->
+<!--                <i class="fa-solid fa-user" style="margin-right: 8px; color: #667eea;"></i>-->
+<!--                <span th:text="${post.userName}">username</span>-->
+<!--            </div>-->
             <div class="post-user">
                 <i class="fa-solid fa-user" style="margin-right: 8px; color: #667eea;"></i>
-                <span th:text="${post.userName}">username</span>
+                <a th:href="@{/api/users/viewUserProfile/{id}(id=${post.userId})}"
+                   th:text="${post.userName}"
+                   class="username-link">username</a>
             </div>
             <div class="post-date">
                 <i class="fa-solid fa-calendar" style="margin-right: 6px;"></i>

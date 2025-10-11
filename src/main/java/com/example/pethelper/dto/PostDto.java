@@ -19,4 +19,5 @@ public class PostDto {
     private Long userId;
     private int likeCount;
     private boolean likedByCurrentUser;
+    private String visibility;
 }

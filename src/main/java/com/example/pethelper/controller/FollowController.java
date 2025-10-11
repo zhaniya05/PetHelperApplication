@@ -27,7 +27,7 @@ public class FollowController {
         UserDto follower = userService.findByEmail(authentication.getName());
         UserDto following = userService.getUserById(userId);
         followService.sendFollowRequest(follower, following);
-        return "redirect:/users/" + userId; // redirect to viewed user's profile
+        return "redirect:/api/users/viewUserProfile/" + userId;
     }
 
     // View all pending follow requests (for the logged-in user)
@@ -59,6 +59,7 @@ public class FollowController {
         UserDto currentUser = userService.findByEmail(authentication.getName());
         List<FollowDto> followers = followService.getFollowers(currentUser);
         model.addAttribute("followers", followers);
+        model.addAttribute("user", currentUser);
         return "followers";
     }
 
@@ -67,6 +68,7 @@ public class FollowController {
     public String viewFollowing(Authentication authentication, Model model) {
         UserDto currentUser = userService.findByEmail(authentication.getName());
         List<FollowDto> following = followService.getFollowing(currentUser);
+        model.addAttribute("user", currentUser);
         model.addAttribute("following", following);
         return "following";
     }

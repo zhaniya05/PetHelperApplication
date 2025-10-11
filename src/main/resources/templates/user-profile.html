@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${userProfile.userName} + ' - Profile'">User Profile</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-container">
+    <a th:href="@{/posts}" class="nav-brand">Posts</a>
+    <a th:href="@{/pets/main}" class="nav-brand">PawPal</a>
+    <div class="notif-icon">
+      <a th:href="@{/follow/requests}" title="Follow Requests">
+        <i class="fa-solid fa-bell" style="font-size: 20px; color: white;"></i>
+        <span th:if="${pendingRequestsCount > 0}" th:text="${pendingRequestsCount}" class="notif-badge"></span>
+      </a>
+    </div>
+
+    <div class="nav-profile">
+      <a th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">
+        <img th:src="@{${user.profilePicture != null ? user.profilePicture : '/css/images/default-avatar.jpg'}}"
+             alt="Profile"
+             class="avatar"
+             onerror="this.src='/css/images/default-avatar.jpg'">
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="max-w-3xl mx-auto mt-10 bg-white shadow rounded-2xl p-6">
+  <!-- User Info -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold" th:text="${userProfile.userName}">Username</h1>
+    </div>
+
+    <!-- Follow Button -->
+    <div th:if="${!isOwner}">
+      <form th:if="${!isFollowing}" th:action="@{/follow/request/{id}(id=${userProfile.userId})}" method="post">
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+          Follow
+        </button>
+      </form>
+      <button th:if="${isFollowing}" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg" disabled>
+        Following
+      </button>
+    </div>
+  </div>
+
+  <!-- Followers / Following -->
+<!--  <div class="mt-4 flex space-x-6 text-gray-700">-->
+<!--    <div>-->
+<!--      <span class="font-bold text-lg" th:text="${followersCount}">0</span> Followers-->
+<!--    </div>-->
+<!--    <div>-->
+<!--      <span class="font-bold text-lg" th:text="${followingCount}">0</span> Following-->
+<!--    </div>-->
+<!--  </div>-->
+
+  <div class="mt-4 flex space-x-6 text-gray-700 followers-links">
+    <div>
+      <a th:href="@{/follow/followers}">
+        <span class="font-bold text-lg" th:text="${followersCount}">0</span> Followers
+      </a>
+    </div>
+    <div>
+      <a th:href="@{/follow/following}">
+        <span class="font-bold text-lg" th:text="${followingCount}">0</span> Following
+      </a>
+    </div>
+  </div>
+
+  <!-- Divider -->
+  <hr class="my-6 border-gray-300">
+
+  <!-- Posts Feed -->
+  <h2 class="text-xl font-semibold mb-3">Posts</h2>
+
+  <div th:if="${#lists.isEmpty(posts)}">
+    <p class="text-gray-500 italic">No posts yet.</p>
+  </div>
+
+  <div th:each="post : ${posts}" class="bg-gray-50 p-4 mb-4 rounded-xl shadow-sm">
+    <p th:text="${post.postContent}" class="mb-2"></p>
+    <span class="text-xs text-gray-400" th:text="'Posted on ' + ${#temporals.format(post.postDate, 'yyyy-MM-dd HH:mm')}"></span>
+  </div>
+</div>
+</body>
+</html>

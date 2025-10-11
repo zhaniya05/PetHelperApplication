@@ -53,8 +53,10 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public boolean isFollowing(User follower, User following) {
-        return followRepository.findByFollowerAndFollowing(follower, following)
+    public boolean isFollowing(UserDto follower, UserDto following) {
+        User follower1 = UserMapper.mapToUser(follower);
+        User following1 = UserMapper.mapToUser(following);
+        return followRepository.findByFollowerAndFollowing(follower1, following1)
                 .filter(f -> f.getStatus() == FollowStatus.ACCEPTED)
                 .isPresent();
     }

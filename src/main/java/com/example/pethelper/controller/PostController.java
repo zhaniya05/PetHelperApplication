@@ -1,6 +1,7 @@
 package com.example.pethelper.controller;
 
 import com.example.pethelper.dto.PostDto;
+import com.example.pethelper.dto.PostFilterRequest;
 import com.example.pethelper.dto.UserDto;
 import com.example.pethelper.entity.Post;
 import com.example.pethelper.entity.User;
@@ -11,6 +12,7 @@ import com.example.pethelper.service.PostService;
 import com.example.pethelper.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,6 +38,7 @@ public class PostController {
     private final UserService userService;
 
 
+
 //    @GetMapping
 //    public String getAllPosts(Model model) {
 //        List<PostDto> posts = postRepository.findAll()
@@ -46,25 +49,40 @@ public class PostController {
 //        return "posts";
 //    }
 
+
     @GetMapping
     public String showPosts(@RequestParam(required = false) String search,
                             @RequestParam(required = false) String date,
                             @RequestParam(required = false) String likes,
                             @RequestParam(required = false) String sort,
+                            @RequestParam(required = false) Integer minLikes,
+                            @RequestParam(required = false) Integer maxLikes,
+                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                            @RequestParam(required = false) String userName,
                             Model model,
                             Authentication authentication) {
 
         UserDto user = userService.findByEmail(authentication.getName());
 
+        // Создаем объект фильтра
+        PostFilterRequest filterRequest = new PostFilterRequest();
+        filterRequest.setSearch(search);
+        filterRequest.setDate(date);
+        filterRequest.setLikes(likes);
+        filterRequest.setSort(sort);
+        filterRequest.setMinLikes(minLikes);
+        filterRequest.setMaxLikes(maxLikes);
+        filterRequest.setStartDate(startDate);
+        filterRequest.setEndDate(endDate);
+        filterRequest.setUserName(userName);
 
-        List<PostDto> posts = postService.getAllPosts(authentication.getName(), search, date, likes, sort);
+        List<PostDto> posts = postService.getAllPosts(authentication.getName(), filterRequest);
 
+        // Передаем все параметры в модель
         model.addAttribute("posts", posts);
         model.addAttribute("user", user);
-        model.addAttribute("search", search);
-        model.addAttribute("date", date);
-        model.addAttribute("likes", likes);
-        model.addAttribute("sort", sort);
+        model.addAttribute("filterRequest", filterRequest);
 
         return "posts";
     }

@@ -1,8 +1,12 @@
 package com.example.pethelper.controller;
 
+import com.example.pethelper.dto.FollowDto;
 import com.example.pethelper.dto.PetDto;
+import com.example.pethelper.dto.PostDto;
 import com.example.pethelper.dto.UserDto;
 import com.example.pethelper.entity.User;
+import com.example.pethelper.service.FollowService;
+import com.example.pethelper.service.PostService;
 import com.example.pethelper.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -19,9 +23,15 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final FollowService followService;
+    private final PostService postService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService,
+                          FollowService followService,
+                          PostService postService) {
         this.userService = userService;
+        this.followService = followService;
+        this.postService = postService;
     }
 
 
@@ -58,6 +68,34 @@ public class UserController {
         UserDto user = userService.getUserById(id);
         model.addAttribute("user", user);
         return "profile";
+    }
+
+    @GetMapping("/viewUserProfile/{id}")
+    public String viewUserProfile(@PathVariable Long id, Authentication authentication, Model model) {
+        UserDto viewedUser = userService.getUserById(id);
+        UserDto currentUser = userService.findByEmail(authentication.getName());
+
+        boolean isOwner = viewedUser.getUserId().equals(currentUser.getUserId());
+        boolean isFollowing = followService.isFollowing(currentUser, viewedUser);
+
+        // Followers and following lists
+        List<FollowDto> followers = followService.getFollowers(viewedUser);
+        List<FollowDto> following = followService.getFollowing(viewedUser);
+
+        // Posts — filter private ones if not following
+        List<PostDto> posts = postService.getVisiblePosts(currentUser, viewedUser);
+
+        model.addAttribute("user", currentUser);
+        model.addAttribute("userProfile", viewedUser);
+        model.addAttribute("isOwner", isOwner);
+        model.addAttribute("isFollowing", isFollowing);
+        model.addAttribute("followersCount", followers.size());
+        model.addAttribute("followingCount", following.size());
+        model.addAttribute("followers", followers);
+        model.addAttribute("following", following);
+        model.addAttribute("posts", posts);
+
+        return "user-profile";
     }
 }
 

@@ -1,15 +1,21 @@
 package com.example.pethelper.service.impl;
 
 import com.example.pethelper.dto.PostDto;
+import com.example.pethelper.dto.PostFilterRequest;
+import com.example.pethelper.dto.UserDto;
 import com.example.pethelper.entity.Post;
 import com.example.pethelper.entity.PostLike;
 import com.example.pethelper.entity.User;
+import com.example.pethelper.entity.Visibility;
 import com.example.pethelper.exception.ResourceNotFoundException;
 import com.example.pethelper.mapper.PostMapper;
+import com.example.pethelper.mapper.UserMapper;
 import com.example.pethelper.repository.PostLikeRepository;
 import com.example.pethelper.repository.PostRepository;
 import com.example.pethelper.repository.UserRepository;
+import com.example.pethelper.service.FollowService;
 import com.example.pethelper.service.PostService;
+import com.example.pethelper.service.UserActivityService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import com.example.pethelper.entity.ActivityType;
 
 @Service
 @AllArgsConstructor
@@ -28,22 +35,25 @@ public class PostServiceImpl implements PostService {
     private PostRepository postRepository;
     private UserRepository userRepository;
     private final PostLikeRepository postLikeRepository;
+    private final UserActivityService userActivityService;
+
+    private final FollowService followService;
 
 
 
 
     @Override
     public List<PostDto> getAllPosts(String currentUserEmail) {
-        return getAllPosts(currentUserEmail, null, null, null, null);
+        return getAllPosts(currentUserEmail, new PostFilterRequest());
     }
 
     @Override
-    public List<PostDto> getAllPosts(String currentUserEmail, String search, String dateFilter, String likesFilter, String sort) {
+    public List<PostDto> getAllPosts(String currentUserEmail, PostFilterRequest filterRequest) {
         List<Post> posts = postRepository.findAll();
         User currentUser = userRepository.findByEmail(currentUserEmail).orElse(null);
 
-        // Применяем фильтры и сортировку
-        List<Post> filteredPosts = applyFiltersAndSorting(posts, search, dateFilter, likesFilter, sort);
+        // Применяем комбинированные фильтры и сортировку
+        List<Post> filteredPosts = applyCombinedFiltersAndSorting(posts, filterRequest);
 
         return filteredPosts.stream().map(post -> {
             PostDto dto = PostMapper.mapToPostDto(post);
@@ -55,111 +65,132 @@ public class PostServiceImpl implements PostService {
         }).collect(Collectors.toList());
     }
 
-    private List<Post> applyFiltersAndSorting(List<Post> posts, String search, String dateFilter, String likesFilter, String sort) {
+    private List<Post> applyCombinedFiltersAndSorting(List<Post> posts, PostFilterRequest filters) {
         Stream<Post> stream = posts.stream();
 
-        // Фильтр по поиску
-        if (search != null && !search.isBlank()) {
-            String lowerSearch = search.toLowerCase();
+        // 🔍 ПОИСК ПО КЛЮЧЕВЫМ СЛОВАМ
+        if (filters.getSearch() != null && !filters.getSearch().isBlank()) {
+            String lowerSearch = filters.getSearch().toLowerCase();
             stream = stream.filter(post ->
-                    (post.getPostContent() != null && post.getPostContent().toLowerCase().contains(lowerSearch))
+                    (post.getPostContent() != null && post.getPostContent().toLowerCase().contains(lowerSearch)) ||
+                            (post.getUser() != null && post.getUser().getUserName() != null &&
+                                    post.getUser().getUserName().toLowerCase().contains(lowerSearch))
             );
         }
 
-        // ФИЛЬТР ПО ДАТЕ
-        if (dateFilter != null && !dateFilter.isBlank()) {
-            stream = applyDateFilter(stream, dateFilter);
+        // 📅 ФИЛЬТР ПО ДАТЕ (комбинированный)
+        stream = applyDateFilters(stream, filters);
+
+        // ❤️ ФИЛЬТР ПО ЛАЙКАМ (комбинированный)
+        stream = applyLikesFilters(stream, filters);
+
+        // 👤 ФИЛЬТР ПО АВТОРУ
+        if (filters.getUserName() != null && !filters.getUserName().isBlank()) {
+            String lowerUsername = filters.getUserName().toLowerCase();
+            stream = stream.filter(post ->
+                    post.getUser() != null && post.getUser().getUserName() != null &&
+                            post.getUser().getUserName().toLowerCase().contains(lowerUsername)
+            );
         }
 
-        // ФИЛЬТР ПО ЛАЙКАМ
-        if (likesFilter != null && !likesFilter.isBlank()) {
-            stream = applyLikesFilter(stream, likesFilter);
-        }
-
-        // Сортировка
-        if (sort != null && !sort.isBlank()) {
-            stream = applySorting(stream, sort);
-        }
+        // 🔄 СОРТИРОВКА (приоритетная)
+        stream = applyAdvancedSorting(stream, filters.getSort());
 
         return stream.collect(Collectors.toList());
     }
 
-    private Stream<Post> applyDateFilter(Stream<Post> stream, String dateFilter) {
+    private Stream<Post> applyDateFilters(Stream<Post> stream, PostFilterRequest filters) {
         LocalDate now = LocalDate.now();
 
-        switch (dateFilter.toLowerCase()) {
-            case "today":
-                return stream.filter(post -> post.getPostDate().isEqual(now));
-
-            case "week":
-                LocalDate weekAgo = now.minusWeeks(1);
-                return stream.filter(post ->
-                        !post.getPostDate().isBefore(weekAgo) && !post.getPostDate().isAfter(now)
-                );
-
-            case "month":
-                LocalDate monthAgo = now.minusMonths(1);
-                return stream.filter(post ->
-                        !post.getPostDate().isBefore(monthAgo) && !post.getPostDate().isAfter(now)
-                );
-
-            case "year":
-                LocalDate yearAgo = now.minusYears(1);
-                return stream.filter(post ->
-                        !post.getPostDate().isBefore(yearAgo) && !post.getPostDate().isAfter(now)
-                );
-
-            default:
-                return stream;
+        // Приоритет: пользовательский диапазон дат > предустановленные фильтры
+        if (filters.getStartDate() != null && filters.getEndDate() != null) {
+            return stream.filter(post ->
+                    !post.getPostDate().isBefore(filters.getStartDate()) &&
+                            !post.getPostDate().isAfter(filters.getEndDate())
+            );
         }
+
+        // Предустановленные фильтры дат
+        if (filters.getDate() != null && !filters.getDate().isBlank()) {
+            switch (filters.getDate().toLowerCase()) {
+                case "today":
+                    return stream.filter(post -> post.getPostDate().isEqual(now));
+                case "week":
+                    LocalDate weekAgo = now.minusWeeks(1);
+                    return stream.filter(post -> !post.getPostDate().isBefore(weekAgo));
+                case "month":
+                    LocalDate monthAgo = now.minusMonths(1);
+                    return stream.filter(post -> !post.getPostDate().isBefore(monthAgo));
+                case "year":
+                    LocalDate yearAgo = now.minusYears(1);
+                    return stream.filter(post -> !post.getPostDate().isBefore(yearAgo));
+                case "last_week":
+                    LocalDate lastWeekStart = now.minusWeeks(1);
+                    LocalDate lastWeekEnd = now.minusDays(1);
+                    return stream.filter(post ->
+                            !post.getPostDate().isBefore(lastWeekStart) &&
+                                    !post.getPostDate().isAfter(lastWeekEnd)
+                    );
+            }
+        }
+
+        return stream;
     }
 
-    private Stream<Post> applyLikesFilter(Stream<Post> stream, String likesFilter) {
-        switch (likesFilter.toLowerCase()) {
-            case "popular":
-                return stream.filter(post -> post.getLikeCount() >= 10);
+    private Stream<Post> applyLikesFilters(Stream<Post> stream, PostFilterRequest filters) {
+        // Приоритет: числовой диапазон > предустановленные фильтры
+        if (filters.getMinLikes() != null || filters.getMaxLikes() != null) {
+            int min = filters.getMinLikes() != null ? filters.getMinLikes() : 0;
+            Integer max = filters.getMaxLikes();
 
-            case "trending":
-                return stream.filter(post -> post.getLikeCount() >= 5);
-
-            case "viral":
-                return stream.filter(post -> post.getLikeCount() >= 20);
-
-            case "none":
-                return stream.filter(post -> post.getLikeCount() == 0);
-
-            case "some":
-                return stream.filter(post -> post.getLikeCount() > 0 && post.getLikeCount() < 5);
-
-            default:
-                // Фильтр по числовому диапазону (например: "5-10", "10+")
-                if (likesFilter.contains("-")) {
-                    String[] range = likesFilter.split("-");
-                    if (range.length == 2) {
-                        try {
-                            int min = Integer.parseInt(range[0].trim());
-                            int max = Integer.parseInt(range[1].trim());
-                            return stream.filter(post ->
-                                    post.getLikeCount() >= min && post.getLikeCount() <= max
-                            );
-                        } catch (NumberFormatException e) {
-                            return stream;
-                        }
-                    }
-                } else if (likesFilter.endsWith("+")) {
-                    try {
-                        int min = Integer.parseInt(likesFilter.replace("+", "").trim());
-                        return stream.filter(post -> post.getLikeCount() >= min);
-                    } catch (NumberFormatException e) {
-                        return stream;
-                    }
-                }
-                return stream;
+            if (max != null) {
+                return stream.filter(post ->
+                        post.getLikeCount() >= min && post.getLikeCount() <= max
+                );
+            } else {
+                return stream.filter(post -> post.getLikeCount() >= min);
+            }
         }
+
+        // Предустановленные фильтры лайков
+        if (filters.getLikes() != null && !filters.getLikes().isBlank()) {
+            switch (filters.getLikes().toLowerCase()) {
+                case "none":
+                    return stream.filter(post -> post.getLikeCount() == 0);
+                case "some":
+                    return stream.filter(post -> post.getLikeCount() > 0 && post.getLikeCount() < 5);
+                case "trending":
+                    return stream.filter(post -> post.getLikeCount() >= 5);
+                case "popular":
+                    return stream.filter(post -> post.getLikeCount() >= 10);
+                case "viral":
+                    return stream.filter(post -> post.getLikeCount() >= 20);
+                case "top_rated":
+                    return stream.filter(post -> post.getLikeCount() >= 15);
+            }
+        }
+
+        return stream;
     }
 
-    private Stream<Post> applySorting(Stream<Post> stream, String sort) {
+    private Stream<Post> applyAdvancedSorting(Stream<Post> stream, String sort) {
+        if (sort == null || sort.isBlank()) {
+            return stream.sorted((a, b) -> b.getPostDate().compareTo(a.getPostDate())); // по умолчанию новые first
+        }
+
         switch (sort.toLowerCase()) {
+            case "likes_desc,date_desc":
+                return stream.sorted((a, b) -> {
+                    int likeCompare = Integer.compare(b.getLikeCount(), a.getLikeCount());
+                    return likeCompare != 0 ? likeCompare : b.getPostDate().compareTo(a.getPostDate());
+                });
+
+            case "date_desc,likes_desc":
+                return stream.sorted((a, b) -> {
+                    int dateCompare = b.getPostDate().compareTo(a.getPostDate());
+                    return dateCompare != 0 ? dateCompare : Integer.compare(b.getLikeCount(), a.getLikeCount());
+                });
+
             case "likes_desc":
                 return stream.sorted((a, b) -> Integer.compare(b.getLikeCount(), a.getLikeCount()));
 
@@ -179,11 +210,17 @@ public class PostServiceImpl implements PostService {
                     return contentA.compareToIgnoreCase(contentB);
                 });
 
+            case "user_name":
+                return stream.sorted((a, b) -> {
+                    String userA = a.getUser() != null && a.getUser().getUserName() != null ? a.getUser().getUserName() : "";
+                    String userB = b.getUser() != null && b.getUser().getUserName() != null ? b.getUser().getUserName() : "";
+                    return userA.compareToIgnoreCase(userB);
+                });
+
             default:
-                return stream;
+                return stream.sorted((a, b) -> b.getPostDate().compareTo(a.getPostDate()));
         }
     }
-
 
     @Override
     public PostDto createPost(PostDto postDto) {
@@ -191,6 +228,17 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new RuntimeException("User not found with username: " + postDto.getUserName()));
         Post post = PostMapper.mapToPost(postDto, user);
         Post savedPost = postRepository.save(post);
+
+        // ✅ ДОБАВЬТЕ ЛОГИРОВАНИЕ ЗДЕСЬ
+        userActivityService.logActivity(
+                user,
+                ActivityType.POST_CREATED,
+                "Created new post: " + (postDto.getPostContent().length() > 50 ?
+                        postDto.getPostContent().substring(0, 50) + "..." : postDto.getPostContent()),
+                "POST",
+                savedPost.getPostId()
+        );
+
         return PostMapper.mapToPostDto(savedPost);
     }
 
@@ -246,6 +294,30 @@ public class PostServiceImpl implements PostService {
         }
 
         return PostMapper.mapToPostDto(post);
+    }
+
+    @Override
+    public List<PostDto> getVisiblePosts(UserDto viewer, UserDto postOwner) {
+        User viewer1 = UserMapper.mapToUser(viewer);
+        User postOwner1 = UserMapper.mapToUser(postOwner);
+
+        List<Post> allPosts = postRepository.findByUser(postOwner1);
+
+        // If the viewer is the owner — show all posts
+        if (viewer.getUserId().equals(postOwner.getUserId())) {
+            return allPosts.stream().map(PostMapper::mapToPostDto).collect(Collectors.toList());
+        }
+
+        // If following and accepted — show all posts
+        if (followService.isFollowing(viewer, postOwner)) {
+            return allPosts.stream().map(PostMapper::mapToPostDto).collect(Collectors.toList());
+        }
+
+        // Otherwise, show only public posts
+        return allPosts.stream()
+                .filter(p -> p.getVisibility() == Visibility.PUBLIC)
+                .map(PostMapper::mapToPostDto)
+                .collect(Collectors.toList());
     }
 
 }

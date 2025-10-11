@@ -11,7 +11,7 @@ public interface FollowService {
     void sendFollowRequest(UserDto follower, UserDto following);
     void acceptFollowRequest(Long requestId);
     void rejectFollowRequest(Long requestId);
-    boolean isFollowing(User follower, User following);
+    boolean isFollowing(UserDto follower, UserDto following);
     List<FollowDto> getPendingRequests(UserDto user);
     List<FollowDto> getFollowers(UserDto user);
     List<FollowDto> getFollowing(UserDto user);

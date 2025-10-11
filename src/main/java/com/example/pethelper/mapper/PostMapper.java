@@ -3,6 +3,7 @@ package com.example.pethelper.mapper;
 import com.example.pethelper.dto.PostDto;
 import com.example.pethelper.entity.Post;
 import com.example.pethelper.entity.User;
+import com.example.pethelper.entity.Visibility;
 
 public class PostMapper {
 
@@ -14,6 +15,7 @@ public class PostMapper {
         dto.setPostLikes(post.getPostLikes());
         dto.setPostDate(post.getPostDate());
         dto.setUserId(post.getUser() != null ? post.getUser().getUserId() : null);
+        dto.setVisibility(post.getVisibility() != null ? post.getVisibility().name() : null);
       //  dto.setLiked(false);
         dto.setUserName(post.getUser() != null ? post.getUser().getUserName() : null);
         dto.setLikeCount(post.getLikeCount());
@@ -28,6 +30,11 @@ public class PostMapper {
         post.setPostLikes(dto.getPostLikes());
         post.setPostDate(dto.getPostDate());
         post.setUser(user);
+        if (dto.getVisibility() != null) {
+            post.setVisibility(Visibility.valueOf(dto.getVisibility()));
+        } else {
+            post.setVisibility(Visibility.PUBLIC);
+        }
         return post;
     }
 }

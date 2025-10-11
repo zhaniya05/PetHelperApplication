@@ -39,6 +39,10 @@ public class Post {
 
     private LocalDate postDate;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Visibility visibility = Visibility.PUBLIC;
+
 
     @ManyToOne
     @JoinColumn(name = "user_id")

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Following</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-container">
+    <a th:href="@{/posts}" class="nav-brand">Posts</a>
+    <a th:href="@{/pets/main}" class="nav-brand">PawPal</a>
+    <div class="nav-profile">
+      <a th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">
+        <img th:src="@{${user.profilePicture != null ? user.profilePicture : '/css/images/default-avatar.jpg'}}"
+             alt="Profile"
+             class="avatar"
+             onerror="this.src='/css/images/default-avatar.jpg'">
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <h2><i class="fa-solid fa-heart"></i> You’re Following</h2>
+
+  <div th:if="${#lists.isEmpty(following)}">
+    <p>You are not following anyone yet.</p>
+  </div>
+
+  <div th:each="follow : ${following}" class="follow-card">
+    <div class="user-info">
+      <i class="fa-solid fa-user"></i>
+      <a th:href="@{/api/users/viewUserProfile/{id}(id=${follow.followingId})}"
+         th:text="${follow.followingName}" class="username-link">Following Name</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
