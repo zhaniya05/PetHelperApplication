@@ -80,4 +80,18 @@ public class CommentController {
         commentService.deleteComment(commentId, authentication.getName());
         return "redirect:/posts/" + postId + "/comments";
     }
+
+    @PostMapping("/{commentId}/like")
+    public String likeComment(@PathVariable Long postId,
+                              @PathVariable Long commentId,
+                              Authentication authentication) {
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "redirect:/login";
+        }
+
+        commentService.likeComment(commentId, authentication.getName());
+        return "redirect:/posts/" + postId + "/comments";
+    }
+
 }

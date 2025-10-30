@@ -76,4 +76,24 @@ public class CommentServiceImpl implements CommentService {
 
         commentRepository.delete(comment);
     }
+
+    @Override
+    public void likeComment(Long commentId, String email) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        comment.setLikesCount(comment.getLikesCount() + 1);
+        commentRepository.save(comment);
+
+        userActivityService.logActivity(
+                user,
+                ActivityType.LIKE_ADDED,
+                "Liked comment",
+                "COMMENT",
+                commentId
+        );
+    }
 }

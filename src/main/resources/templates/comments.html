@@ -51,6 +51,13 @@
             </div>
             <p class="comment-text" th:text="${comment.commentContent}">blablabla...</p>
 
+            <form th:action="@{'/posts/' + ${postId} + '/comments/' + ${comment.commentId} + '/like'}"
+                  method="post"
+                  style="display:inline;">
+                <button type="submit" class="btn btn-like">
+                    ❤️ <span th:text="${comment.likesCount}">0</span>
+                </button>
+            </form>
 
             <div class="comment-actions" th:if="${comment.userId == currentUserId}">
                 <a th:href="@{'/posts/' + ${postId} + '/comments/' + ${comment.commentId}}"

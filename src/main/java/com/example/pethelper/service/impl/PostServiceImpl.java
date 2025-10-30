@@ -6,6 +6,7 @@ import com.example.pethelper.dto.UserDto;
 import com.example.pethelper.entity.Post;
 import com.example.pethelper.entity.PostLike;
 import com.example.pethelper.entity.User;
+import com.example.pethelper.entity.Tag;
 import com.example.pethelper.entity.Visibility;
 import com.example.pethelper.exception.ResourceNotFoundException;
 import com.example.pethelper.mapper.PostMapper;
@@ -15,6 +16,7 @@ import com.example.pethelper.repository.PostRepository;
 import com.example.pethelper.repository.UserRepository;
 import com.example.pethelper.service.FollowService;
 import com.example.pethelper.service.PostService;
+import com.example.pethelper.service.TagService;
 import com.example.pethelper.service.UserActivityService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -25,6 +27,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import com.example.pethelper.entity.ActivityType;
@@ -37,6 +40,7 @@ public class PostServiceImpl implements PostService {
     private UserRepository userRepository;
     private final PostLikeRepository postLikeRepository;
     private final UserActivityService userActivityService;
+    private final TagService tagService;
 
     private final FollowService followService;
 
@@ -227,14 +231,29 @@ public class PostServiceImpl implements PostService {
     }
 
 
+    @Transactional
     @Override
     public PostDto createPost(PostDto postDto) {
+        // 1️⃣ Находим пользователя
         User user = userRepository.findByUserName(postDto.getUserName())
                 .orElseThrow(() -> new RuntimeException("User not found with username: " + postDto.getUserName()));
+
+        // 2️⃣ Маппим DTO → Entity
         Post post = PostMapper.mapToPost(postDto, user);
+
+        // 3️⃣ Обрабатываем теги, если есть
+        if (postDto.getTagNames() != null && !postDto.getTagNames().isEmpty()) {
+            Set<Tag> tags = tagService.findOrCreateTags(postDto.getTagNames());
+            post.setTags(tags);
+
+            // 🔥 Двусторонняя связь (чтобы Hibernate сохранил в post_tags)
+            tags.forEach(tag -> tag.getPosts().add(post));
+        }
+
+        // 4️⃣ Сохраняем пост
         Post savedPost = postRepository.save(post);
 
-        // ✅ ДОБАВЬТЕ ЛОГИРОВАНИЕ ЗДЕСЬ
+        // 5️⃣ Логируем активность пользователя
         userActivityService.logActivity(
                 user,
                 ActivityType.POST_CREATED,
@@ -244,6 +263,7 @@ public class PostServiceImpl implements PostService {
                 savedPost.getPostId()
         );
 
+        // 6️⃣ Возвращаем DTO
         return PostMapper.mapToPostDto(savedPost);
     }
 

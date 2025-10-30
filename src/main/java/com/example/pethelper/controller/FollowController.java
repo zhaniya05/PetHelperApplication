@@ -30,30 +30,6 @@ public class FollowController {
         return "redirect:/api/users/viewUserProfile/" + userId;
     }
 
-    // View all pending follow requests (for the logged-in user)
-//    @GetMapping("/requests")
-//    public String viewRequests(Authentication authentication, Model model) {
-//        UserDto currentUser = userService.findByEmail(authentication.getName());
-//        List<FollowDto> requests = followService.getPendingRequests(currentUser);
-//        model.addAttribute("requests", requests);
-//        model.addAttribute("user", currentUser);
-//        return "followRequests";
-//    }
-//
-//    // Accept follow request
-//    @PostMapping("/accept/{id}")
-//    public String acceptFollow(@PathVariable Long id) {
-//        followService.acceptFollowRequest(id);
-//        return "redirect:/follow/requests";
-//    }
-//
-//    // Reject follow request
-//    @PostMapping("/reject/{id}")
-//    public String rejectFollow(@PathVariable Long id) {
-//        followService.rejectFollowRequest(id);
-//        return "redirect:/follow/requests";
-//    }
-
     // View followers of current user
     @GetMapping("{id}/followers")
     public String viewFollowers(@PathVariable Long id, Authentication authentication, Model model) {

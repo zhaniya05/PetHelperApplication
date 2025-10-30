@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>Profile</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<!--  <link rel="stylesheet" th:href="@{/css/styles.css}">-->
+  <!--  <link rel="stylesheet" th:href="@{/css/styles.css}">-->
   <style>
     body {
       margin: 0;
@@ -535,52 +535,52 @@
         <p th:text="${post.postContent}" class="mb-2"></p>
         <div class="post-date" th:text="'Posted on ' + ${#temporals.format(post.postDate, 'yyyy-MM-dd HH:mm')}"></div>
       </div>
-<!--      <div th:each="post : ${posts}" class="post-card">-->
-<!--        <div class="post-header">-->
-<!--          &lt;!&ndash;            <div class="post-user">&ndash;&gt;-->
-<!--          &lt;!&ndash;                <i class="fa-solid fa-user" style="margin-right: 8px; color: #667eea;"></i>&ndash;&gt;-->
-<!--          &lt;!&ndash;                <span th:text="${post.userName}">username</span>&ndash;&gt;-->
-<!--          &lt;!&ndash;            </div>&ndash;&gt;-->
-<!--          <div class="post-user">-->
-<!--            <i class="fa-solid fa-user" style="margin-right: 8px; color: #667eea;"></i>-->
-<!--            <a th:href="@{/api/users/viewUserProfile/{id}(id=${post.userId})}"-->
-<!--               th:text="${post.userName}"-->
-<!--               class="username-link">username</a>-->
-<!--          </div>-->
-<!--          <div class="post-date">-->
-<!--            <i class="fa-solid fa-calendar" style="margin-right: 6px;"></i>-->
-<!--            <span th:text="${#temporals.format(post.postDate, 'dd MMM yyyy')}">date</span>-->
-<!--          </div>-->
-<!--        </div>-->
+      <!--      <div th:each="post : ${posts}" class="post-card">-->
+      <!--        <div class="post-header">-->
+      <!--          &lt;!&ndash;            <div class="post-user">&ndash;&gt;-->
+      <!--          &lt;!&ndash;                <i class="fa-solid fa-user" style="margin-right: 8px; color: #667eea;"></i>&ndash;&gt;-->
+      <!--          &lt;!&ndash;                <span th:text="${post.userName}">username</span>&ndash;&gt;-->
+      <!--          &lt;!&ndash;            </div>&ndash;&gt;-->
+      <!--          <div class="post-user">-->
+      <!--            <i class="fa-solid fa-user" style="margin-right: 8px; color: #667eea;"></i>-->
+      <!--            <a th:href="@{/api/users/viewUserProfile/{id}(id=${post.userId})}"-->
+      <!--               th:text="${post.userName}"-->
+      <!--               class="username-link">username</a>-->
+      <!--          </div>-->
+      <!--          <div class="post-date">-->
+      <!--            <i class="fa-solid fa-calendar" style="margin-right: 6px;"></i>-->
+      <!--            <span th:text="${#temporals.format(post.postDate, 'dd MMM yyyy')}">date</span>-->
+      <!--          </div>-->
+      <!--        </div>-->
 
-<!--        <div class="post-content" th:text="${post.postContent}">Post content here</div>-->
+      <!--        <div class="post-content" th:text="${post.postContent}">Post content here</div>-->
 
-<!--        &lt;!&ndash; Галерея фотографий &ndash;&gt;-->
-<!--        <div th:if="${post.postPhotos != null && !post.postPhotos.isEmpty()}" class="post-photos">-->
-<!--          <div th:each="photo : ${post.postPhotos}">-->
-<!--            <img th:src="@{${photo}}" alt="Post Photo" class="post-photo"-->
-<!--                 onerror="this.style.display='none'"/>-->
-<!--          </div>-->
-<!--        </div>-->
+      <!--        &lt;!&ndash; Галерея фотографий &ndash;&gt;-->
+      <!--        <div th:if="${post.postPhotos != null && !post.postPhotos.isEmpty()}" class="post-photos">-->
+      <!--          <div th:each="photo : ${post.postPhotos}">-->
+      <!--            <img th:src="@{${photo}}" alt="Post Photo" class="post-photo"-->
+      <!--                 onerror="this.style.display='none'"/>-->
+      <!--          </div>-->
+      <!--        </div>-->
 
-<!--        <div class="post-actions">-->
-<!--          <div class="action-buttons">-->
-<!--            &lt;!&ndash; Комментарии &ndash;&gt;-->
-<!--            <a th:href="@{/posts/{id}/comments(id=${post.postId})}" class="comment-btn">-->
-<!--              <i class="fa-solid fa-comment"></i> Comment-->
-<!--            </a>-->
+      <!--        <div class="post-actions">-->
+      <!--          <div class="action-buttons">-->
+      <!--            &lt;!&ndash; Комментарии &ndash;&gt;-->
+      <!--            <a th:href="@{/posts/{id}/comments(id=${post.postId})}" class="comment-btn">-->
+      <!--              <i class="fa-solid fa-comment"></i> Comment-->
+      <!--            </a>-->
 
-<!--          <span class="likes-count" th:text="${post.likeCount} + ' likes'">0 likes</span>-->
+      <!--          <span class="likes-count" th:text="${post.likeCount} + ' likes'">0 likes</span>-->
 
-<!--          <form th:action="@{/posts/{id}/like(id=${post.postId})}" method="post" style="display:inline;">-->
-<!--            <button type="submit" class="like-btn" th:classappend="${post.likedByCurrentUser} ? 'active' : ''">-->
-<!--              <i th:class="${post.likedByCurrentUser} ? 'fa-solid' : 'fa-regular'" class="fa-heart"></i>-->
-<!--              <span th:text="${post.likedByCurrentUser} ? 'Unlike' : 'Like'">Like</span>-->
-<!--            </button>-->
-<!--          </form>-->
+      <!--          <form th:action="@{/posts/{id}/like(id=${post.postId})}" method="post" style="display:inline;">-->
+      <!--            <button type="submit" class="like-btn" th:classappend="${post.likedByCurrentUser} ? 'active' : ''">-->
+      <!--              <i th:class="${post.likedByCurrentUser} ? 'fa-solid' : 'fa-regular'" class="fa-heart"></i>-->
+      <!--              <span th:text="${post.likedByCurrentUser} ? 'Unlike' : 'Like'">Like</span>-->
+      <!--            </button>-->
+      <!--          </form>-->
 
-<!--        </div>-->
-<!--      </div>-->
+      <!--        </div>-->
+      <!--      </div>-->
 
       <!-- Сообщение если постов нет -->
       <div th:if="${#lists.isEmpty(posts)}" class="no-posts">
@@ -588,8 +588,8 @@
         <h3>No posts yet</h3>
       </div>
     </div>
-    </div>
   </div>
+</div>
 </div>
 </body>
 </html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>View Post</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-container">
+    <a th:href="@{/posts}" class="nav-brand">Posts</a>
+    <a th:href="@{/pets/main}" class="nav-brand">PawPal</a>
+    <a th:href="@{/api/users/main}" class="nav-brand">Users</a>
+
+    <div class="notif-icon">
+      <a th:href="@{/notifications}" title="Notifications">
+        <i class="fa-solid fa-bell"></i>
+        <span th:if="${#lists.size(requests) + #lists.size(postNotifications) > 0}"
+              th:text="${#lists.size(requests) + #lists.size(postNotifications)}"
+              class="notif-badge"></span>
+      </a>
+    </div>
+
+    <div class="nav-profile">
+      <a th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">
+        <img th:src="@{${user.profilePicture != null ? user.profilePicture : '/css/images/default-avatar.jpg'}}"
+             alt="Profile"
+             class="avatar"
+             onerror="this.src='/css/images/default-avatar.jpg'">
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="post-container">
+  <div class="post-header-view">
+    <div class="author-info">
+      <span class="author-name" th:text="${post.userName}">Author Name</span>
+      <span class="post-date-view" th:text="${#temporals.format(post.postDate, 'dd MMM yyyy HH:mm')}">Date</span>
+    </div>
+  </div>
+
+  <div class="post-content-view" th:text="${post.postContent}">Post content here</div>
+
+  <div class="tags">
+    <span th:each="tag : ${post.tagNames}"
+          th:text="'#' + ${tag}"
+          class="tag">
+    </span>
+  </div>
+
+  <!-- Галерея фотографий -->
+  <div th:if="${post.postPhotos != null && !post.postPhotos.isEmpty()}" class="post-photos">
+    <div th:each="photo : ${post.postPhotos}">
+      <img th:src="@{${photo}}" alt="Post Photo" class="post-photo"
+           onerror="this.style.display='none'"/>
+    </div>
+  </div>
+
+  <div class="post-actions">
+    <div class="action-buttons">
+      <!-- Комментарии -->
+      <a th:href="@{/posts/{id}/comments(id=${post.postId})}" class="comment-btn">
+        <i class="fa-solid fa-comment"></i> Comment
+      </a>
+
+      <span class="likes-count" th:text="${post.likeCount} + ' likes'">0 likes</span>
+
+      <form th:action="@{/posts/{id}/like(id=${post.postId})}" method="post" style="display:inline;">
+        <button type="submit" class="like-btn" th:classappend="${post.likedByCurrentUser} ? 'active' : ''">
+          <i th:class="${post.likedByCurrentUser} ? 'fa-solid' : 'fa-regular'" class="fa-heart"></i>
+          <span th:text="${post.likedByCurrentUser} ? 'Unlike' : 'Like'">Like</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="post-footer">
+    <a class="back-btn" th:href="@{/notifications}">
+      <i class="fa-solid fa-arrow-left"></i> Back to Notifications
+    </a>
+
+    <div class="actions">
+      <i class="fa-regular fa-heart"></i>
+      <i class="fa-regular fa-comment"></i>
+      <i class="fa-solid fa-share-nodes"></i>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

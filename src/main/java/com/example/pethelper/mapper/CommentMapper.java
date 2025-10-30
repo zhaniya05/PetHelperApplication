@@ -15,6 +15,8 @@ public class CommentMapper {
         dto.setUserId(comment.getUser().getUserId());
         dto.setUserName(comment.getUser().getUserName());
         dto.setPostId(comment.getPost().getPostId());
+        dto.setLikesCount(comment.getLikesCount());
+
         return dto;
     }
 

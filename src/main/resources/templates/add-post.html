@@ -502,6 +502,38 @@
             </div>
             <div class="file-preview" id="filePreview"></div>
         </div>
+        <!-- Выбор тегов -->
+        <div class="form-group">
+            <label for="tags" class="form-label">
+                <i class="fa-solid fa-tags"></i>
+                Choose Tags
+            </label>
+<!--            <select id="tags" th:field="*{tagIds}" multiple class="form-select" style="-->
+<!--        width: 100%;-->
+<!--        padding: 12px;-->
+<!--        border-radius: 12px;-->
+<!--        border: 2px solid #ffeef4;-->
+<!--        font-size: 16px;-->
+<!--        background: rgba(255,255,255,0.8);-->
+<!--    ">-->
+
+<!--                <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.name}"></option>-->
+<!--            </select>-->
+
+            <select id="tags" name="selectedTags" multiple class="form-select" style="
+        width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+        border: 2px solid #ffeef4;
+        font-size: 16px;
+        background: rgba(255,255,255,0.8);
+    ">
+                <option th:each="tag : ${tags}" th:value="${tag.name}" th:text="${tag.name}"></option>
+            </select>
+
+            <small style="color: #999; font-style: italic;">Hold Ctrl (Windows) or Cmd (Mac) to select multiple tags</small>
+        </div>
+
 
         <!-- Кнопки действий -->
         <div class="form-actions">

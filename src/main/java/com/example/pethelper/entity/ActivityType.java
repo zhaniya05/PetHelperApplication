@@ -9,5 +9,6 @@ public enum ActivityType {
     COMMENT_DELETED,
     PET_CREATED,
     PET_UPDATED,
-    PET_DELETED
+    PET_DELETED,
+    LIKE_ADDED
 }

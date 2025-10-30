@@ -25,13 +25,13 @@ public class Tag {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany
-    @JoinTable(
-            name = "post_tags",
-            joinColumns = @JoinColumn(name = "tag_id"),
-            inverseJoinColumns = @JoinColumn(name = "post_id")
-    )
-    private List<Post> posts = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "tags", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<Post> posts = new HashSet<>();
+
+    @ManyToMany(mappedBy = "followedTags")
+    private Set<User> followers = new HashSet<>();
+
 
     public Tag(String name) {
         this.name = name;

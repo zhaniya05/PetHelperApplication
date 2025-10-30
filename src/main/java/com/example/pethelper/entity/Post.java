@@ -59,13 +59,13 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PostLike> likes = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "post_tags",
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
-    private List<Tag> tags = new ArrayList<>();
+    private Set<Tag> tags = new HashSet<>();
 
     public boolean isLikedByUser(User user) {
         return likes.stream().anyMatch(like -> like.getUser().equals(user));

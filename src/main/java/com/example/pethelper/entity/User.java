@@ -7,7 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -51,4 +53,13 @@ public class User {
 
    @OneToMany(mappedBy = "following")
    private List<Follow> followersList;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_followed_tags",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> followedTags = new HashSet<>();
+
 }

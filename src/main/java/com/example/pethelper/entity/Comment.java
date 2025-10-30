@@ -26,6 +26,10 @@ public class Comment {
 
     private LocalDate commentDate;
 
+    @Column(name = "likes_count", nullable = false)
+    private Integer likesCount = 0;
+
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -20,4 +21,7 @@ public class PostDto {
     private int likeCount;
     private boolean likedByCurrentUser;
     private String visibility;
+    private Set<String> tagNames;
+    private Set<Long> tagIds;
+
 }
