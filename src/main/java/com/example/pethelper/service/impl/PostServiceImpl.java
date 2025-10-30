@@ -19,6 +19,7 @@ import com.example.pethelper.service.UserActivityService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.time.temporal.ChronoUnit;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -174,53 +175,57 @@ public class PostServiceImpl implements PostService {
     }
 
     private Stream<Post> applyAdvancedSorting(Stream<Post> stream, String sort) {
-        if (sort == null || sort.isBlank()) {
-            return stream.sorted((a, b) -> b.getPostDate().compareTo(a.getPostDate())); // по умолчанию новые first
+        if (sort == null || sort.isBlank() || sort.equalsIgnoreCase("recommended")) {
+            // 🧠 Рекомендательная сортировка: лайки + свежесть
+            LocalDate now = LocalDate.now();
+            return stream.sorted((a, b) -> {
+                long daysA = ChronoUnit.DAYS.between(a.getPostDate(), now);
+                long daysB = ChronoUnit.DAYS.between(b.getPostDate(), now);
+
+                double scoreA = a.getLikeCount() * 2 + Math.max(0, 30 - daysA);
+                double scoreB = b.getLikeCount() * 2 + Math.max(0, 30 - daysB);
+
+                return Double.compare(scoreB, scoreA); // по убыванию
+            });
         }
 
+        // остальные сортировки
         switch (sort.toLowerCase()) {
             case "likes_desc,date_desc":
                 return stream.sorted((a, b) -> {
                     int likeCompare = Integer.compare(b.getLikeCount(), a.getLikeCount());
                     return likeCompare != 0 ? likeCompare : b.getPostDate().compareTo(a.getPostDate());
                 });
-
             case "date_desc,likes_desc":
                 return stream.sorted((a, b) -> {
                     int dateCompare = b.getPostDate().compareTo(a.getPostDate());
                     return dateCompare != 0 ? dateCompare : Integer.compare(b.getLikeCount(), a.getLikeCount());
                 });
-
             case "likes_desc":
                 return stream.sorted((a, b) -> Integer.compare(b.getLikeCount(), a.getLikeCount()));
-
             case "likes_asc":
                 return stream.sorted((a, b) -> Integer.compare(a.getLikeCount(), b.getLikeCount()));
-
             case "date_desc":
                 return stream.sorted((a, b) -> b.getPostDate().compareTo(a.getPostDate()));
-
             case "date_asc":
                 return stream.sorted((a, b) -> a.getPostDate().compareTo(b.getPostDate()));
-
             case "alphabetical":
                 return stream.sorted((a, b) -> {
                     String contentA = a.getPostContent() != null ? a.getPostContent() : "";
                     String contentB = b.getPostContent() != null ? b.getPostContent() : "";
                     return contentA.compareToIgnoreCase(contentB);
                 });
-
             case "user_name":
                 return stream.sorted((a, b) -> {
                     String userA = a.getUser() != null && a.getUser().getUserName() != null ? a.getUser().getUserName() : "";
                     String userB = b.getUser() != null && b.getUser().getUserName() != null ? b.getUser().getUserName() : "";
                     return userA.compareToIgnoreCase(userB);
                 });
-
             default:
                 return stream.sorted((a, b) -> b.getPostDate().compareTo(a.getPostDate()));
         }
     }
+
 
     @Override
     public PostDto createPost(PostDto postDto) {
@@ -253,16 +258,26 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public void deletePost(Long postUserId, Long userId, Long postId) {
-
         if (Objects.equals(postUserId, userId)) {
+            // ✅ Находим пользователя для логирования
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+            // ✅ Логируем удаление поста
+            userActivityService.logActivity(
+                    user,
+                    ActivityType.POST_DELETED,
+                    "Deleted post",
+                    "POST",
+                    postId
+            );
+
             postRepository.deleteById(postId);
             postRepository.flush();
-        }
-        else {
+        } else {
             throw new RuntimeException("Access denied " + postUserId + " " + userId);
         }
     }
-
 
 
     @Override
@@ -272,7 +287,6 @@ public class PostServiceImpl implements PostService {
                 .map(PostMapper::mapToPostDto)
                 .collect(Collectors.toList());
     }
-
 
     @Override
     public PostDto toggleLike(Long postId, String email) {
@@ -286,16 +300,34 @@ public class PostServiceImpl implements PostService {
 
         if (existingLike.isPresent()) {
             postLikeRepository.delete(existingLike.get());
+
+
+            userActivityService.logActivity(
+                    user,
+                    ActivityType.POST_UNLIKED,
+                    "Unliked post",
+                    "POST",
+                    postId
+            );
+
         } else {
             PostLike like = new PostLike();
             like.setPost(post);
             like.setUser(user);
             postLikeRepository.save(like);
+
+
+            userActivityService.logActivity(
+                    user,
+                    ActivityType.POST_LIKED,
+                    "Liked post",
+                    "POST",
+                    postId
+            );
         }
 
         return PostMapper.mapToPostDto(post);
     }
-
     @Override
     public List<PostDto> getVisiblePosts(UserDto viewer, UserDto postOwner) {
         User viewer1 = UserMapper.mapToUser(viewer);

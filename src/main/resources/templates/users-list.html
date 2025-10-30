@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Followers</title>
+    <title>Users List</title>
   <link rel="stylesheet" th:href="@{/css/styles.css}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -13,6 +13,7 @@
     <a th:href="@{/posts}" class="nav-brand">Posts</a>
     <a th:href="@{/pets/main}" class="nav-brand">PawPal</a>
     <a th:href="@{/api/users/main}" class="nav-brand">Users</a>
+
     <div class="notif-icon">
       <a th:href="@{/notifications}" title="Notifications">
         <i class="fa-solid fa-bell" style="font-size: 20px; color: pink;"></i>
@@ -21,9 +22,10 @@
               class="notif-badge"></span>
       </a>
     </div>
+
     <div class="nav-profile">
-      <a th:href="@{/api/users/viewProfile/{id}(id=${currentUser.userId})}">
-        <img th:src="@{${currentUser.profilePicture != null ? currentUser.profilePicture : '/css/images/default-avatar.jpg'}}"
+      <a th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">
+        <img th:src="@{${user.profilePicture != null ? user.profilePicture : '/css/images/default-avatar.jpg'}}"
              alt="Profile"
              class="avatar"
              onerror="this.src='/css/images/default-avatar.jpg'">
@@ -32,20 +34,25 @@
   </div>
 </nav>
 
-<div class="container">
-  <h2><i class="fa-solid fa-users"></i>Followers</h2>
+<div class="search-bar">
+  <form th:action="@{/api/users/main}" method="get">
+    <input type="text" name="keyword" th:value="${keyword}" placeholder="Search users...">
+  </form>
+</div>
 
-  <div th:if="${#lists.isEmpty(followers)}">
-    <p>You have no followers yet.</p>
-  </div>
-
-  <div th:each="follow : ${followers}" class="follow-card">
-    <div class="user-info">
-      <i class="fa-solid fa-user"></i>
-      <a th:href="@{/api/users/viewUserProfile/{id}(id=${follow.getFollowerId()})}"
-         th:text="${follow.getFollowerUsername()}" class="username-link">Follower Name</a>
+<div class="users-container">
+  <div th:each="u : ${listUsers}" class="user-card">
+    <img th:src="@{${u.profilePicture != null ? u.profilePicture : '/css/images/default-avatar.jpg'}}"
+         alt="User avatar">
+    <div>
+      <a th:href="@{/api/users/viewUserProfile/{id}(id=${u.userId})}"
+         th:text="${u.userName}">Username</a>
     </div>
   </div>
+</div>
+
+<div class="no-users" th:if="${#lists.isEmpty(listUsers)}">
+  No users found.
 </div>
 </body>
 </html>

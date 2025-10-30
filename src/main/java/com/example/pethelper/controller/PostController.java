@@ -1,5 +1,6 @@
 package com.example.pethelper.controller;
 
+import com.example.pethelper.dto.FollowDto;
 import com.example.pethelper.dto.PostDto;
 import com.example.pethelper.dto.PostFilterRequest;
 import com.example.pethelper.dto.UserDto;
@@ -8,6 +9,8 @@ import com.example.pethelper.entity.User;
 import com.example.pethelper.mapper.PostMapper;
 import com.example.pethelper.repository.PostRepository;
 import com.example.pethelper.repository.UserRepository;
+import com.example.pethelper.service.FollowService;
+import com.example.pethelper.service.NotificationService;
 import com.example.pethelper.service.PostService;
 import com.example.pethelper.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +39,8 @@ public class PostController {
 
     private final PostService postService;
     private final UserService userService;
+    private final FollowService followService;
+    private final NotificationService notificationService;
 
 
 
@@ -151,8 +156,19 @@ public class PostController {
             postDto.setPostPhotos(photoUrls);
             postService.createPost(postDto);
 
-            return "redirect:/posts";
+            PostDto createdPost = postService.createPost(postDto);
 
+            List<FollowDto> followers = followService.getFollowers(currentUser);
+
+
+            for (FollowDto follower : followers) {
+                notificationService.createNotification(
+                        follower.getFollowerId(),
+                        currentUser.getUserName() + " posted a new update!",
+                        "/posts/" + createdPost.getPostId()
+                );
+            }
+            return "redirect:/posts";
         } catch (Exception e) {
             e.printStackTrace();
             return "redirect:/posts/add?error";

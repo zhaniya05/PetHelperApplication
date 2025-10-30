@@ -15,7 +15,8 @@ public class FollowMapper {
                 follow.getFollowing() != null ? follow.getFollowing().getUserId() : null,
                 follow.getFollowing() != null ? follow.getFollowing().getUserName() : null,
                 follow.getStatus() != null ? follow.getStatus().name() : null,
-                follow.getCreatedAt()
+                follow.getCreatedAt(),
+                follow.getFollower().getProfilePicture()
         );
     }
 

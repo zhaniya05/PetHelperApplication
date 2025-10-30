@@ -2,6 +2,7 @@ package com.example.pethelper.service.impl;
 
 
 import com.example.pethelper.dto.CommentDto;
+import com.example.pethelper.entity.ActivityType;
 import com.example.pethelper.entity.Comment;
 import com.example.pethelper.entity.Post;
 import com.example.pethelper.entity.User;
@@ -10,6 +11,7 @@ import com.example.pethelper.repository.CommentRepository;
 import com.example.pethelper.repository.PostRepository;
 import com.example.pethelper.repository.UserRepository;
 import com.example.pethelper.service.CommentService;
+import com.example.pethelper.service.UserActivityService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final UserActivityService userActivityService;
 
     @Override
     public List<CommentDto> getCommentsByPost(Long postId) {
@@ -40,18 +43,36 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
         Comment comment = CommentMapper.mapToComment(dto, user, post);
-        commentRepository.save(comment);
-        return CommentMapper.mapToCommentDto(comment);
-    }
+        Comment savedComment = commentRepository.save(comment);
 
+        // ✅ ДОБАВЬТЕ ЛОГИРОВАНИЕ СОЗДАНИЯ КОММЕНТАРИЯ
+        userActivityService.logActivity(
+                user,
+                ActivityType.COMMENT_CREATED,
+                "Added comment to post",
+                "COMMENT",
+                savedComment.getCommentId()
+        );
+
+        return CommentMapper.mapToCommentDto(savedComment);
+    }
     @Override
-    public void deleteComment(Long commentId, String username) {
+    public void deleteComment(Long commentId, String email) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
 
-        if (!comment.getUser().getEmail().equals(username)) {
+        if (!comment.getUser().getEmail().equals(email)) {
             throw new RuntimeException("Access denied");
         }
+
+        // ✅ ДОБАВЬТЕ ЛОГИРОВАНИЕ УДАЛЕНИЯ КОММЕНТАРИЯ
+        userActivityService.logActivity(
+                comment.getUser(),
+                ActivityType.COMMENT_DELETED,
+                "Deleted comment",
+                "COMMENT",
+                commentId
+        );
 
         commentRepository.delete(comment);
     }

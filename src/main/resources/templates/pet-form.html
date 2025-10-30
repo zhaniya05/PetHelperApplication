@@ -6,6 +6,29 @@
   <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
+<nav class="navbar">
+  <div class="nav-container">
+    <a th:href="@{/posts}" class="nav-brand">Posts</a>
+    <a th:href="@{/pets/main}" class="nav-brand">PawPal</a>
+    <a th:href="@{/api/users/main}" class="nav-brand">Users</a>
+    <div class="notif-icon">
+      <a th:href="@{/notifications}" title="Notifications">
+        <i class="fa-solid fa-bell" style="font-size: 20px; color: pink;"></i>
+        <span th:if="${#lists.size(requests) + #lists.size(postNotifications) > 0}"
+              th:text="${#lists.size(requests) + #lists.size(postNotifications)}"
+              class="notif-badge"></span>
+      </a>
+    </div>
+    <div class="nav-profile">
+      <a th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">
+        <img th:src="@{${user.profilePicture != null ? user.profilePicture : '/css/images/default-avatar.jpg'}}"
+             alt="Profile"
+             class="avatar"
+             onerror="this.src='/css/images/default-avatar.jpg'">
+      </a>
+    </div>
+  </div>
+</nav>
 <div class="container">
   <div class="header-container">
     <h1>Add New Pet</h1>
@@ -44,9 +67,19 @@
       </select>
     </div>
 
+<!--    <div class="form-group">-->
+<!--      <label for="breed">Pet Breed</label>-->
+<!--      <input type="text" id="breed" name="breed" placeholder="e.g. Labrador, Persian" required>-->
+<!--    </div>-->
+
+
     <div class="form-group">
       <label for="breed">Pet Breed</label>
-      <input type="text" id="breed" name="breed" placeholder="e.g. Labrador, Persian" required>
+      <!-- поле поиска -->
+      <input type="text" id="breedSearch" placeholder="Search breed..." style="display:none; margin-bottom:5px;">
+      <select id="breed" name="breed" style="display:none;">
+        <option value="">-- Select Breed --</option>
+      </select>
     </div>
 
     <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
@@ -59,5 +92,57 @@
     </div>
   </form>
 </div>
+
+<script>
+  const typeSelect = document.getElementById('type');
+  const breedSelect = document.getElementById('breed');
+  const breedSearch = document.getElementById('breedSearch');
+  let allBreeds = [];
+
+  typeSelect.addEventListener('change', function () {
+    const type = this.value.toLowerCase();
+    breedSelect.innerHTML = '<option value="">-- Select Breed --</option>';
+    breedSearch.value = '';
+
+    if (type === 'dog' || type === 'cat') {
+      breedSelect.style.display = 'block';
+      breedSearch.style.display = 'block';
+
+      fetch(`/api/breeds?type=${type}`)
+              .then(response => response.json())
+              .then(data => {
+                allBreeds = data.map(breed => breed.name);
+                updateBreedOptions(allBreeds);
+              })
+              .catch(error => console.error('Error loading breeds:', error));
+    } else {
+      breedSelect.style.display = 'none';
+      breedSearch.style.display = 'none';
+      allBreeds = [];
+    }
+  });
+
+  // функция фильтрации
+  breedSearch.addEventListener('input', function () {
+    const query = this.value.toLowerCase();
+    const filtered = allBreeds.filter(breed => breed.toLowerCase().includes(query));
+    updateBreedOptions(filtered);
+  });
+
+  function updateBreedOptions(breeds) {
+    breedSelect.innerHTML = '<option value="">-- Select Breed --</option>';
+    breeds.forEach(name => {
+      const option = document.createElement('option');
+      option.value = name;
+      option.text = name;
+      breedSelect.appendChild(option);
+    });
+  }
+</script>
+
+
+
 </body>
 </html>
+
+

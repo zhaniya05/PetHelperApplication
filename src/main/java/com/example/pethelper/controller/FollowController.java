@@ -31,44 +31,51 @@ public class FollowController {
     }
 
     // View all pending follow requests (for the logged-in user)
-    @GetMapping("/requests")
-    public String viewRequests(Authentication authentication, Model model) {
-        UserDto currentUser = userService.findByEmail(authentication.getName());
-        List<FollowDto> requests = followService.getPendingRequests(currentUser);
-        model.addAttribute("requests", requests);
-        return "followRequests";
-    }
-
-    // Accept follow request
-    @PostMapping("/accept/{id}")
-    public String acceptFollow(@PathVariable Long id) {
-        followService.acceptFollowRequest(id);
-        return "redirect:/follow/requests";
-    }
-
-    // Reject follow request
-    @PostMapping("/reject/{id}")
-    public String rejectFollow(@PathVariable Long id) {
-        followService.rejectFollowRequest(id);
-        return "redirect:/follow/requests";
-    }
+//    @GetMapping("/requests")
+//    public String viewRequests(Authentication authentication, Model model) {
+//        UserDto currentUser = userService.findByEmail(authentication.getName());
+//        List<FollowDto> requests = followService.getPendingRequests(currentUser);
+//        model.addAttribute("requests", requests);
+//        model.addAttribute("user", currentUser);
+//        return "followRequests";
+//    }
+//
+//    // Accept follow request
+//    @PostMapping("/accept/{id}")
+//    public String acceptFollow(@PathVariable Long id) {
+//        followService.acceptFollowRequest(id);
+//        return "redirect:/follow/requests";
+//    }
+//
+//    // Reject follow request
+//    @PostMapping("/reject/{id}")
+//    public String rejectFollow(@PathVariable Long id) {
+//        followService.rejectFollowRequest(id);
+//        return "redirect:/follow/requests";
+//    }
 
     // View followers of current user
-    @GetMapping("/followers")
-    public String viewFollowers(Authentication authentication, Model model) {
-        UserDto currentUser = userService.findByEmail(authentication.getName());
-        List<FollowDto> followers = followService.getFollowers(currentUser);
+    @GetMapping("{id}/followers")
+    public String viewFollowers(@PathVariable Long id, Authentication authentication, Model model) {
+        UserDto profileUser = userService.getUserById(id); // user being viewed
+        UserDto currentUser = userService.findByEmail(authentication.getName()); // logged-in user
+
+        List<FollowDto> followers = followService.getFollowers(profileUser);
+        model.addAttribute("profileUser", profileUser);
+        model.addAttribute("currentUser", currentUser);
         model.addAttribute("followers", followers);
-        model.addAttribute("user", currentUser);
         return "followers";
     }
 
     // View users current user follows
-    @GetMapping("/following")
-    public String viewFollowing(Authentication authentication, Model model) {
-        UserDto currentUser = userService.findByEmail(authentication.getName());
-        List<FollowDto> following = followService.getFollowing(currentUser);
-        model.addAttribute("user", currentUser);
+    @GetMapping("{id}/following")
+    public String viewFollowing(@PathVariable Long id,Authentication authentication, Model model) {
+        UserDto profileUser = userService.getUserById(id); // user being viewed
+        UserDto currentUser = userService.findByEmail(authentication.getName()); // logged-in user
+
+        List<FollowDto> following = followService.getFollowing(profileUser);
+        model.addAttribute("profileUser", profileUser);
+        model.addAttribute("currentUser", currentUser);
         model.addAttribute("following", following);
         return "following";
     }

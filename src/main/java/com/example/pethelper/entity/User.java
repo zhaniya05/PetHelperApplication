@@ -39,6 +39,9 @@ public class User {
    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
    List<Comment> comments;
 
+//   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+//   List<Notification> notifications;
+
 
    private String profilePicture;
 
@@ -48,6 +51,4 @@ public class User {
 
    @OneToMany(mappedBy = "following")
    private List<Follow> followersList;
-
-
 }

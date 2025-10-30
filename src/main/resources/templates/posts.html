@@ -12,11 +12,14 @@
     <div class="nav-container">
         <a th:href="@{/posts}" class="nav-brand">Posts</a>
         <a th:href="@{/pets/main}" class="nav-brand">PawPal</a>
+        <a th:href="@{/api/users/main}" class="nav-brand">Users</a>
 
         <div class="notif-icon">
-            <a th:href="@{/follow/requests}" title="Follow Requests">
-                <i class="fa-solid fa-bell" style="font-size: 20px; color: white;"></i>
-                <span th:if="${pendingRequestsCount > 0}" th:text="${pendingRequestsCount}" class="notif-badge"></span>
+            <a th:href="@{/notifications}" title="Notifications">
+                <i class="fa-solid fa-bell" style="font-size: 20px; color: pink;"></i>
+                <span th:if="${#lists.size(requests) + #lists.size(postNotifications) > 0}"
+                      th:text="${#lists.size(requests) + #lists.size(postNotifications)}"
+                      class="notif-badge"></span>
             </a>
         </div>
 
@@ -151,12 +154,27 @@
 <!--                <i class="fa-solid fa-user" style="margin-right: 8px; color: #667eea;"></i>-->
 <!--                <span th:text="${post.userName}">username</span>-->
 <!--            </div>-->
+<!--            <div class="post-user">-->
+<!--                <i class="fa-solid fa-user" style="margin-right: 8px; color: #667eea;"></i>-->
+<!--                <a th:href="@{/api/users/viewUserProfile/{id}(id=${post.userId})}"-->
+<!--                   th:text="${post.userName}"-->
+<!--                   class="username-link">username</a>-->
+<!--            </div>-->
             <div class="post-user">
                 <i class="fa-solid fa-user" style="margin-right: 8px; color: #667eea;"></i>
-                <a th:href="@{/api/users/viewUserProfile/{id}(id=${post.userId})}"
+
+                <!-- Если пост написан текущим пользователем, просто текст -->
+                <span th:if="${post.userId == user.userId}"
+                      th:text="${post.userName}"
+                      class="username-text"></span>
+
+                <!-- Если пост другого пользователя — ссылка -->
+                <a th:if="${post.userId != user.userId}"
+                   th:href="@{/api/users/viewUserProfile/{id}(id=${post.userId})}"
                    th:text="${post.userName}"
-                   class="username-link">username</a>
+                   class="username-link"></a>
             </div>
+
             <div class="post-date">
                 <i class="fa-solid fa-calendar" style="margin-right: 6px;"></i>
                 <span th:text="${#temporals.format(post.postDate, 'dd MMM yyyy')}">date</span>

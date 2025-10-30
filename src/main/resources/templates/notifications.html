@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+  <title>Follow Requests</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body>
+<!--<nav class="navbar">-->
+<!--  <div class="nav-container">-->
+<!--    <a th:href="@{/posts}" class="nav-brand">Posts</a>-->
+<!--    <a th:href="@{/pets/main}" class="nav-brand">PawPal</a>-->
+<!--    <a th:href="@{/api/users/main}" class="nav-brand">Users</a>-->
+<!--    <div class="notif-icon">-->
+<!--      <a th:href="@{/follow/requests}" title="Follow Requests">-->
+<!--        <i class="fa-solid fa-bell" style="font-size: 20px; color: pink;"></i>-->
+<!--        <span th:if="${pendingRequestsCount > 0}" th:text="${pendingRequestsCount}" class="notif-badge"></span>-->
+<!--      </a>-->
+<!--    </div>-->
+<!--    <div class="nav-profile">-->
+<!--      <a th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">-->
+<!--        <img th:src="@{${user.profilePicture != null ? user.profilePicture : '/css/images/default-avatar.jpg'}}"-->
+<!--             alt="Profile"-->
+<!--             class="avatar"-->
+<!--             onerror="this.src='/css/images/default-avatar.jpg'">-->
+<!--      </a>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</nav>-->
+
+<!--<div class="container">-->
+<!--  <h2><i class="fa-solid fa-user-plus"></i> Follow Requests</h2>-->
+
+<!--  <div th:if="${#lists.isEmpty(requests)}">-->
+<!--    <p>No pending follow requests.</p>-->
+<!--  </div>-->
+
+<!--  <div th:each="request : ${requests}" class="follow-card">-->
+<!--    <div class="user-info">-->
+<!--      <i class="fa-solid fa-user"></i>-->
+<!--      <span th:text="${request.getFollowerUsername()}">Follower Name</span>-->
+<!--    </div>-->
+
+<!--    <div class="actions">-->
+<!--      <form th:action="@{/follow/accept/{id}(id=${request.getId()})}" method="post" style="display:inline;">-->
+<!--        <button type="submit" class="btn btn-success">-->
+<!--          <i class="fa-solid fa-check"></i> Accept-->
+<!--        </button>-->
+<!--      </form>-->
+<!--      <form th:action="@{/follow/reject/{id}(id=${request.getId()})}" method="post" style="display:inline;">-->
+<!--        <button type="submit" class="btn btn-danger">-->
+<!--          <i class="fa-solid fa-xmark"></i> Reject-->
+<!--        </button>-->
+<!--      </form>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
+
+<nav class="navbar">
+  <div class="nav-container">
+    <a th:href="@{/posts}" class="nav-brand">Posts</a>
+    <a th:href="@{/pets/main}" class="nav-brand">PawPal</a>
+    <a th:href="@{/api/users/main}" class="nav-brand">Users</a>
+
+    <div class="notif-icon">
+      <a th:href="@{/notifications}" title="Notifications">
+        <i class="fa-solid fa-bell" style="font-size: 20px; color: pink;"></i>
+        <span th:if="${#lists.size(requests) + #lists.size(postNotifications) > 0}"
+               th:text="${#lists.size(requests) + #lists.size(postNotifications)}"
+               class="notif-badge"></span>
+
+      </a>
+    </div>
+
+    <div class="nav-profile">
+      <a th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">
+        <img th:src="@{${user.profilePicture != null ? user.profilePicture : '/css/images/default-avatar.jpg'}}"
+             alt="Profile" class="avatar"
+             onerror="this.src='/css/images/default-avatar.jpg'">
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <h2><i class="fa-solid fa-bell"></i> Notifications</h2>
+
+  <!-- FOLLOW REQUESTS -->
+  <section class="follow-requests">
+    <h3><i class="fa-solid fa-user-plus"></i> Follow Requests</h3>
+
+    <div th:if="${#lists.isEmpty(requests)}">
+      <p>No pending follow requests.</p>
+    </div>
+
+    <div th:each="request : ${requests}" class="follow-card">
+      <div class="user-info">
+        <i class="fa-solid fa-user"></i>
+        <span th:text="${request.getFollowerUsername()}">Follower Name</span>
+      </div>
+      <div class="actions">
+        <form th:action="@{/notifications/accept/{id}(id=${request.getId()})}" method="post" style="display:inline;">
+          <button type="submit" class="btn btn-success">
+            <i class="fa-solid fa-check"></i> Accept
+          </button>
+        </form>
+        <form th:action="@{/notifications/reject/{id}(id=${request.getId()})}" method="post" style="display:inline;">
+          <button type="submit" class="btn btn-danger">
+            <i class="fa-solid fa-xmark"></i> Reject
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- POST NOTIFICATIONS -->
+  <section class="post-notifications">
+    <h3><i class="fa-solid fa-paw"></i> New Posts</h3>
+
+    <div th:if="${#lists.isEmpty(postNotifications)}">
+      <p>No new post notifications.</p>
+    </div>
+
+    <div th:each="notif : ${postNotifications}" class="notif-card">
+      <p>
+        <span th:text="${notif.message}"></span>
+        <a th:href="${notif.link}" class="btn btn-link">View Post</a>
+      </p>
+      <form th:if="${!notif.read}"
+            th:action="@{/notifications/{id}/read(id=${notif.id})}"
+            method="post" style="display:inline;">
+        <button type="submit" class="btn btn-secondary">Mark as read</button>
+      </form>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

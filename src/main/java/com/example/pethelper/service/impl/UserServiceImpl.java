@@ -7,6 +7,8 @@ import com.example.pethelper.repository.UserRepository;
 import com.example.pethelper.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -137,5 +139,22 @@ public class UserServiceImpl implements UserService {
     public UserDto findByEmail(String email) {
         return UserMapper.mapToUserDto(userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email)));
+    }
+
+    @Override
+    public List<UserDto> searchUsersByKeyword(String keyword) {
+        return userRepository.findByUserNameContainingIgnoreCase(keyword)
+                .stream()
+                .map(UserMapper::mapToUserDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public User getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+            return (User) auth.getPrincipal();
+        }
+        return null;
     }
 }

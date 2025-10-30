@@ -98,7 +98,7 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            width: 100%;
+            width: 85%;
             padding: 10px 16px;
             margin-top: 10px;
             background: #6c757d;
@@ -160,7 +160,7 @@
         .profile-form input[type="email"],
         .profile-form textarea,
         .profile-form select {
-            width: 100%;
+            width: 95%;
             padding: 10px 12px;
             border: 1px solid #e6edf3;
             border-radius: 8px;
@@ -221,6 +221,8 @@
             </div>
         </div>
 
+        <a th:href = "@{/api/users/viewUserProfile/{id}(id=${user.userId})}" class="btn btn-primary btn-sm mb-3">View My Profile</a>
+
         <!-- Кнопка назад -->
         <a th:href="@{/pets/main}" class="back-btn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -240,6 +242,10 @@
                 Log out
             </button>
         </form>
+
+
+
+
     </aside>
 
     <!-- Правый столбец -->
@@ -273,6 +279,36 @@
                 <a class="btn btn-secondary" th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}" style="margin-left:8px;">Cancel</a>
             </div>
         </form>
+
+        <div class="profile-section-title" style="margin-top: 30px;">
+            <i class="fa-solid fa-history"></i> Recent Activity
+        </div>
+
+        <div class="activity-list">
+            <div th:each="activity : ${recentActivities}" class="activity-item">
+                <div class="activity-icon">
+                    <i th:class="|fa-solid ${@activityHelper.getActivityIcon(activity.activityType)}|"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-description" th:text="${activity.description}"></div>
+                    <div class="activity-meta">
+                        <span class="activity-type" th:text="${@activityHelper.getActivityTypeText(activity.activityType)}"></span>
+                        <span class="activity-date" th:text="${activity.formattedDate}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <!-- Сообщение если истории нет -->
+            <div th:if="${#lists.isEmpty(recentActivities)}" class="no-activity">
+                <i class="fa-solid fa-clock" style="color: #ccc; margin-right: 8px;"></i>
+                <span>No recent activity</span>
+            </div>
+
+
+
+
+
     </section>
 
 </div>

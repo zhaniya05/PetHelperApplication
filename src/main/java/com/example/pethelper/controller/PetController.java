@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/pets")
@@ -27,11 +28,20 @@ public class PetController {
     private final PetService petService;
     private final UserService userService;
 
+//
+//    @GetMapping("/add/pet")
+//    public String showAddPetForm() {
+//        return "pet-form";
+//    }
 
     @GetMapping("/add/pet")
-    public String showAddPetForm() {
+    public String showAddPetForm(Authentication authentication, Model model) {
+        String email = authentication.getName();
+        UserDto user = userService.findByEmail(email);
+        model.addAttribute("user", user);
         return "pet-form";
     }
+
 
     @PostMapping("/add/pet")
     public String addPet(Authentication authentication,
@@ -39,7 +49,7 @@ public class PetController {
                               @RequestParam int age,
                               @RequestParam LocalDate birthday,
                               @RequestParam String breed,
-                              @RequestParam String type){
+                              @RequestParam String type, Model model){
         String email = authentication.getName();
         UserDto user = userService.findByEmail(email);
         PetDto p = new PetDto();
@@ -53,6 +63,12 @@ public class PetController {
 
         return "redirect:/pets/main";
     }
+
+//    @GetMapping("/api/breeds")
+//    @ResponseBody
+//    public List<Map<String, Object>> getBreeds(@RequestParam String type) {
+//        return petService.getBreedsByType(type);
+//    }
 
 
     @GetMapping("/main")
@@ -126,13 +142,13 @@ public class PetController {
 
     @GetMapping("/delete/{id}")
     public String deletePet(@PathVariable("id") Long petId) {
-        System.out.println("🔄 DELETE: Attempting to delete pet with ID: " + petId);
+        System.out.println("DELETE: Attempting to delete pet with ID: " + petId);
         try {
             petService.deletePet(petId);
-            System.out.println("✅ DELETE: Successfully deleted pet with ID: " + petId);
+            System.out.println("DELETE: Successfully deleted pet with ID: " + petId);
             return "redirect:/pets/main";
         } catch (Exception e) {
-            System.out.println("❌ DELETE: Error deleting pet: " + e.getMessage());
+            System.out.println(" DELETE: Error deleting pet: " + e.getMessage());
             return "redirect:/pets/main?error=true";
         }
     }

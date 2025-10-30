@@ -22,6 +22,9 @@ public class FollowDto {
 
     private String status;
     private LocalDateTime createdAt;
+
+    private String profilePicture;
+
 }
 
 
