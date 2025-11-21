@@ -54,8 +54,13 @@
             <form th:action="@{'/posts/' + ${postId} + '/comments/' + ${comment.commentId} + '/like'}"
                   method="post"
                   style="display:inline;">
-                <button type="submit" class="btn btn-like">
-                    ❤️ <span th:text="${comment.likesCount}">0</span>
+                <button type="submit"
+                        class="like-btn"
+                        th:classappend="${comment.likedByCurrentUser} ? 'active' : ''">
+                    <i th:class="${comment.likedByCurrentUser} ? 'fa-solid' : 'fa-regular'"
+                       class="fa-heart"></i>
+                    <span th:text="${comment.likedByCurrentUser} ? 'Unlike' : 'Like'">Like</span>
+                    (<span th:text="${comment.likesCount}">0</span>)
                 </button>
             </form>
 

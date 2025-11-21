@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class UserMapper {
-    public static UserDto mapToUserDto(User user){
-
+    public static UserDto mapToUserDto(User user) {
         List<Long> petIds = user.getPets() != null
                 ? user.getPets().stream().map(Pet::getPetId).collect(Collectors.toList())
                 : null;
@@ -19,21 +18,24 @@ public class UserMapper {
                 user.getUserId(),
                 user.getUserName(),
                 user.getEmail(),
-                user.getPassword(),
+                null, // пароль в DTO лучше не возвращать
                 user.getRole(),
                 petIds,
-                user.getProfilePicture()
+                user.getProfilePicture(),
+                null
         );
     }
+
 
     public static User mapToUser(UserDto userDto) {
         User user = new User();
         user.setUserId(userDto.getUserId());
         user.setUserName(userDto.getUserName());
         user.setEmail(userDto.getEmail());
-        userDto.setProfilePicture(user.getProfilePicture());
-        user.setPets(null);
-        user.setRole(user.getRole());
+        user.setPassword(userDto.getPassword()); // обязательно!
+        user.setRole(userDto.getRole() != null ? userDto.getRole() : "ROLE_USER");
+        user.setProfilePicture(userDto.getProfilePicture());
         return user;
     }
+
 }

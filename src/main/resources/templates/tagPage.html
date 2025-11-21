@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Tag</title>
+  <meta charset="UTF-8">
+  <title>Tag: [[${tag.name}]]</title>
   <link rel="stylesheet" th:href="@{/css/styles.css}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 </head>
 <body>
 <nav class="navbar">
@@ -34,15 +33,301 @@
   </div>
 </nav>
 
-<form th:action="@{/tags/{id}/follow(id=${tag.id})}" method="post">
-  <button type="submit" class="btn btn-primary"
-          th:if="${!isFollowing}">Follow</button>
-</form>
+<div class="container">
+  <!-- Заголовок тега -->
+  <div class="tag-header">
+    <div class="tag-info">
+      <h1>#[[${tag.name}]]</h1>
+      <div class="tag-stats">
+                <span class="stat">
+                    <i class="fa-solid fa-image"></i>
+                    <strong>[[${posts != null ? posts.size() : 0}]]</strong> posts
+                </span>
+        <span class="stat">
+                    <i class="fa-solid fa-users"></i>
+                    <strong>[[${tag.followers != null ? tag.followers.size() : 0}]]</strong> followers
+                </span>
+      </div>
+    </div>
 
-<form th:action="@{/tags/{id}/unfollow(id=${tag.id})}" method="post">
-  <button type="submit" class="btn btn-danger"
-          th:if="${isFollowing}">Unfollow</button>
-</form>
+    <div class="tag-actions">
+      <form th:action="@{/tags/{name}/follow(name=${tag.name})}" method="post" style="display: inline;">
+        <button type="submit" class="btn btn-primary"
+                th:if="${!isFollowing}">
+          <i class="fas fa-plus"></i> Follow
+        </button>
+      </form>
+      <form th:action="@{/tags/{name}/unfollow(name=${tag.name})}" method="post" style="display: inline;">
+        <button type="submit" class="btn btn-danger"
+                th:if="${isFollowing}">
+          <i class="fas fa-minus"></i> Unfollow
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Список постов с этим тегом -->
+  <div class="posts-container">
+    <div th:each="post : ${posts}" class="post-card">
+      <div class="post-header">
+        <div class="post-user">
+          <i class="fa-solid fa-user" style="margin-right: 8px; color: #667eea;"></i>
+
+          <!-- Если пост написан текущим пользователем, просто текст -->
+          <span th:if="${post.userId == user.userId}"
+                th:text="${post.userName}"
+                class="username-text"></span>
+
+          <!-- Если пост другого пользователя — ссылка -->
+          <a th:if="${post.userId != user.userId}"
+             th:href="@{/api/users/viewUserProfile/{id}(id=${post.userId})}"
+             th:text="${post.userName}"
+             class="username-link"></a>
+        </div>
+
+        <div class="post-date">
+          <i class="fa-solid fa-calendar" style="margin-right: 6px;"></i>
+          <span th:text="${#temporals.format(post.postDate, 'dd MMM yyyy')}">date</span>
+        </div>
+      </div>
+
+      <div class="post-content" th:text="${post.postContent}">Post content here</div>
+
+      <!-- Теги поста -->
+      <div class="tags" th:if="${not #lists.isEmpty(post.tagNames)}">
+        <a th:each="tagName : ${post.tagNames}"
+           th:href="@{/tags/{name}(name=${tagName})}"
+           th:text="'#' + ${tagName}"
+           class="tag-link">
+        </a>
+      </div>
+
+      <!-- Галерея фотографий -->
+      <div th:if="${post.postPhotos != null && !post.postPhotos.isEmpty()}" class="post-photos">
+        <div th:each="photo : ${post.postPhotos}">
+          <img th:src="@{${photo}}" alt="Post Photo" class="post-photo"
+               onerror="this.style.display='none'"/>
+        </div>
+      </div>
+
+      <div class="post-actions">
+        <div class="action-buttons">
+          <!-- Комментарии -->
+          <a th:href="@{/posts/{id}/comments(id=${post.postId})}" class="comment-btn">
+            <i class="fa-solid fa-comment"></i> Comment
+          </a>
+
+          <!-- Кнопка удаления (только для владельца поста) -->
+          <div th:if="${user.userId == post.userId}" class="post-owner-actions">
+            <form th:action="@{/posts/delete/{id}(id=${post.postId})}" method="post" style="display:inline;">
+              <button type="submit" class="delete-btn"
+                      onclick="return confirm('Are you sure you want to delete this post?')">
+                <i class="fa-solid fa-trash"></i> Delete
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <span class="likes-count" th:text="${post.likeCount} + ' likes'">0 likes</span>
+
+        <form th:action="@{/posts/{id}/like(id=${post.postId})}" method="post" style="display:inline;">
+          <button type="submit" class="like-btn" th:classappend="${post.likedByCurrentUser} ? 'active' : ''">
+            <i th:class="${post.likedByCurrentUser} ? 'fa-solid' : 'fa-regular'" class="fa-heart"></i>
+            <span th:text="${post.likedByCurrentUser} ? 'Unlike' : 'Like'">Like</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Сообщение если постов нет -->
+    <div th:if="${#lists.isEmpty(posts)}" class="no-posts">
+      <i class="fa-solid fa-hashtag" style="font-size: 48px; color: #ccc; margin-bottom: 16px;"></i>
+      <h3>No posts with this tag yet</h3>
+      <p>Be the first to create a post with #[[${tag.name}]]!</p>
+      <a th:href="@{/posts/add}" class="btn btn-primary" style="margin-top: 16px;">
+        <i class="fa-solid fa-plus"></i> Create Post with #[[${tag.name}]]
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .container {
+    max-width: 600px;
+    margin: 30px auto;
+    padding: 0 20px;
+  }
+
+  .tag-header {
+    background: linear-gradient(135deg, #ffffff, #fff5f8);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(255, 107, 149, 0.1);
+    border: 2px solid #fff5f8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .tag-info h1 {
+    margin: 0 0 15px 0;
+    font-size: 2.2em;
+    color: #ff6390;
+    font-weight: bold;
+  }
+
+  .tag-stats {
+    display: flex;
+    gap: 25px;
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    color: #666;
+  }
+
+  .stat i {
+    color: #ff8fab;
+    font-size: 16px;
+  }
+
+  .stat strong {
+    color: #ff6390;
+    font-size: 1.3em;
+    margin-right: 3px;
+  }
+
+  .tag-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .tag-actions .btn {
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    font-size: 14px;
+    box-shadow: 0 3px 10px rgba(255, 107, 149, 0.2);
+  }
+
+  .tag-actions .btn-primary {
+    background: linear-gradient(135deg, #ffb7ce, #ff8fab);
+    color: white;
+  }
+
+  .tag-actions .btn-primary:hover {
+    background: linear-gradient(135deg, #ff8fab, #ff6b95);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 149, 0.3);
+  }
+
+  .tag-actions .btn-danger {
+    background: linear-gradient(135deg, #ffa8a8, #ff8787);
+    color: white;
+  }
+
+  .tag-actions .btn-danger:hover {
+    background: linear-gradient(135deg, #ff8787, #ff6b6b);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+  }
+
+  /* Стили для тегов внутри постов */
+  .tag-link {
+    display: inline-block;
+    background: #ffeef4;
+    color: #ff6390;
+    padding: 6px 12px;
+    border-radius: 15px;
+    margin: 4px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+  }
+
+  .tag-link:hover {
+    background: #ff6390;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 149, 0.3);
+    border-color: #ff8fab;
+  }
+
+  /* Адаптивность для мобильных */
+  @media (max-width: 768px) {
+    .container {
+      padding: 0 15px;
+    }
+
+    .tag-header {
+      flex-direction: column;
+      gap: 20px;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .tag-stats {
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .tag-actions {
+      justify-content: center;
+    }
+
+    .tag-actions .btn {
+      padding: 10px 20px;
+    }
+  }
+
+  /* Анимации */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .tag-header {
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  .post-card {
+    animation: fadeInUp 0.6s ease-out;
+  }
+</style>
+
+<script>
+  function confirmDelete() {
+    return confirm('Are you sure you want to delete this post? This action cannot be undone.');
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        if (!confirm('Are you sure you want to delete this post?')) {
+          e.preventDefault();
+        }
+      });
+    });
+  });
+</script>
 
 </body>
 </html>

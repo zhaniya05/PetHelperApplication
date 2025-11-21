@@ -13,7 +13,8 @@
         <h1>PawPal</h1>
         <p>Create your account</p>
     </div>
-    <form th:action="@{/auth/register}" th:object="${user}" method="post">
+    <form th:action="@{/auth/register}" th:object="${userDto}" method="post">
+
         <div class="login-form">
             <label for="username">Username:</label>
             <input type="text" id="username" th:field="*{userName}" placeholder="Choose a username" required>
@@ -25,7 +26,9 @@
             <input type="password" id="password" th:field="*{password}" placeholder="Choose a password" required>
 
             <label for="confirm-password">Confirm Password:</label>
-            <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
+<!--            <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>-->
+            <input type="password" id="confirm-password" th:field="*{confirmPassword}">
+
 
             <button type="submit" class="login-button">Sign up</button>
         </div>
@@ -35,6 +38,11 @@
         <p>🐾 Powered by PawPal 🐾</p>
         Already have an account? <a th:href="@{/auth/login}">Log in</a>
     </div>
+
+    <div th:if="${errorMessage}" class="error">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
 </div>
 </body>
 </html>

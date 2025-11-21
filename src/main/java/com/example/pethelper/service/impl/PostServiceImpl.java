@@ -372,4 +372,23 @@ public class PostServiceImpl implements PostService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<PostDto> getPostsByTag(String tagName, String currentUserEmail) {
+        // ✅ Используем правильное имя метода
+        List<Post> posts = postRepository.findByTags_NameOrderByPostDateDesc(tagName);
+        // или: List<Post> posts = postRepository.findByTags_NameOrderByPostDateDesc(tagName);
+
+        User currentUser = userRepository.findByEmail(currentUserEmail).orElse(null);
+
+        // Конвертируем в DTO и устанавливаем информацию о лайках
+        return posts.stream().map(post -> {
+            PostDto dto = PostMapper.mapToPostDto(post);
+            dto.setLikeCount(post.getLikeCount());
+            if (currentUser != null) {
+                dto.setLikedByCurrentUser(post.isLikedByUser(currentUser));
+            }
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
 }

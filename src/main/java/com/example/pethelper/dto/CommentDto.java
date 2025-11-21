@@ -16,5 +16,6 @@ public class CommentDto {
     private String userName;
     private Long postId;
     private int likesCount;
+    private boolean likedByCurrentUser;
 }
 

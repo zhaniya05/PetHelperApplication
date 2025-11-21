@@ -7,7 +7,7 @@ import com.example.pethelper.entity.User;
 
 public class CommentMapper {
 
-    public static CommentDto mapToCommentDto(Comment comment) {
+    public static CommentDto mapToCommentDto(Comment comment, Long currentUserId) {
         CommentDto dto = new CommentDto();
         dto.setCommentId(comment.getCommentId());
         dto.setCommentContent(comment.getCommentContent());
@@ -16,6 +16,11 @@ public class CommentMapper {
         dto.setUserName(comment.getUser().getUserName());
         dto.setPostId(comment.getPost().getPostId());
         dto.setLikesCount(comment.getLikesCount());
+
+        boolean isLiked = currentUserId != null &&
+                comment.getLikes().stream()
+                        .anyMatch(like -> like.getUser().getUserId().equals(currentUserId));
+        dto.setLikedByCurrentUser(isLiked);
 
         return dto;
     }

@@ -31,5 +31,6 @@ public class UserDto {
 
     private String profilePicture;
 
+    private String confirmPassword;
 
 }

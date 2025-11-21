@@ -51,34 +51,71 @@ public class TagServiceImpl implements TagService {
         return new HashSet<>(tagRepository.findAll());
     }
 
+//    @Override
+//    @Transactional
+//    public void followTag(UserDto user, String name) {
+//        Tag tag = tagRepository.findByNameIgnoreCase(name)
+//                .orElseThrow(() -> new RuntimeException("Tag not found"));
+//        User user1 = UserMapper.mapToUser(user);
+//        user1.getFollowedTags().add(tag);
+//        userRepository.save(user1);
+//    }
+//
+//    @Override
+//    @Transactional
+//    public void unfollowTag(UserDto user, String name) {
+//        Tag tag = tagRepository.findByNameIgnoreCase(name)
+//                .orElseThrow(() -> new RuntimeException("Tag not found"));
+//
+//        User user1 = UserMapper.mapToUser(user);
+//        user1.getFollowedTags().remove(tag);
+//        userRepository.save(user1);
+//    }
+
     @Override
     @Transactional
-    public void followTag(UserDto user, String name) {
+    public void followTag(UserDto userDto, String name) {
         Tag tag = tagRepository.findByNameIgnoreCase(name)
                 .orElseThrow(() -> new RuntimeException("Tag not found"));
-        User user1 = UserMapper.mapToUser(user);
-        user1.getFollowedTags().add(tag);
-        userRepository.save(user1);
+
+        User user = userRepository.findById(userDto.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.getFollowedTags().add(tag);
     }
 
     @Override
     @Transactional
-    public void unfollowTag(UserDto user, String name) {
+    public void unfollowTag(UserDto userDto, String name) {
         Tag tag = tagRepository.findByNameIgnoreCase(name)
                 .orElseThrow(() -> new RuntimeException("Tag not found"));
 
-        User user1 = UserMapper.mapToUser(user);
-        user1.getFollowedTags().remove(tag);
-        userRepository.save(user1);
+        User user = userRepository.findById(userDto.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.getFollowedTags().remove(tag);
     }
 
-    @Override
-    public boolean isUserFollowingTag(UserDto user, String name) {
-        User user1 = UserMapper.mapToUser(user);
 
-        return user1.getFollowedTags().stream()
+//    @Override
+//    public boolean isUserFollowingTag(UserDto user, String name) {
+//        User user1 = UserMapper.mapToUser(user);
+//
+//        return user1.getFollowedTags().stream()
+//                .anyMatch(tag -> tag.getName().equals(name));
+//    }
+
+
+    @Override
+    public boolean isUserFollowingTag(UserDto userDto, String name) {
+        User user = userRepository.findById(userDto.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return user.getFollowedTags()
+                .stream()
                 .anyMatch(tag -> tag.getName().equals(name));
     }
+
 
     @Override
     public Set<Tag> getFollowedTags(Long userId) {

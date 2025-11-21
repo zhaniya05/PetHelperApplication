@@ -35,6 +35,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto register(UserDto userDto) {
+        if (userDto == null) {
+            throw new IllegalArgumentException("UserDto cannot be null");
+        }
+
         if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
             throw new RuntimeException("Email already registered");
         }

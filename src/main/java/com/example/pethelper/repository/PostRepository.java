@@ -19,4 +19,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Long countByPostDateAfter(LocalDate localDate);
 
+    List<Post> findByTags_NameOrderByPostDateDesc(String name);
+
 }

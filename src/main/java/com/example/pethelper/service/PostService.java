@@ -20,5 +20,5 @@ public interface PostService {
 //    PostDto removeLike(Long postId);
     PostDto toggleLike(Long postId, String username);
     List<PostDto> getVisiblePosts(UserDto viewer, UserDto postOwner);
-
+    List<PostDto> getPostsByTag(String tagName, String currentUserEmail);
 }

@@ -22,7 +22,7 @@ public class AuthController {
 
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
-        model.addAttribute("user", new UserDto());
+        model.addAttribute("userDto", new UserDto());
         return "register";
     }
 
@@ -34,14 +34,36 @@ public class AuthController {
     }
 
 
+//    @PostMapping("/register")
+//    public String register(@ModelAttribute("user") UserDto userDto, Model model) {
+//        try {
+//            UserDto savedUser = userService.register(userDto);
+//            model.addAttribute("successMessage", "Registration successful! Please log in.");
+//            return "login";
+//        } catch (RuntimeException e) {
+//           // model.addAttribute("errorMessage", e.getMessage());
+//            model.addAttribute("errorMessage", "Error: " + e.getMessage());
+//            return "register";
+//        }
+//    }
+
     @PostMapping("/register")
-    public String register(@ModelAttribute("user") UserDto userDto, Model model) {
+    public String register(@ModelAttribute("userDto") UserDto userDto, Model model) {
+        System.out.println("Received userDto: " + userDto);
+        System.out.println("Is userDto null? " + (userDto == null));
+
+        if (userDto == null) {
+            model.addAttribute("errorMessage", "User data is null - form binding failed");
+            return "register";
+        }
+
         try {
-            UserDto savedUser = userService.register(userDto);
-            model.addAttribute("successMessage", "Registration successful! Please log in.");
-            return "login";
-        } catch (RuntimeException e) {
-            model.addAttribute("errorMessage", e.getMessage());
+            userService.register(userDto);
+            return "redirect:/auth/login";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("errorMessage", "Error: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+            model.addAttribute("userDto", userDto);
             return "register";
         }
     }

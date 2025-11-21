@@ -2,11 +2,9 @@ package com.example.pethelper.service.impl;
 
 
 import com.example.pethelper.dto.CommentDto;
-import com.example.pethelper.entity.ActivityType;
-import com.example.pethelper.entity.Comment;
-import com.example.pethelper.entity.Post;
-import com.example.pethelper.entity.User;
+import com.example.pethelper.entity.*;
 import com.example.pethelper.mapper.CommentMapper;
+import com.example.pethelper.repository.CommentLikeRepository;
 import com.example.pethelper.repository.CommentRepository;
 import com.example.pethelper.repository.PostRepository;
 import com.example.pethelper.repository.UserRepository;
@@ -26,17 +24,18 @@ public class CommentServiceImpl implements CommentService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final UserActivityService userActivityService;
+    private final CommentLikeRepository commentLikeRepository;
 
     @Override
-    public List<CommentDto> getCommentsByPost(Long postId) {
+    public List<CommentDto> getCommentsByPost(Long postId, Long currentUserId) {
         return commentRepository.findByPost_PostId(postId)
                 .stream()
-                .map(CommentMapper::mapToCommentDto)
+                .map(comment -> CommentMapper.mapToCommentDto(comment, currentUserId))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public CommentDto addComment(Long postId, CommentDto dto, String email) {
+    public CommentDto addComment(Long postId, CommentDto dto, String email, Long currentUserId) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         Post post = postRepository.findById(postId)
@@ -45,7 +44,6 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = CommentMapper.mapToComment(dto, user, post);
         Comment savedComment = commentRepository.save(comment);
 
-        // ✅ ДОБАВЬТЕ ЛОГИРОВАНИЕ СОЗДАНИЯ КОММЕНТАРИЯ
         userActivityService.logActivity(
                 user,
                 ActivityType.COMMENT_CREATED,
@@ -54,7 +52,7 @@ public class CommentServiceImpl implements CommentService {
                 savedComment.getCommentId()
         );
 
-        return CommentMapper.mapToCommentDto(savedComment);
+        return CommentMapper.mapToCommentDto(savedComment, currentUserId);
     }
     @Override
     public void deleteComment(Long commentId, String email) {
@@ -77,6 +75,7 @@ public class CommentServiceImpl implements CommentService {
         commentRepository.delete(comment);
     }
 
+
     @Override
     public void likeComment(Long commentId, String email) {
         Comment comment = commentRepository.findById(commentId)
@@ -84,6 +83,15 @@ public class CommentServiceImpl implements CommentService {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (commentLikeRepository.existsByUser_UserIdAndComment_CommentId(user.getUserId(), commentId)) {
+            throw new RuntimeException("You have already liked this comment");
+        }
+
+        CommentLike like = new CommentLike();
+        like.setUser(user);
+        like.setComment(comment);
+        commentLikeRepository.save(like);
 
         comment.setLikesCount(comment.getLikesCount() + 1);
         commentRepository.save(comment);
@@ -95,5 +103,20 @@ public class CommentServiceImpl implements CommentService {
                 "COMMENT",
                 commentId
         );
+    }
+
+    public void unlikeComment(Long commentId, String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        CommentLike like = commentLikeRepository.findByUser_UserIdAndComment_CommentId(user.getUserId(), commentId)
+                .orElseThrow(() -> new RuntimeException("Like not found"));
+
+        commentLikeRepository.delete(like);
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+        comment.setLikesCount(Math.max(0, comment.getLikesCount() - 1));
+        commentRepository.save(comment);
     }
 }

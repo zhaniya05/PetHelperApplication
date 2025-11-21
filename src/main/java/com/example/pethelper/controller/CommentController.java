@@ -27,25 +27,27 @@ public class CommentController {
                               Model model,
                               Authentication authentication) {
 
-        List<CommentDto> comments = commentService.getCommentsByPost(postId);
-        model.addAttribute("comments", comments);
-        model.addAttribute("postId", postId);
+        Long currentUserId = null;
 
         if (authentication != null && authentication.isAuthenticated()) {
             try {
                 UserDto currentUser = userService.findByEmail(authentication.getName());
                 model.addAttribute("user", currentUser);
                 model.addAttribute("currentUserId", currentUser.getUserId());
+                currentUserId = currentUser.getUserId();
             } catch (Exception e) {
-
                 model.addAttribute("user", null);
                 model.addAttribute("currentUserId", null);
             }
         } else {
-
             model.addAttribute("user", null);
             model.addAttribute("currentUserId", null);
         }
+
+        // Pass currentUserId to service to check likes
+        List<CommentDto> comments = commentService.getCommentsByPost(postId, currentUserId);
+        model.addAttribute("comments", comments);
+        model.addAttribute("postId", postId);
 
         return "comments";
     }
@@ -63,7 +65,18 @@ public class CommentController {
         CommentDto commentDTO = new CommentDto();
         commentDTO.setCommentContent(commentContent);
 
-        commentService.addComment(postId, commentDTO, authentication.getName());
+        // Get current user ID
+        Long currentUserId = null;
+        if (authentication != null && authentication.isAuthenticated()) {
+            try {
+                UserDto currentUser = userService.findByEmail(authentication.getName());
+                currentUserId = currentUser.getUserId();
+            } catch (Exception e) {
+                System.out.println("error");
+            }
+        }
+
+        commentService.addComment(postId, commentDTO, authentication.getName(), currentUserId);
 
         return "redirect:/posts/" + postId + "/comments";
     }
@@ -90,7 +103,31 @@ public class CommentController {
             return "redirect:/login";
         }
 
-        commentService.likeComment(commentId, authentication.getName());
+        try {
+            commentService.likeComment(commentId, authentication.getName());
+        } catch (RuntimeException e) {
+            commentService.unlikeComment(commentId, authentication.getName());
+        }
+
+        return "redirect:/posts/" + postId + "/comments";
+    }
+
+    // Add unlike endpoint
+    @PostMapping("/{commentId}/unlike")
+    public String unlikeComment(@PathVariable Long postId,
+                                @PathVariable Long commentId,
+                                Authentication authentication) {
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "redirect:/login";
+        }
+
+        try {
+            commentService.unlikeComment(commentId, authentication.getName());
+        } catch (RuntimeException e) {
+            commentService.likeComment(commentId, authentication.getName());
+        }
+
         return "redirect:/posts/" + postId + "/comments";
     }
 
