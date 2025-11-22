@@ -1,53 +1,28 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>My Pets</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 </head>
 <body>
-<!--<nav class="navbar">-->
-<!--    <div class="nav-container">-->
-<!--        <a th:href="@{/pets/main}" class="nav-brand">FurEver</a>-->
-<!--        <div class="nav-profile">-->
-<!--            <a th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">-->
-<!--                <img th:src="@{${user.profilePicture != null ? user.profilePicture : '/css/images/default-avatar.jpg'}}"-->
-<!--                     alt="Profile"-->
-<!--                     class="avatar"-->
-<!--                     onerror="this.src='/css/images/default-avatar.jpg'">-->
-<!--            </a>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</nav>-->
-
 <nav class="navbar">
     <div class="nav-container">
         <a th:href="@{/posts}" class="nav-brand">Posts</a>
         <a th:href="@{/pets/main}" class="nav-brand">PawPal</a>
         <a th:href="@{/api/users/main}" class="nav-brand">Users</a>
 
-
-        <a
-                th:href="@{/statistics}"
-                class="nav-brand admin-btn">
+        <a th:href="@{/statistics}" class="nav-brand admin-btn">
             <i class="fa-solid fa-chart-bar"></i> Statistics
         </a>
 
-<!--        <div class="notif-icon">-->
-<!--            <a th:href="@{/follow/requests}" title="Follow Requests">-->
-<!--                <i class="fa-solid fa-bell" style="font-size: 20px; color: pink;"></i>-->
-<!--                <span th:if="${pendingRequestsCount > 0}" th:text="${pendingRequestsCount}" class="notif-badge"></span>-->
-<!--            </a>-->
-<!--        </div>-->
         <div class="notif-icon">
             <a th:href="@{/notifications}" title="Notifications">
                 <i class="fa-solid fa-bell" style="font-size: 20px; color: pink;"></i>
                 <span th:if="${#lists.size(requests) + #lists.size(postNotifications) > 0}"
-                       th:text="${#lists.size(requests) + #lists.size(postNotifications)}"
-                       class="notif-badge"></span>
+                      th:text="${#lists.size(requests) + #lists.size(postNotifications)}"
+                      class="notif-badge"></span>
             </a>
         </div>
         <div class="nav-profile">
@@ -61,133 +36,425 @@
     </div>
 </nav>
 
-<div class="container my-2">
-    <div class="header-container">
-        <h1>My Pets</h1>
+<div class="container">
+    <!-- Заголовок и кнопка добавления -->
+    <div class="pets-header">
+        <div class="header-content">
+            <h1><i class="fa-solid fa-paw" style="color: #ff6390; margin-right: 15px;"></i>My Pets</h1>
+            <p class="pets-subtitle">Manage your furry friends</p>
+        </div>
+        <a th:href="@{/pets/add/pet}" class="btn btn-primary add-pet-btn">
+            <i class="fa-solid fa-plus"></i> Add New Pet
+        </a>
     </div>
 
-    <a th:href = "@{/pets/add/pet}" class="btn btn-primary btn-sm mb-3">Add Pet</a>
-
-
-    <form method="get" th:action="@{/pets/main}">
+    <!-- Фильтры -->
+    <div class="filters-container">
         <form th:action="@{/pets/main}" method="get" class="filter-form">
-            <div class="filters">
-                <input type="text" name="keyword" placeholder="Search by name or breed"
-                       th:value="${keyword}" class="filter-input"/>
+            <div class="filter-group">
+                <div class="filter-field">
+                    <label><i class="fa-solid fa-magnifying-glass"></i> Search</label>
+                    <input type="text" name="keyword" placeholder="Search by name or breed"
+                           th:value="${keyword}" class="filter-input">
+                </div>
 
-                <select name="type" class="filter-select">
-                    <option value="">All Types</option>
-                    <option value="Dog" th:selected="${type == 'Dog'}">Dog</option>
-                    <option value="Cat" th:selected="${type == 'Cat'}">Cat</option>
-                    <option value="Fish" th:selected="${type == 'Fish'}">Fish</option>
-                    <option value="Cow" th:selected="${type == 'Cow'}">Cow</option>
-                    <option value="Horse" th:selected="${type == 'Horse'}">Horse</option>
-                    <option value="Snake" th:selected="${type == 'Snake'}">Snake</option>
-                    <option value="Insect" th:selected="${type == 'Insect'}">Insect</option>
-                    <option value="Hamster" th:selected="${type == 'Hamster'}">Hamster</option>
-                    <option value="Rabbit" th:selected="${type == 'Rabbit'}">Rabbit</option>
-                    <option value="Parrot" th:selected="${type == 'Parrot'}">Parrot</option>
-                    <option value="Other" th:selected="${type == 'Other'}">Other</option>
-                </select>
+                <div class="filter-field">
+                    <label><i class="fa-solid fa-cat"></i> Type</label>
+                    <select name="type" class="filter-select">
+                        <option value="">All Types</option>
+                        <option value="Dog" th:selected="${type == 'Dog'}">🐕 Dog</option>
+                        <option value="Cat" th:selected="${type == 'Cat'}">🐱 Cat</option>
+                        <option value="Fish" th:selected="${type == 'Fish'}">🐠 Fish</option>
+                        <option value="Cow" th:selected="${type == 'Cow'}">🐄 Cow</option>
+                        <option value="Horse" th:selected="${type == 'Horse'}">🐎 Horse</option>
+                        <option value="Snake" th:selected="${type == 'Snake'}">🐍 Snake</option>
+                        <option value="Insect" th:selected="${type == 'Insect'}">🐛 Insect</option>
+                        <option value="Hamster" th:selected="${type == 'Hamster'}">🐹 Hamster</option>
+                        <option value="Rabbit" th:selected="${type == 'Rabbit'}">🐰 Rabbit</option>
+                        <option value="Parrot" th:selected="${type == 'Parrot'}">🦜 Parrot</option>
+                        <option value="Other" th:selected="${type == 'Other'}">🐾 Other</option>
+                    </select>
+                </div>
 
+                <div class="filter-field">
+                    <label><i class="fa-solid fa-sort"></i> Sort By</label>
+                    <select name="sort" class="filter-select">
+                        <option value="">Default</option>
+                        <option value="name" th:selected="${sort == 'name'}">Name (A-Z)</option>
+                        <option value="age" th:selected="${sort == 'age'}">Age (youngest first)</option>
+                        <option value="birthday" th:selected="${sort == 'birthday'}">Birthday (newest first)</option>
+                    </select>
+                </div>
 
-                <select name="sort" class="filter-select">
-                    <option value="">Sort by</option>
-                    <option value="name" th:selected="${sort == 'name'}">Name (A-Z)</option>
-                    <option value="age" th:selected="${sort == 'age'}">Age (youngest first)</option>
-                    <option value="birthday" th:selected="${sort == 'birthday'}">Birthday (newest first)</option>
-                </select>
-
-                <button type="submit" class="btn btn-success">
-                    <i class="fas fa-search"></i> Apply
-                </button>
-
-                <a th:href="@{/pets/main}" class="btn btn-secondary">Reset</a>
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-filter"></i> Apply Filters
+                    </button>
+                    <a th:href="@{/pets/main}" class="btn btn-secondary">
+                        <i class="fa-solid fa-rotate-left"></i> Reset
+                    </a>
+                </div>
             </div>
         </form>
-        <table class="table table-bordered table-hover">
-            <thead class="table-dark">
-            <tr>
-                <th>Pet Id</th>
-                <th>Pet Name</th>
-                <th>Pet Age</th>
-                <th>Pet Birthday</th>
-                <th>Pet Type</th>
-                <th>Pet Breed</th>
-                <th>Pet Health Condition</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="pet : ${listPets}">
-                <td th:text="${pet?.petId}"></td>
-                <td th:text="${pet?.petName}"></td>
-                <td th:text="${pet?.petAge}"></td>
-                <td th:text="${pet?.petBd}"></td>
-                <td th:text="${pet?.petType}"></td>
-                <td th:text="${pet?.petBreed}"></td>
-                <td th:text="${pet?.petHealth}"></td>
-                <td>
-                    <!-- Edit -->
-                    <a th:href="@{/pets/edit/{id}(id=${pet.petId})}"
-                       class="btn btn-sm btn-warning">
-                        <i class="fas fa-edit"></i> Edit
-                    </a>
+    </div>
 
-                    <!-- Delete -->
-<!--                    <a th:href="@{/pets/delete/{id}(id=${pet.petId})}"-->
-<!--                       class="btn btn-sm btn-danger"-->
-<!--                       onclick="return confirm('Are you sure you want to delete this pet?')">-->
-<!--                        <i class="fas fa-trash-alt"></i> Delete-->
-<!--                    </a>-->
-<!--                    <form th:action="@{/pets/delete/{id}(id=${pet.petId})}" method="post" style="display: inline;">-->
-<!--                        <button type="submit" class="btn btn-primary"-->
-<!--                                onclick="return confirm('Are you sure you want to delete this pet?')">-->
-<!--                            Delete-->
-<!--                        </button>-->
-<!--                    </form>-->
+    <!-- Карточки питомцев -->
+    <div class="pets-grid" th:if="${not #lists.isEmpty(listPets)}">
+        <div th:each="pet : ${listPets}" class="pet-card">
+            <div class="pet-header">
+                <div class="pet-avatar" th:data-type="${pet.petType}">
+                    <i class="fa-solid fa-paw pet-icon"></i>
+                </div>
+                <div class="pet-info">
+                    <h3 class="pet-name" th:text="${pet.petName}"></h3>
+                    <span class="pet-breed" th:text="${pet.petBreed}"></span>
+                </div>
+            </div>
 
-<!--                    <form th:action="@{/pets/delete/{id}(id=${pet.petId})}" method="post" style="display:inline;">-->
-<!--                        <button type="submit" class="btn btn-danger"-->
-<!--                                onclick="return confirm('Are you sure you want to delete this pet?')">-->
-<!--                            <i class="fas fa-trash-alt"></i> Delete-->
-<!--                        </button>-->
-<!--                    </form>-->
+            <div class="pet-details">
+                <div class="detail-item">
+                    <i class="fa-solid fa-cake-candles"></i>
+                    <span th:text="${pet.petAge} + ' years old'"></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fa-solid fa-calendar"></i>
+                    <span th:text="${pet.petBd}"></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                    <span th:text="${pet.petHealth}"></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fa-solid fa-tag"></i>
+                    <span th:text="${pet.petType}"></span>
+                </div>
+            </div>
 
-                    <a href="#" onclick="confirmDelete(this)" class="btn btn-primary" th:data-url="@{/pets/delete/{id}(id=${pet.petId})}">Delete</a>
+            <div class="pet-actions">
+                <a th:href="@{/pets/edit/{id}(id=${pet.petId})}"
+                   class="btn-action btn-edit">
+                    <i class="fa-solid fa-edit"></i> Edit
+                </a>
+                <a th:href="@{/pets/{petId}/activities(petId=${pet.petId})}"
+                   class="btn-action btn-track">
+                    <i class="fa-solid fa-chart-line"></i> Track
+                </a>
+                <button class="btn-action btn-delete"
+                        th:data-url="@{/pets/delete/{id}(id=${pet.petId})}"
+                        onclick="confirmDelete(this)">
+                    <i class="fa-solid fa-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
 
-
-                    <!--                    <form th:action="@{/pets/delete/{id}(id=${pet.petId})}" method="post" style="display:inline;">-->
-<!--                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
-<!--                        <button type="submit" class="btn btn-danger"-->
-<!--                                onclick="return confirm('Are you sure you want to delete this pet?')">-->
-<!--                            <i class="fas fa-trash-alt"></i> Delete-->
-<!--                        </button>-->
-<!--                    </form>-->
-
-
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </form>
+    <!-- Сообщение если питомцев нет -->
+    <div th:if="${#lists.isEmpty(listPets)}" class="no-pets">
+        <div class="no-pets-content">
+            <i class="fa-solid fa-paw" style="font-size: 64px; color: #ffb7ce; margin-bottom: 20px;"></i>
+            <h3>No pets yet</h3>
+            <p>Start by adding your first furry friend!</p>
+            <a th:href="@{/pets/add/pet}" class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i> Add Your First Pet
+            </a>
+        </div>
+    </div>
 </div>
 
-<script>
-    // function confirmDelete(element) {
-    //     const url = element.getAttribute("th:data-url");
-    //     if (confirm("Are you sure you want to delete this pet?")) {
-    //         window.location.href = url;
-    //     }
-    // }
+<style>
+    .container {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 0 20px;
+    }
 
-    function confirmDelete(element) {
-        const url = element.getAttribute("data-url");
-        if (confirm("Are you sure you want to delete this pet?")) {
-            window.location.href = url;
+    /* Заголовок */
+    .pets-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #fff5f8;
+    }
+
+    .header-content h1 {
+        color: #ff6390;
+        margin: 0;
+        font-size: 2.5em;
+        display: flex;
+        align-items: center;
+    }
+
+    .pets-subtitle {
+        color: #666;
+        margin: 5px 0 0 0;
+        font-size: 16px;
+    }
+    .btn-track {
+        background: linear-gradient(135deg, #96f2d7, #63e6be);
+        color: white;
+    }
+
+    .btn-track:hover {
+        background: linear-gradient(135deg, #63e6be, #38d9a9);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(99, 230, 190, 0.3);
+    }
+
+    .add-pet-btn {
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    /* Сетка карточек */
+    .pets-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 25px;
+        margin-top: 30px;
+    }
+
+    /* Карточка питомца */
+    .pet-card {
+        background: linear-gradient(135deg, #ffffff, #fff5f8);
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(255, 107, 149, 0.1);
+        border: 2px solid #fff5f8;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .pet-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(255, 107, 149, 0.2);
+        border-color: #ffb7ce;
+    }
+
+    .pet-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, #ffb7ce, #ff8fab);
+    }
+
+    /* Шапка карточки */
+    .pet-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .pet-avatar {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #ffb7ce, #ff8fab);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+    }
+
+    .pet-icon {
+        font-size: 24px;
+        color: white;
+    }
+
+    .pet-info h3 {
+        margin: 0;
+        color: #ff6390;
+        font-size: 1.4em;
+        font-weight: bold;
+    }
+
+    .pet-breed {
+        color: #666;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    /* Детали питомца */
+    .pet-details {
+        margin-bottom: 20px;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+        color: #555;
+        font-size: 14px;
+    }
+
+    .detail-item i {
+        color: #ff8fab;
+        width: 16px;
+        text-align: center;
+    }
+
+    /* Кнопки действий */
+    .pet-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+    }
+
+    .btn-action {
+        flex: 1;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #a5d8ff, #74c0fc);
+        color: white;
+    }
+
+    .btn-edit:hover {
+        background: linear-gradient(135deg, #74c0fc, #4dabf7);
+        transform: translateY(-2px);
+    }
+
+    .btn-delete {
+        background: linear-gradient(135deg, #ffa8a8, #ff8787);
+        color: white;
+    }
+
+    .btn-delete:hover {
+        background: linear-gradient(135deg, #ff8787, #ff6b6b);
+        transform: translateY(-2px);
+    }
+
+    /* Сообщение об отсутствии питомцев */
+    .no-pets {
+        text-align: center;
+        padding: 60px 30px;
+        background: linear-gradient(135deg, #ffffff, #fff5f8);
+        border-radius: 20px;
+        border: 2px dashed #ffb7ce;
+        margin-top: 30px;
+    }
+
+    .no-pets-content h3 {
+        color: #ff6390;
+        margin-bottom: 10px;
+    }
+
+    .no-pets-content p {
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .pets-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .pets-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-group {
+            flex-direction: column;
+        }
+
+        .pet-actions {
+            flex-direction: column;
         }
     }
 
+    /* Анимации */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .pet-card {
+        animation: fadeInUp 0.6s ease-out;
+    }
+</style>
+
+<script>
+    function confirmDelete(element) {
+        const url = element.getAttribute("data-url");
+        if (confirm("Are you sure you want to delete this pet? This action cannot be undone.")) {
+            // Создаем скрытую форму для отправки POST запроса
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = url;
+
+            // Добавляем CSRF токен
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_csrf';
+            csrfInput.value = document.querySelector('input[name="_csrf"]') ? document.querySelector('input[name="_csrf"]').value : '';
+            form.appendChild(csrfInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    // Простая функция для обновления иконок на основе типа питомца
+    document.addEventListener('DOMContentLoaded', function() {
+        const petAvatars = document.querySelectorAll('.pet-avatar');
+        petAvatars.forEach(function(avatar) {
+            const petType = avatar.getAttribute('data-type');
+            const icon = avatar.querySelector('.pet-icon');
+
+            if (petType && icon) {
+                const iconClass = getPetIconClass(petType);
+                icon.className = 'fa-solid ' + iconClass + ' pet-icon';
+            }
+        });
+    });
+
+    function getPetIconClass(petType) {
+        const type = petType.toLowerCase();
+        if (type.includes('dog')) return 'fa-dog';
+        if (type.includes('cat')) return 'fa-cat';
+        if (type.includes('fish')) return 'fa-fish';
+        if (type.includes('cow')) return 'fa-cow';
+        if (type.includes('horse')) return 'fa-horse';
+        if (type.includes('snake')) return 'fa-staff-snake';
+        if (type.includes('insect')) return 'fa-bug';
+        if (type.includes('hamster')) return 'fa-hamster';
+        if (type.includes('rabbit')) return 'fa-rabbit';
+        if (type.includes('parrot')) return 'fa-dove';
+        return 'fa-paw';
+    }
 </script>
 
 </body>

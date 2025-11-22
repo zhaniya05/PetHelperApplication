@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Активности питомца</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-container">
+    <a th:href="@{/posts}" class="nav-brand">Posts</a>
+    <a th:href="@{/pets/main}" class="nav-brand">PawPal</a>
+    <a th:href="@{/api/users/main}" class="nav-brand">Users</a>
+
+    <div class="notif-icon">
+      <a th:href="@{/notifications}" title="Notifications">
+        <i class="fa-solid fa-bell" style="font-size: 20px; color: pink;"></i>
+        <span th:if="${#lists.size(requests) + #lists.size(postNotifications) > 0}"
+              th:text="${#lists.size(requests) + #lists.size(postNotifications)}"
+              class="notif-badge"></span>
+      </a>
+    </div>
+
+    <div class="nav-profile">
+      <a th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">
+        <img th:src="@{${user.profilePicture != null ? user.profilePicture : '/css/images/default-avatar.jpg'}}"
+             alt="Profile"
+             class="avatar"
+             onerror="this.src='/css/images/default-avatar.jpg'">
+      </a>
+    </div>
+  </div>
+</nav>
+
+<h2 th:text="'Schedule for ' + ${pet.petName}"></h2>
+
+<form th:action="@{|/pets/${pet.petId}/activities/add|}" method="post">
+  <label>Date:</label>
+  <input type="date" name="date" required>
+
+  <label>Time:</label>
+  <input type="time" name="time" required>
+
+  <label>Note:</label>
+  <input type="text" name="note" required>
+
+  <button type="submit">Add Activity</button>
+</form>
+
+<hr>
+
+<h3>Activities</h3>
+<table>
+  <thead>
+  <tr>
+    <th>Date</th>
+    <th>Time</th>
+    <th>Note</th>
+    <th>Delete</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr th:each="a : ${activities}">
+    <td th:text="${a.date}"></td>
+    <td th:text="${a.time}"></td>
+    <td th:text="${a.note}"></td>
+    <td>
+      <a th:href="@{|/pets/${pet.petId}/activities/delete/${a.id}|}">
+        Delete
+      </a>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+
+</body>
+</html>

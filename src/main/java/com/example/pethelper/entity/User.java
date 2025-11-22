@@ -32,6 +32,9 @@ public class User {
 
     private String role = "ROLE_USER";
 
+    private Integer experiencePoints = 0;
+    private Integer level = 1;
+
    @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
    List<Pet> pets;
 
@@ -62,4 +65,77 @@ public class User {
     )
     private Set<Tag> followedTags = new HashSet<>();
 
+
+    // entity/User.java
+    // entity/User.java
+    public void addExperience(int points) {
+        // ✅ ОБЕСПЕЧИВАЕМ ИНИЦИАЛИЗАЦИЮ ПЕРЕД ИСПОЛЬЗОВАНИЕМ
+        if (this.experiencePoints == null) {
+            this.experiencePoints = 0;
+        }
+        if (this.level == null) {
+            this.level = 1;
+        }
+
+        this.experiencePoints += points;
+        checkLevelUp(); // ✅ ВЫЗЫВАЕМ ПРОВЕРКУ УРОВНЯ
+    }
+
+    // ✅ ЭТОТ МЕТОД ДОЛЖЕН БЫТЬ В КЛАССЕ User
+    private void checkLevelUp() {
+        while (canLevelUp()) {
+            levelUp();
+        }
+    }
+
+    private boolean canLevelUp() {
+        if (this.level >= 50) return false; // Максимальный уровень
+        return this.experiencePoints >= getXpRequiredForCurrentLevel();
+    }
+
+    private void levelUp() {
+        if (this.level >= 50) return; // Нельзя повысить выше 50
+
+        int xpUsed = getXpRequiredForCurrentLevel();
+        this.experiencePoints -= xpUsed;
+        this.level++;
+        System.out.println("User " + userName + " reached level " + level + "! Used " + xpUsed + " XP");
+
+        // ✅ ПРОВЕРЯЕМ, МОЖЕТ БЫТЬ МОЖНО ПОВЫСИТЬ ЕЩЕ РАЗ (если XP много)
+        checkLevelUp(); // РЕКУРСИВНЫЙ ВЫЗОВ ДЛЯ МНОГОКРАТНОГО ПОВЫШЕНИЯ
+    }
+
+    public int getXpRequiredForCurrentLevel() {
+        if (this.level == null || this.level >= 50) return 0;
+        return 50 + 15 * (this.level - 1);
+    }
+
+    // ✅ ПРОГРЕСС ТЕКУЩЕГО УРОВНЯ
+    @Transient
+    public double getLevelProgress() {
+        if (this.level == null || this.experiencePoints == null || this.level >= 50) {
+            return 100.0;
+        }
+
+        int xpRequired = getXpRequiredForCurrentLevel();
+        double progress = ((double) this.experiencePoints / xpRequired) * 100;
+        return Math.min(100, Math.max(0, progress));
+    }
+
+    // ✅ ОСТАЛОСЬ XP ДО СЛЕДУЮЩЕГО УРОВНЯ
+    @Transient
+    public int getXpToNextLevel() {
+        if (this.level == null || this.experiencePoints == null || this.level >= 50) {
+            return 0;
+        }
+
+        int xpRequired = getXpRequiredForCurrentLevel();
+        return Math.max(0, xpRequired - this.experiencePoints);
+    }
+
+    // ✅ МАКСИМАЛЬНЫЙ УРОВЕНЬ
+    @Transient
+    public boolean isMaxLevel() {
+        return this.level != null && this.level >= 50;
+    }
 }

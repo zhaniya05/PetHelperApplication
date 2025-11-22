@@ -41,6 +41,7 @@ public class PostServiceImpl implements PostService {
     private final PostLikeRepository postLikeRepository;
     private final UserActivityService userActivityService;
     private final TagService tagService;
+    private final ExperienceService experienceService;
 
     private final FollowService followService;
 
@@ -262,7 +263,7 @@ public class PostServiceImpl implements PostService {
                 "POST",
                 savedPost.getPostId()
         );
-
+        experienceService.awardExperience(user.getUserId(), "POST_CREATED");
         // 6️⃣ Возвращаем DTO
         return PostMapper.mapToPostDto(savedPost);
     }
@@ -344,6 +345,8 @@ public class PostServiceImpl implements PostService {
                     "POST",
                     postId
             );
+            User postAuthor = post.getUser();
+            experienceService.awardExperience(postAuthor.getUserId(), "POST_LIKED");
         }
 
         return PostMapper.mapToPostDto(post);

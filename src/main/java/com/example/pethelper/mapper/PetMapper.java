@@ -4,6 +4,7 @@ import com.example.pethelper.dto.PetDto;
 import com.example.pethelper.entity.Pet;
 import com.example.pethelper.entity.User;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class PetMapper {

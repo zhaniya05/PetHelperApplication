@@ -29,6 +29,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ExperienceService experienceService;
     //private final String uploadDir = "C:\\Users\\baite\\IdeaProjects\\PetHelper\\src\\main\\resources\\static\\css\\uploads\\";
     private final String uploadDir = "C:\\Users\\baite\\IdeaProjects\\PetHelper\\uploads\\";
 
@@ -83,6 +84,9 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
 
+        // ✅ СОХРАНЯЕМ СОСТОЯНИЕ ПРОФИЛЯ ДО ОБНОВЛЕНИЯ
+        boolean wasProfileIncomplete = isProfileIncomplete(user);
+
         if (userDto.getUserName() != null) {
             user.setUserName(userDto.getUserName());
         }
@@ -104,8 +108,25 @@ public class UserServiceImpl implements UserService {
         }
 
         User savedUser = userRepository.save(user);
+
+        // ✅ НАЧИСЛЯЕМ ОПЫТ ЕСЛИ ПРОФИЛЬ БЫЛ НЕЗАПОЛНЕН И СТАЛ ЗАПОЛНЕННЫМ
+        if (wasProfileIncomplete && isProfileCompleted(savedUser)) {
+            experienceService.awardExperience(id, "PROFILE_COMPLETED");
+        }
+
         return UserMapper.mapToUserDto(savedUser);
     }
+
+    private boolean isProfileIncomplete(User user) {
+        return user.getUserName() == null || user.getUserName().isEmpty() ||
+                user.getProfilePicture() == null || user.getProfilePicture().isEmpty();
+    }
+
+    private boolean isProfileCompleted(User user) {
+        return user.getUserName() != null && !user.getUserName().isEmpty() &&
+                user.getProfilePicture() != null && !user.getProfilePicture().isEmpty();
+    }
+
 
     private String saveAvatar(MultipartFile avatarFile, Long userId) throws IOException {
         // Создаем директорию для аватаров, если не существует

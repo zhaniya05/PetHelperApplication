@@ -25,6 +25,7 @@ public class CommentServiceImpl implements CommentService {
     private final PostRepository postRepository;
     private final UserActivityService userActivityService;
     private final CommentLikeRepository commentLikeRepository;
+    private final ExperienceService experienceService;
 
     @Override
     public List<CommentDto> getCommentsByPost(Long postId, Long currentUserId) {
@@ -51,6 +52,7 @@ public class CommentServiceImpl implements CommentService {
                 "COMMENT",
                 savedComment.getCommentId()
         );
+        experienceService.awardExperience(user.getUserId(), "COMMENT_CREATED");
 
         return CommentMapper.mapToCommentDto(savedComment, currentUserId);
     }

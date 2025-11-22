@@ -44,6 +44,7 @@ public class PetServiceImpl implements PetService {
     private final PetRepository petRepository;
     private final UserRepository userRepository;
     private final UserActivityService userActivityService;
+    private final ExperienceService experienceService;
 
     @Override
     public PetDto createPet(PetDto petDto) {
@@ -60,6 +61,8 @@ public class PetServiceImpl implements PetService {
                 "PET",
                 savedPet.getPetId()
         );
+
+        experienceService.awardExperience(user.getUserId(), "PET_CREATED");
 
         return PetMapper.mapToPetDto(savedPet);
     }
