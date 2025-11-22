@@ -408,24 +408,11 @@
 
 <script>
     function confirmDelete(element) {
-        const url = element.getAttribute("data-url");
-        if (confirm("Are you sure you want to delete this pet? This action cannot be undone.")) {
-            // Создаем скрытую форму для отправки POST запроса
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = url;
-
-            // Добавляем CSRF токен
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = '_csrf';
-            csrfInput.value = document.querySelector('input[name="_csrf"]') ? document.querySelector('input[name="_csrf"]').value : '';
-            form.appendChild(csrfInput);
-
-            document.body.appendChild(form);
-            form.submit();
-        }
+    const url = element.getAttribute("data-url");
+    if (confirm("Are you sure you want to delete this pet? This action cannot be undone.")) {
+        window.location.href = url;
     }
+}
 
     // Простая функция для обновления иконок на основе типа питомца
     document.addEventListener('DOMContentLoaded', function() {

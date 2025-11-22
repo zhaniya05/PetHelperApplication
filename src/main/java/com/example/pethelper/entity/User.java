@@ -66,8 +66,6 @@ public class User {
     private Set<Tag> followedTags = new HashSet<>();
 
 
-    // entity/User.java
-    // entity/User.java
     public void addExperience(int points) {
         // ✅ ОБЕСПЕЧИВАЕМ ИНИЦИАЛИЗАЦИЮ ПЕРЕД ИСПОЛЬЗОВАНИЕМ
         if (this.experiencePoints == null) {
@@ -81,7 +79,6 @@ public class User {
         checkLevelUp(); // ✅ ВЫЗЫВАЕМ ПРОВЕРКУ УРОВНЯ
     }
 
-    // ✅ ЭТОТ МЕТОД ДОЛЖЕН БЫТЬ В КЛАССЕ User
     private void checkLevelUp() {
         while (canLevelUp()) {
             levelUp();
@@ -102,7 +99,7 @@ public class User {
         System.out.println("User " + userName + " reached level " + level + "! Used " + xpUsed + " XP");
 
         // ✅ ПРОВЕРЯЕМ, МОЖЕТ БЫТЬ МОЖНО ПОВЫСИТЬ ЕЩЕ РАЗ (если XP много)
-        checkLevelUp(); // РЕКУРСИВНЫЙ ВЫЗОВ ДЛЯ МНОГОКРАТНОГО ПОВЫШЕНИЯ
+        checkLevelUp();
     }
 
     public int getXpRequiredForCurrentLevel() {
@@ -133,7 +130,7 @@ public class User {
         return Math.max(0, xpRequired - this.experiencePoints);
     }
 
-    // ✅ МАКСИМАЛЬНЫЙ УРОВЕНЬ
+    // ✅ МАКСИМАЛЬНЫЙ УРОВЕНЬ (ТОЛЬКО ОДИН РАЗ!)
     @Transient
     public boolean isMaxLevel() {
         return this.level != null && this.level >= 50;

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Activity</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header-container">
+    <h1>Add New Activity</h1>>
+        <div class="pet-info" th:text="${pet.petName}">Barsik</div>
+    </div>
+
+
+    <div class="form-container">
+<!--        <div class="current-date">-->
+<!--            <i class="fas fa-calendar"></i>-->
+<!--            Today: <span th:text="${#temporals.format(#temporals.createToday(), 'MMMM dd, yyyy')}"></span>-->
+<!--        </div>-->
+
+
+        <form th:action="@{/pets/{petId}/activities/add(petId=${pet.petId})}" method="post" th:object="${newActivity}" class="login-form">
+
+            <input type="hidden" th:field="*{date}">
+
+
+            <div class="form-group">
+                <label class="form-label">Time</label>
+                <input type="time" class="form-input" th:field="*{time}" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Activity Type</label>
+                <select class="form-select" th:field="*{type}" id="activityType" required>
+                    <option value="">Select activity type</option>
+                    <option th:each="t : ${T(com.example.pethelper.entity.PetActivityType).values()}"
+                            th:value="${t}"
+                            th:text="${t}"></option>
+                </select>
+            </div>
+
+            <div id="nutritionFields" class="fields-group hidden">
+                <div class="form-group">
+                    <label class="form-label">Food Amount (grams)</label>
+                    <input type="number" class="form-input" th:field="*{amountGrams}" min="1" max="1000" placeholder="Enter amount in grams">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Calories</label>
+                    <input type="number" class="form-input" th:field="*{calories}" min="1" max="5000" placeholder="Enter calories">
+                </div>
+            </div>
+
+            <div id="otherFields" class="fields-group hidden">
+                <div class="form-group">
+                    <label class="form-label">Duration (minutes)</label>
+                    <input type="number" class="form-input" th:field="*{durationMinutes}" min="1" max="480" placeholder="Enter duration in minutes">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Note (Optional)</label>
+                <input type="text" class="form-input" th:field="*{note}" placeholder="Add a note about this activity">
+            </div>
+
+            <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+                <button type="submit" class="btn btn-primary">
+                    Add Activity
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const activityType = document.getElementById('activityType');
+    const nutritionFields = document.getElementById('nutritionFields');
+    const otherFields = document.getElementById('otherFields');
+
+    function updateFields() {
+        const selectedType = activityType.value;
+
+        nutritionFields.classList.add('hidden');
+        otherFields.classList.add('hidden');
+
+        if (selectedType === 'NUTRITION') {
+            nutritionFields.classList.remove('hidden');
+        } else if (selectedType && selectedType !== 'NUTRITION') {
+            otherFields.classList.remove('hidden');
+        }
+    }
+
+    activityType.addEventListener('change', updateFields);
+    updateFields();
+</script>
+</body>
+</html>

@@ -3,8 +3,384 @@
 <head>
   <meta charset="UTF-8">
   <title>Активности питомца</title>
-  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #ffb7ce;
+      --primary-light: #ffeef4;
+      --secondary: #ff8fab;
+      --accent: #ff6390;
+      --background: linear-gradient(to bottom, #f9f9f9, #ffb7ce);
+      --card-bg: #FFFFFF;
+      --text-primary: #333;
+      --text-secondary: #666;
+      --border: #ffb7ce;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: var(--background);
+      min-height: 100vh;
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    /* Navigation */
+    .navbar {
+      background: #ffffff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      width: 100%;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 70px;
+    }
+
+    .nav-brand {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #ff6b95;
+      text-decoration: none;
+    }
+
+    .nav-brand:hover {
+      color: var(--accent);
+    }
+
+    .notif-icon {
+      position: relative;
+    }
+
+    .notif-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #ff4757;
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    .avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #f0f0f0;
+      transition: transform 0.2s;
+    }
+
+    .avatar:hover {
+      transform: scale(1.05);
+    }
+
+    /* Main Container */
+    .container {
+      background: var(--card-bg);
+      margin: 30px auto;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: var(--shadow);
+      width: 90%;
+      max-width: 900px;
+    }
+
+    /* Header Section */
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 1rem;
+    }
+
+    .time-display {
+      font-size: 3rem;
+      font-weight: 300;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+      letter-spacing: -1px;
+    }
+
+    .pet-name {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: var(--text-primary);
+    }
+
+    .pet-breed {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    /* Stats Section */
+    .stats-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .stat-label {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .stat-percentage {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #ff6390;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--primary-light);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.8s ease;
+    }
+
+    .nutrition-progress {
+      background: linear-gradient(90deg, var(--secondary), var(--accent));
+    }
+    .activity-progress {
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+
+    /* Activities Section */
+    .activities-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .date-selector {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.4rem 0.8rem;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+
+    .date-selector::-webkit-calendar-picker-indicator {
+      filter: sepia(1) saturate(5) hue-rotate(300deg);
+    }
+
+    /* Activity List */
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--primary-light);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .activity-item:hover {
+      background: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .activity-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--secondary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      color: white;
+    }
+
+    .activity-details {
+      flex: 1;
+    }
+
+    .activity-time {
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      color: var(--text-primary);
+    }
+
+    .activity-note {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .activity-stats {
+      text-align: right;
+    }
+
+    .activity-calories,
+    .activity-duration {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--secondary);
+      transform: translateY(-2px);
+    }
+
+    /* Add Button */
+    .add-button {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 56px;
+      height: 56px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-decoration: none;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 12px rgba(255, 107, 149, 0.3);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .add-button:hover {
+      background: var(--secondary);
+      transform: scale(1.1);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-secondary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .stats-section {
+        grid-template-columns: 1fr;
+      }
+
+      .section-title {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .activity-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+      }
+
+      .activity-stats {
+        text-align: center;
+      }
+
+      .time-display {
+        font-size: 2.5rem;
+      }
+
+      .nav-container {
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+      }
+
+      .container {
+        padding: 1rem;
+        margin: 15px auto;
+      }
+    }
+  </style>
 </head>
 <body>
 <nav class="navbar">
@@ -15,7 +391,7 @@
 
     <div class="notif-icon">
       <a th:href="@{/notifications}" title="Notifications">
-        <i class="fa-solid fa-bell" style="font-size: 20px; color: pink;"></i>
+        <i class="fa-solid fa-bell" style="font-size: 18px; color: #ff6b95;"></i>
         <span th:if="${#lists.size(requests) + #lists.size(postNotifications) > 0}"
               th:text="${#lists.size(requests) + #lists.size(postNotifications)}"
               class="notif-badge"></span>
@@ -33,47 +409,183 @@
   </div>
 </nav>
 
-<h2 th:text="'Schedule for ' + ${pet.petName}"></h2>
+<div class="container">
+  <!-- Header Section -->
+  <div class="header">
+    <div class="time-display" th:text="${#temporals.format(#temporals.createNow(), 'HH:mm')}">13:12</div>
+    <div class="pet-name" th:text="${pet.petName}">Aktos</div>
+    <div class="pet-breed" th:text="${pet.getPetBreed()}">Akbash Dog</div>
+  </div>
 
-<form th:action="@{|/pets/${pet.petId}/activities/add|}" method="post">
-  <label>Date:</label>
-  <input type="date" name="date" required>
+  <!-- Stats Section -->
+  <div class="stats-section">
+    <div class="stat-item">
+      <div class="stat-header">
+        <span class="stat-label">Food Safety</span>
+        <span class="stat-percentage" th:text="${nutritionPercentage} + '%'">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill nutrition-progress" th:style="'width: ' + ${nutritionPercentage} + '%;'"></div>
+      </div>
+    </div>
 
-  <label>Time:</label>
-  <input type="time" name="time" required>
+    <div class="stat-item">
+      <div class="stat-header">
+        <span class="stat-label">Activity Progress</span>
+        <span class="stat-percentage" th:text="${activityPercentage} + '%'">25%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill activity-progress" th:style="'width: ' + ${activityPercentage} + '%;'"></div>
+      </div>
+    </div>
+  </div>
 
-  <label>Note:</label>
-  <input type="text" name="note" required>
+  <!-- Activities Section -->
+  <div class="activities-section">
+    <div class="section-title">
+      Today's Activities
+      <input type="date" class="date-selector" th:value="${date}"
+             onchange="location.href='/pets/' + [[${pet.petId}]] + '/activities?date=' + encodeURIComponent(this.value)">
+    </div>
 
-  <button type="submit">Add Activity</button>
-</form>
+    <div class="activity-list">
+      <!-- Walk Activity -->
+      <div class="activity-item">
+        <div class="activity-icon">
+          <i class="fas fa-walking"></i>
+        </div>
+        <div class="activity-details">
+          <div class="activity-time">13:00</div>
+          <div class="activity-note">Morning walk</div>
+        </div>
+        <div class="activity-stats">
+          <div class="activity-duration">30 min</div>
+        </div>
+      </div>
 
-<hr>
+      <!-- Nutrition Activities -->
+      <div th:each="activity : ${activities}" th:if="${activity.type == 'NUTRITION'}" class="activity-item">
+        <div class="activity-icon">
+          <i class="fas fa-utensils"></i>
+        </div>
+        <div class="activity-details">
+          <div class="activity-time" th:text="${#temporals.format(activity.time, 'HH:mm')}">06:45</div>
+          <div class="activity-note" th:text="'Food: ' + ${activity.note} ?: 'Meal'">Food Safety</div>
+        </div>
+        <div class="activity-stats">
+          <div class="activity-calories" th:text="${activity.calories} + ' kcal'">250 kcal</div>
+          <div class="activity-duration" th:text="${activity.amountGrams} + 'g'">150g</div>
+        </div>
+      </div>
 
-<h3>Activities</h3>
-<table>
-  <thead>
-  <tr>
-    <th>Date</th>
-    <th>Time</th>
-    <th>Note</th>
-    <th>Delete</th>
-  </tr>
-  </thead>
+      <!-- Other Activities -->
+      <div th:each="activity : ${activities}" th:if="${activity.type != 'NUTRITION'}" class="activity-item">
+        <div class="activity-icon">
+          <i th:class="${activity.type == 'WALK' ? 'fas fa-walking' :
+                                    activity.type == 'TRAINING' ? 'fas fa-graduation-cap' :
+                                    'fas fa-running'}"></i>
+        </div>
+        <div class="activity-details">
+          <div class="activity-time" th:text="${#temporals.format(activity.time, 'HH:mm')}">08:30</div>
+          <div class="activity-note" th:text="${activity.note} ?: ${activity.type}">Morning Walk</div>
+        </div>
+        <div class="activity-stats">
+          <div class="activity-duration" th:text="${activity.durationMinutes} + ' min'">30 min</div>
+        </div>
+      </div>
 
-  <tbody>
-  <tr th:each="a : ${activities}">
-    <td th:text="${a.date}"></td>
-    <td th:text="${a.time}"></td>
-    <td th:text="${a.note}"></td>
-    <td>
-      <a th:href="@{|/pets/${pet.petId}/activities/delete/${a.id}|}">
-        Delete
-      </a>
-    </td>
-  </tr>
-  </tbody>
-</table>
+      <a th:href="@{activities/add}" class="btn btn-primary" style="margin-top: 1rem;">Add Activity</a>
+
+      <!-- Empty State -->
+      <div th:if="${#lists.isEmpty(activities)}" class="activity-item" style="text-align: center; color: var(--text-secondary);">
+        <div class="activity-details">
+          <div class="activity-note">No activities for today</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Activity Button -->
+<a th:href="@{/pets/{petId}/activities/add(petId=${pet.petId})}" class="add-button">
+  <i class="fas fa-plus"></i>
+</a>
+
+<script>
+  // Update time every minute
+  function updateTime() {
+    const now = new Date();
+    const timeString = now.getHours().toString().padStart(2, '0') + ':' +
+            now.getMinutes().toString().padStart(2, '0');
+    document.querySelector('.time-display').textContent = timeString;
+  }
+
+  setInterval(updateTime, 60000);
+  updateTime();
+</script>
+
+
+<!--<h2 th:text="'Daily Activities for ' + ${pet.petName}"></h2>-->
+
+<!--<form method="get" th:action="@{|/pets/${pet.petId}/activities/daily|}">-->
+<!--  <label>Select date:</label>-->
+<!--  <input type="date" name="date" th:value="${date}">-->
+<!--  <button type="submit">Show</button>-->
+<!--</form>-->
+
+
+<!--<div class="stats-box">-->
+<!--  <h3>Summary for <span th:text="${date}"></span></h3>-->
+
+<!--  <p>-->
+<!--    <b>Calories consumed:</b>-->
+<!--    <span th:text="${dailyCalories}"></span> kcal-->
+<!--    /-->
+<!--    <span th:text="${recommendedCalories}"></span> kcal recommended-->
+<!--    <span th:if="${dailyCalories <= recommendedCalories}" class="good">✓ OK</span>-->
+<!--    <span th:if="${dailyCalories > recommendedCalories}" class="bad">✗ Too much</span>-->
+<!--  </p>-->
+
+<!--  <p>-->
+<!--    <b>Activity time:</b>-->
+<!--    <span th:text="${dailyActivityMinutes}"></span> min-->
+<!--    /-->
+<!--    <span th:text="${recommendedMinutes}"></span> min recommended-->
+<!--    <span th:if="${dailyActivityMinutes >= recommendedMinutes}" class="good">✓ Good</span>-->
+<!--    <span th:if="${dailyActivityMinutes < recommendedMinutes}" class="bad">✗ Not enough</span>-->
+<!--  </p>-->
+<!--</div>-->
+
+<!--<a th:href="@{activities/add}" class="btn btn-primary">Add Activity</a>-->
+
+
+
+<!--<h3>Activities</h3>-->
+
+<!--<table>-->
+<!--  <thead>-->
+<!--  <tr>-->
+<!--    <th>Type</th>-->
+<!--    <th>Time</th>-->
+<!--    <th>End</th>-->
+<!--    <th>Calories</th>-->
+<!--    <th>Duration</th>-->
+<!--    <th>Note</th>-->
+<!--  </tr>-->
+<!--  </thead>-->
+
+<!--  <tbody>-->
+<!--  <tr th:each="a : ${activities}">-->
+<!--    <td th:text="${a.type}"></td>-->
+<!--    <td th:text="${a.time}"></td>-->
+<!--    <td th:text="${a.endTime} ?: '-'"></td>-->
+<!--    <td th:text="${a.calories} ?: '-'"></td>-->
+<!--    <td th:text="${a.durationMinutes} ?: '-'"></td>-->
+<!--    <td th:text="${a.note}"></td>-->
+<!--  </tr>-->
+<!--  </tbody>-->
+<!--</table>-->
+
 
 
 </body>

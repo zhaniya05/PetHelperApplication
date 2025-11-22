@@ -51,19 +51,11 @@ public class UserDto {
             return;
         }
 
-        int xpRequired = getXpRequiredForLevel(level);
+        // ✅ ИСПОЛЬЗУЕМ ТУ ЖЕ ФОРМУЛУ, ЧТО И В ENTITY
+        int xpRequired = 50 + 15 * (level - 1);
         this.levelProgress = Math.min(100, ((double) experiencePoints / xpRequired) * 100);
         this.xpToNextLevel = Math.max(0, xpRequired - experiencePoints);
     }
 
-    private int getXpRequiredForLevel(int currentLevel) {
-        if (currentLevel >= 50) return 0;
-        return 50 + 15 * (currentLevel - 1);
-    }
 
-    // ✅ ДЛЯ ОТОБРАЖЕНИЯ МАКСИМАЛЬНОГО УРОВНЯ
-    @Transient
-    public boolean isMaxLevel() {
-        return level != null && level >= 50;
-    }
 }

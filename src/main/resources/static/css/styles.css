@@ -107,6 +107,16 @@ body.login-page {
     max-width: 900px;
 }
 
+.container {
+    background: #fff;
+    margin: 30px auto;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 900px;
+}
+
 /* Заголовок */
 .header-container h1 {
     text-align: center;
@@ -146,35 +156,6 @@ body.login-page {
     background: #cc3c56;
 }
 
-/* Таблица */
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-}
-
-.table th {
-    background: #ffb7ce;
-    color: #fff;
-    text-align: left;
-    padding: 12px;
-    font-size: 14px;
-}
-
-.table td {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    font-size: 14px;
-}
-
-.table tr:hover {
-    background: #fff5f8;
-}
-
-/* Footer */
 .footer {
     text-align: center;
     font-size: 12px;

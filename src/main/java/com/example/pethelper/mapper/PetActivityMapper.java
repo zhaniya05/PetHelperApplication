@@ -6,24 +6,39 @@ import com.example.pethelper.entity.PetActivity;
 
 public class PetActivityMapper {
 
-    public static PetActivityDto toDto(PetActivity activity) {
+
+    public static PetActivityDto toDto(PetActivity a) {
         return new PetActivityDto(
-                activity.getId(),
-                activity.getDate(),
-                activity.getTime(),
-                activity.getNote(),
-                activity.getPet().getPetId()
+                a.getId(),
+                a.getDate(),
+                a.getTime(),
+                a.getEndTime(),
+                a.getNote(),
+                a.getType(),
+                a.getAmountGrams(),
+                a.getCalories(),
+                a.getDurationMinutes(),
+                a.getPet().getPetId()
         );
     }
 
     public static PetActivity toEntity(PetActivityDto dto, Pet pet) {
-        return new PetActivity(
-                dto.getId(),
-                dto.getDate(),
-                dto.getTime(),
-                dto.getNote(),
-                pet
-        );
+        PetActivity a = new PetActivity();
+        a.setId(dto.getId());
+        a.setDate(dto.getDate());
+        a.setTime(dto.getTime());
+        a.setNote(dto.getNote());
+        a.setType(dto.getType());
+        a.setAmountGrams(dto.getAmountGrams());
+        a.setCalories(dto.getCalories());
+        a.setDurationMinutes(dto.getDurationMinutes());
+        a.setPet(pet);
+
+        if (dto.getDurationMinutes() != null) {
+            a.setEndTime(dto.getTime().plusMinutes(dto.getDurationMinutes()));
+        }
+
+        return a;
     }
 }
 

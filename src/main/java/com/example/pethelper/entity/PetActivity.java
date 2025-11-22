@@ -26,9 +26,26 @@ public class PetActivity {
 
     private LocalTime time;
 
+    private LocalTime endTime;
+
     private String note;
+
+    @Enumerated(EnumType.STRING)
+    private PetActivityType type;
+
+    private Integer amountGrams;
+    private Integer calories;
+
+    private Integer durationMinutes;
 
     @ManyToOne
     @JoinColumn(name = "pet_id")
     private Pet pet;
+
+    @PrePersist
+    protected void onCreate() {
+        if (date == null) {
+            date = LocalDate.now();
+        }
+    }
 }

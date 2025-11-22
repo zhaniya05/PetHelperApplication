@@ -164,6 +164,7 @@ public class UserServiceImpl implements UserService {
     public UserDto findByEmail(String email) {
         return UserMapper.mapToUserDto(userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email)));
+
     }
 
     @Override

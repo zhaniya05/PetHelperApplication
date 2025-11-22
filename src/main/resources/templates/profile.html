@@ -5,255 +5,620 @@
     <title>Profile</title>
 
     <style>
+        :root {
+            --primary: #fb7185;
+            --primary-gradient: linear-gradient(135deg, #ffb7ce, #f472b6);
+            --primary-light: #ffb7ce;
+            --secondary: #f472b6;
+            --secondary-gradient: linear-gradient(135deg, #f472b6, #fb7185);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-50: #f9fafb;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
-            background: linear-gradient(to bottom, #f9f9f9, #ffb7ce);
-            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            background: linear-gradient(135deg, #f9f9f9 0%, #ffb7ce 100%);
+            font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             min-height: 100vh;
+            line-height: 1.6;
+            color: var(--gray-700);
         }
 
         .profile-container {
-            max-width: 980px;
-            margin: 28px auto;
+            max-width: 1200px;
+            margin: 40px auto;
             padding: 20px;
             display: grid;
-            grid-template-columns: 260px 1fr;
-            gap: 24px;
+            grid-template-columns: 320px 1fr;
+            gap: 30px;
             align-items: start;
         }
 
+        /* Profile Card */
         .profile-card {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 6px 18px rgba(13, 30, 49, 0.06);
-            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 30px 25px;
             text-align: center;
             position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: var(--transition);
+        }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg), 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
 
         .profile-avatar {
-            width: 140px;
-            height: 140px;
-            margin: 0 auto 14px;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
             border-radius: 50%;
             object-fit: cover;
-            border: 4px solid #f3f6f9;
-            box-shadow: 0 4px 12px rgba(10, 30, 60, 0.06);
+            border: 5px solid white;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+        }
+
+        .profile-avatar:hover {
+            transform: scale(1.05);
         }
 
         .profile-name {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 6px;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .profile-role {
-            font-size: 13px;
-            color: #667085;
-            margin-bottom: 12px;
+            font-size: 14px;
+            color: var(--gray-500);
+            margin-bottom: 20px;
+            font-weight: 500;
         }
 
-        .profile-meta {
+        /* Level Display */
+        .level-display {
             display: flex;
             justify-content: space-between;
-            gap: 8px;
-            margin-top: 12px;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: var(--secondary-gradient);
+            border-radius: var(--radius-lg);
+            color: white;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .level-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .level-info span:first-child {
+            font-weight: 600;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .level-info span:nth-child(2) {
+            font-weight: 800;
+            font-size: 24px;
+        }
+
+        .max-level-badge {
+            font-size: 11px;
+            background: gold;
+            color: black;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .xp-info {
+            text-align: right;
+        }
+
+        .xp-info div:first-child {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .xp-info div:last-child {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin: 0 0 25px 0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
             font-size: 13px;
-            color: #475569;
+            color: var(--gray-500);
+            font-weight: 500;
         }
 
-        .profile-meta .meta-item {
-            flex: 1;
-            padding: 10px;
-            background: #fbfdff;
-            border-radius: 8px;
-            box-shadow: inset 0 -1px 0 rgba(15,23,42,0.02);
+        .progress-bar {
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
-        .logout-btn {
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .normal-progress {
+            background: linear-gradient(90deg, #ffb7ce, #ff6b95);
+        }
+
+        .max-level-progress {
+            background: linear-gradient(90deg, gold, orange);
+        }
+
+        /* Profile Meta */
+        .profile-meta {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 25px 0;
+        }
+
+        .meta-item {
+            padding: 15px;
+            background: var(--gray-100);
+            border-radius: var(--radius);
+            text-align: center;
+            min-width: 80px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .meta-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .meta-title {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .meta-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        /* Buttons */
+        .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            width: 100%;
-            padding: 10px 16px;
-            margin-top: 16px;
-            background: #ff4757;
-            color: white;
+            gap: 8px;
+            padding: 12px 20px;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius);
             font-weight: 600;
+            font-size: 14px;
             cursor: pointer;
             text-decoration: none;
-            transition: background-color 0.2s;
-            font-size: 14px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
         }
 
-        .logout-btn:hover {
-            background: #ff3742;
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
 
         .back-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            width: 85%;
-            padding: 10px 16px;
-            margin-top: 10px;
-            background: #6c757d;
+            background: var(--gray-500);
             color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: background-color 0.2s;
-            font-size: 14px;
+            width: 100%;
+            margin-bottom: 12px;
         }
 
         .back-btn:hover {
-            background: #5a6268;
+            background: var(--gray-600);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
 
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            width: 100%;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        /* Profile Details */
         .profile-details {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 6px 18px rgba(13, 30, 49, 0.06);
-            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: var(--transition);
+        }
+
+        .profile-details:hover {
+            box-shadow: var(--shadow-lg), 0 15px 30px -10px rgba(0, 0, 0, 0.2);
         }
 
         .profile-section-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--gray-100);
+            color: var(--dark);
+            position: relative;
         }
 
+        .profile-section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: var(--primary-gradient);
+        }
+
+        /* Field Rows */
         .field-row {
             display: flex;
-            gap: 12px;
+            gap: 20px;
             align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px dashed #eef2f7;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--gray-100);
+            transition: var(--transition);
         }
-        .field-row:last-child { border-bottom: none; }
+
+        .field-row:hover {
+            background: var(--gray-50);
+            padding-left: 10px;
+            border-radius: var(--radius);
+        }
+
+        .field-row:last-child {
+            border-bottom: none;
+        }
+
         .field-label {
-            width: 140px;
-            color: #475569;
-            font-weight: 500;
+            width: 120px;
+            color: var(--gray-600);
+            font-weight: 600;
+            font-size: 14px;
         }
+
         .field-value {
-            color: #0f172a;
+            color: var(--dark);
+            font-weight: 500;
             word-break: break-word;
         }
 
+        /* Forms */
         .profile-form .form-group {
-            margin-bottom: 12px;
+            margin-bottom: 20px;
         }
+
         .profile-form label {
             display: block;
-            margin-bottom: 6px;
-            font-size: 13px;
-            color: #334155;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--gray-700);
+            font-weight: 600;
         }
+
         .profile-form input[type="text"],
         .profile-form input[type="email"],
         .profile-form textarea,
         .profile-form select {
-            width: 95%;
-            padding: 10px 12px;
-            border: 1px solid #e6edf3;
-            border-radius: 8px;
-            background: #fff;
-            font-size: 14px;
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius);
+            background: white;
+            font-size: 15px;
             outline: none;
+            transition: var(--transition);
+            font-family: inherit;
         }
-        .profile-form textarea { min-height: 100px; resize: vertical; }
 
-        .btn {
-            display: inline-block;
-            padding: 10px 16px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            text-decoration: none;
-            text-align: center;
+        .profile-form input:focus,
+        .profile-form textarea:focus,
+        .profile-form select:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
-        .btn-primary {
-            background: #ffb7ce;
-            color: #fff;
-            box-shadow: 0 8px 20px rgba(3,102,255,0.14);
+
+        .profile-form textarea {
+            min-height: 120px;
+            resize: vertical;
         }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
         .btn-secondary {
-            background: #f1f5f9;
-            color: #0f172a;
+            background: var(--gray-200);
+            color: var(--gray-700);
+            padding: 12px 24px;
         }
 
-        @media (max-width: 860px) {
+        .btn-secondary:hover {
+            background: var(--gray-300);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        /* Activity Section */
+        .activity-list {
+            margin-top: 10px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 18px;
+            margin-bottom: 12px;
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .activity-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow);
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-description {
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+
+        .activity-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        .activity-type {
+            background: var(--primary-light);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .no-activity {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            color: var(--gray-400);
+            font-style: italic;
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            border: 2px dashed var(--gray-300);
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
             .profile-container {
                 grid-template-columns: 1fr;
-                padding: 12px;
+                gap: 20px;
+                padding: 15px;
+                margin: 20px auto;
             }
+
+            .profile-card {
+                padding: 25px 20px;
+            }
+
             .profile-avatar {
-                width: 110px;
-                height: 110px;
+                width: 120px;
+                height: 120px;
             }
-            .field-label { width: 120px; }
+
+            .field-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .field-label {
+                width: 100%;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .level-display {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .profile-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .meta-item {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
 <div class="profile-container">
-
     <!-- Левый столбец -->
     <aside class="profile-card">
         <img class="profile-avatar"
              th:src="@{${user.profilePicture != null ? user.profilePicture : '/css/images/default-avatar.jpg'}}"
              alt="avatar" />
-        <div class="level-display" style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0; padding: 10px; background: linear-gradient(135deg, #ffb7ce, #ff6b95); border-radius: 12px; color: white;">
-            <div class="level-info" style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-weight: 700; font-size: 16px;">Level</span>
-                <span style="font-weight: 800; font-size: 20px;" th:text="${user.level}">1</span>
-                <span th:if="${user.maxLevel}" style="font-size: 12px; background: gold; color: black; padding: 2px 6px; border-radius: 8px; font-weight: bold;">MAX</span>
+
+        <div class="level-display">
+            <div class="level-info">
+                <span>Level</span>
+                <span th:text="${user.level}">1</span>
+                <span th:if="${user.level >= 50}" class="max-level-badge">MAX</span>
             </div>
-            <div class="xp-info" style="text-align: right;">
-                <div style="font-weight: 600; font-size: 14px;" th:text="${user.experiencePoints} + ' XP'">0 XP</div>
-                <div th:if="${!user.maxLevel}" style="font-size: 11px; opacity: 0.9;" th:text="'Next: ' + ${user.xpToNextLevel} + ' XP'">Next: 50 XP</div>
-                <div th:if="${user.maxLevel}" style="font-size: 11px; opacity: 0.9;">Maximum Level!</div>
+            <div class="xp-info">
+                <div th:text="${user.experiencePoints} + ' XP'">0 XP</div>
+                <div th:if="${user.level < 50}" th:text="'Next: ' + ${user.xpToNextLevel} + ' XP'">Next: 50 XP</div>
+                <div th:if="${user.level >= 50}">Maximum Level!</div>
             </div>
         </div>
 
-        <!-- ✅ ПРОГРЕСС-БАР -->
-        <div class="progress-container" style="margin: 0 0 15px 0;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 12px; color: #6c757d;">
+        <!-- Прогресс-бар -->
+        <div class="progress-container">
+            <div class="progress-header">
                 <span>Progress</span>
-                <span th:text="${user.maxLevel} ? 'MAX' : (#numbers.formatDecimal(user.levelProgress, 1, 1) + '%')">0%</span>
+                <span th:if="${user.level >= 50}">MAX</span>
+                <span th:unless="${user.level >= 50}" th:text="${#numbers.formatDecimal(user.levelProgress, 1, 1) + '%'}">0%</span>
             </div>
-            <div style="height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden;">
-                <div th:style="'width: ' + ${user.levelProgress} + '%;'"
-                     th:class="${user.maxLevel} ? 'max-level-progress' : 'normal-progress'"
-                     style="height: 100%; transition: width 0.3s;"></div>
+            <div class="progress-bar">
+                <div th:if="${user.level >= 50}"
+                     class="progress-fill max-level-progress"
+                     style="width: 100%"></div>
+                <div th:unless="${user.level >= 50}"
+                     class="progress-fill normal-progress"
+                     th:style="'width: ' + ${user.levelProgress} + '%;'"></div>
             </div>
-            <style>
-                .normal-progress { background: linear-gradient(90deg, #ffb7ce, #ff6b95); }
-                .max-level-progress { background: linear-gradient(90deg, gold, orange); }
-            </style>
         </div>
+
         <div class="profile-name" th:text="${user.userName}">Username</div>
         <div class="profile-role" th:text="${user.role}">Role</div>
 
         <div class="profile-meta">
             <div class="meta-item">
                 <div class="meta-title">Pets</div>
-                <div class="meta-value" th:text="${user.petIds != null ? #lists.size(user.petIds) : 0}"></div>
+                <div class="meta-value" th:text="${user.petIds != null ? #lists.size(user.petIds) : 0}">0</div>
             </div>
         </div>
 
-        <a th:href = "@{/api/users/viewUserProfile/{id}(id=${user.userId})}" class="btn btn-primary btn-sm mb-3">View My Profile</a>
+        <a th:href="@{/api/users/viewUserProfile/{id}(id=${user.userId})}" class="btn btn-primary">
+            View My Profile
+        </a>
 
         <!-- Кнопка назад -->
-        <a th:href="@{/pets/main}" class="back-btn">
+        <a th:href="@{/pets/main}" class="btn back-btn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
@@ -262,7 +627,7 @@
 
         <!-- Кнопка выхода -->
         <form th:action="@{/auth/logout}" method="post" style="margin-top: 10px;">
-            <button type="submit" class="logout-btn">
+            <button type="submit" class="btn logout-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                     <polyline points="16,17 21,12 16,7"></polyline>
@@ -271,10 +636,6 @@
                 Log out
             </button>
         </form>
-
-
-
-
     </aside>
 
     <!-- Правый столбец -->
@@ -286,7 +647,7 @@
             <div class="field-value" th:text="${user.email}">user@example.com</div>
         </div>
 
-        <div class="profile-section-title" style="margin-top:18px;">Edit Profile</div>
+        <div class="profile-section-title" style="margin-top: 30px;">Edit Profile</div>
         <form class="profile-form" th:action="@{/api/users/update/{id}(id=${user.userId})}" th:object="${user}" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="username">Username</label>
@@ -303,14 +664,14 @@
                 <input id="avatar" type="file" name="avatar" accept="image/*" />
             </div>
 
-            <div style="margin-top:12px;">
-                <button class="btn btn-primary" type="submit">Save</button>
-                <a class="btn btn-secondary" th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}" style="margin-left:8px;">Cancel</a>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Save Changes</button>
+                <a class="btn btn-secondary" th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">Cancel</a>
             </div>
         </form>
 
-        <div class="profile-section-title" style="margin-top: 30px;">
-            <i class="fa-solid fa-history"></i> Recent Activity
+        <div class="profile-section-title" style="margin-top: 40px;">
+            Recent Activity
         </div>
 
         <div class="activity-list">
@@ -319,27 +680,21 @@
                     <i th:class="|fa-solid ${@activityHelper.getActivityIcon(activity.activityType)}|"></i>
                 </div>
                 <div class="activity-content">
-                    <div class="activity-description" th:text="${activity.description}"></div>
+                    <div class="activity-description" th:text="${activity.description}">Activity description</div>
                     <div class="activity-meta">
-                        <span class="activity-type" th:text="${@activityHelper.getActivityTypeText(activity.activityType)}"></span>
-                        <span class="activity-date" th:text="${activity.formattedDate}"></span>
+                        <span class="activity-type" th:text="${@activityHelper.getActivityTypeText(activity.activityType)}">Type</span>
+                        <span class="activity-date" th:text="${activity.formattedDate}">Date</span>
                     </div>
                 </div>
             </div>
         </div>
 
-            <!-- Сообщение если истории нет -->
-            <div th:if="${#lists.isEmpty(recentActivities)}" class="no-activity">
-                <i class="fa-solid fa-clock" style="color: #ccc; margin-right: 8px;"></i>
-                <span>No recent activity</span>
-            </div>
-
-
-
-
-
+        <!-- Сообщение если истории нет -->
+        <div th:if="${#lists.isEmpty(recentActivities)}" class="no-activity">
+            <i class="fa-solid fa-clock" style="color: #ccc; margin-right: 8px;"></i>
+            <span>No recent activity</span>
+        </div>
     </section>
-
 </div>
 </body>
 </html>

@@ -17,7 +17,9 @@ public class PetMapper {
                 pet.getPetType(),
                 pet.getPetBreed(),
                 pet.getPetHealth(),
-                pet.getUser() != null ? pet.getUser().getUserId() : null
+                pet.getUser() != null ? pet.getUser().getUserId() : null,
+                pet.getRecommendedDailyCalories(),
+                pet.getRecommendedDailyActivityMinutes()
         );
     }
 
@@ -30,7 +32,9 @@ public class PetMapper {
                 petDto.getPetType(),
                 petDto.getPetBreed(),
                 petDto.getPetHealth(),
-                user
+                user,
+                petDto.getRecommendedDailyCalories(),
+                petDto.getRecommendedDailyActivityMinutes()
         );
     }
 }

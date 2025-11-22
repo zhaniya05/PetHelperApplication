@@ -21,4 +21,7 @@ public class PetDto {
     private String petBreed;
     private String petHealth;
     private Long userId;
+    private Integer recommendedDailyCalories;
+    private Integer recommendedDailyActivityMinutes;
+
 }

@@ -40,5 +40,7 @@ public class Pet {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private Integer recommendedDailyCalories = 0;
+    private Integer recommendedDailyActivityMinutes = 0;
 
 }
