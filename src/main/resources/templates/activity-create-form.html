@@ -3,30 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <title>Create Activity</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(to bottom, #f9f9f9, #ffb7ce);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .header-container {
+            background: white;
+            border-radius: 15px 15px 0 0;
+            padding: 25px 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border-bottom: 2px solid #ffeef4;
+        }
+
+        .header-container h1 {
+            color: #ff6390;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .pet-info {
+            background: #ffeef4;
+            color: #ff6390;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 0 0 15px 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .current-date {
+            background: #ffeef4;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            color: #ff6390;
+            font-size: 14px;
+            border-left: 4px solid #ff8fab;
+        }
+
+        .current-date i {
+            margin-right: 8px;
+            color: #ff6390;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #ff6390;
+            font-size: 14px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ffb7ce;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #ff6390;
+            box-shadow: 0 0 0 3px rgba(255, 99, 144, 0.1);
+        }
+
+        .fields-group {
+            padding: 15px;
+            background: #ffeef4;
+            border-radius: 10px;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            border-left: 3px solid #ff8fab;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: #ff6390;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: #ff8fab;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 99, 144, 0.3);
+        }
+
+        .btn-secondary {
+            background: #ffeef4;
+            color: #ff6390;
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background: #ffb7ce;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        /* Animation for fields */
+        .fields-group {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom styling for select dropdown */
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff6390' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px;
+        }
+
+        /* Custom placeholder color */
+        .form-input::placeholder {
+            color: #ffb7ce;
+        }
+    </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
 <div class="container">
-
     <div class="header-container">
-    <h1>Add New Activity</h1>>
-        <div class="pet-info" th:text="${pet.petName}">Barsik</div>
+        <h1>Add New Activity</h1>
+        <div class="pet-info">
+            <i class="fas fa-paw"></i>
+            <span th:text="${pet.petName}">Barsik</span>
+        </div>
     </div>
 
-
     <div class="form-container">
-<!--        <div class="current-date">-->
-<!--            <i class="fas fa-calendar"></i>-->
-<!--            Today: <span th:text="${#temporals.format(#temporals.createToday(), 'MMMM dd, yyyy')}"></span>-->
-<!--        </div>-->
+        <div class="current-date">
+            <i class="fas fa-calendar"></i>
+            Today: <span th:text="${#temporals.format(#temporals.createToday(), 'MMMM dd, yyyy')}"></span>
+        </div>
 
-
-        <form th:action="@{/pets/{petId}/activities/add(petId=${pet.petId})}" method="post" th:object="${newActivity}" class="login-form">
-
+        <form th:action="@{/pets/{petId}/activities/add(petId=${pet.petId})}" method="post" th:object="${newActivity}">
             <input type="hidden" th:field="*{date}">
-
 
             <div class="form-group">
                 <label class="form-label">Time</label>
@@ -66,9 +241,9 @@
                 <input type="text" class="form-input" th:field="*{note}" placeholder="Add a note about this activity">
             </div>
 
-            <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+            <div class="button-group">
                 <button type="submit" class="btn btn-primary">
-                    Add Activity
+                    <i class="fas fa-plus-circle"></i> Add Activity
                 </button>
             </div>
         </form>
@@ -94,7 +269,9 @@
     }
 
     activityType.addEventListener('change', updateFields);
-    updateFields();
+
+
+    document.addEventListener('DOMContentLoaded', updateFields);
 </script>
 </body>
 </html>

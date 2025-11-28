@@ -444,55 +444,114 @@
   <div class="activities-section">
     <div class="section-title">
       Today's Activities
-      <input type="date" class="date-selector" th:value="${date}"
-             onchange="location.href='/pets/' + [[${pet.petId}]] + '/activities?date=' + encodeURIComponent(this.value)">
+      <input type="date"
+             class="date-selector"
+             th:value="${date}"
+             th:onchange="|location.href='/pets/${pet.petId}/activities?date=' + encodeURIComponent(this.value)|">
     </div>
 
     <div class="activity-list">
-      <!-- Walk Activity -->
-      <div class="activity-item">
-        <div class="activity-icon">
-          <i class="fas fa-walking"></i>
+
+      <div th:each="activity : ${activities}" class="activity-item" th:switch="${activity.type}">
+        <div th:case="${T(com.example.pethelper.entity.PetActivityType).NUTRITION}">
+          <div class="activity-icon">
+            <i class="fas fa-utensils"></i>
+          </div>
+
+          <div class="activity-details">
+            <div class="activity-time" th:text="${#temporals.format(activity.time, 'HH:mm')}">06:45</div>
+            <div class="activity-note" th:text="'Food: ' + (activity.note != null ? activity.note : 'Meal')"></div>
+          </div>
+
+          <div class="activity-stats">
+            <div class="activity-calories" th:text="${activity.calories} + ' kcal'">250 kcal</div>
+            <div class="activity-duration" th:text="${activity.amountGrams} + ' g'">150 g</div>
+          </div>
         </div>
-        <div class="activity-details">
-          <div class="activity-time">13:00</div>
-          <div class="activity-note">Morning walk</div>
-        </div>
-        <div class="activity-stats">
-          <div class="activity-duration">30 min</div>
+        <div th:case="*">
+          <div class="activity-icon">
+            <i th:class="${
+    activity.type == T(com.example.pethelper.entity.PetActivityType).WALKING ? 'fas fa-walking' :
+    activity.type == T(com.example.pethelper.entity.PetActivityType).TRAINING ? 'fas fa-dumbbell' :
+    activity.type == T(com.example.pethelper.entity.PetActivityType).GROOMING ? 'fas fa-cut' :
+    'fas fa-paw'
+}"></i>
+          </div>
+
+          <div class="activity-details">
+            <div class="activity-time">
+              <span th:text="${#temporals.format(activity.time, 'HH:mm')}"></span>
+              -
+              <span th:if="${activity.endTime != null}"
+                    th:text="${#temporals.format(activity.endTime, 'HH:mm')}"></span>
+            </div>
+
+            <div class="activity-note"
+                 th:text="${activity.note != null ? activity.note : activity.type}">Walk</div>
+          </div>
+
+          <div class="activity-stats">
+            <div class="activity-duration"
+                 th:text="${activity.durationMinutes != null ? activity.durationMinutes + ' min' : ''}">
+              30 min
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Nutrition Activities -->
-      <div th:each="activity : ${activities}" th:if="${activity.type == 'NUTRITION'}" class="activity-item">
-        <div class="activity-icon">
-          <i class="fas fa-utensils"></i>
-        </div>
-        <div class="activity-details">
-          <div class="activity-time" th:text="${#temporals.format(activity.time, 'HH:mm')}">06:45</div>
-          <div class="activity-note" th:text="'Food: ' + ${activity.note} ?: 'Meal'">Food Safety</div>
-        </div>
-        <div class="activity-stats">
-          <div class="activity-calories" th:text="${activity.calories} + ' kcal'">250 kcal</div>
-          <div class="activity-duration" th:text="${activity.amountGrams} + 'g'">150g</div>
-        </div>
-      </div>
+<!--      &lt;!&ndash; Nutrition Activities &ndash;&gt;-->
+<!--      <div th:each="activity : ${activities}"-->
+<!--           th:if="${activity.type == T(com.example.pethelper.entity.PetActivityType).NUTRITION}"-->
+<!--           class="activity-item">-->
+<!--        <div class="activity-icon">-->
+<!--          <i class="fas fa-utensils"></i>-->
+<!--        </div>-->
+
+<!--        <div class="activity-details">-->
+<!--          <div class="activity-time" th:text="${#temporals.format(activity.time, 'HH:mm')}">06:45</div>-->
+<!--          <div class="activity-note" th:text="'Food: ' + (activity.note != null ? activity.note : 'Meal')"></div>-->
+<!--        </div>-->
+
+<!--        <div class="activity-stats">-->
+<!--          <div class="activity-calories" th:text="${activity.calories} + ' kcal'">250 kcal</div>-->
+<!--          <div class="activity-duration" th:text="${activity.amountGrams} + ' g'">150 g</div>-->
+<!--        </div>-->
+<!--      </div>-->
+
 
       <!-- Other Activities -->
-      <div th:each="activity : ${activities}" th:if="${activity.type != 'NUTRITION'}" class="activity-item">
-        <div class="activity-icon">
-          <i th:class="${activity.type == 'WALK' ? 'fas fa-walking' :
-                                    activity.type == 'TRAINING' ? 'fas fa-graduation-cap' :
-                                    'fas fa-running'}"></i>
-        </div>
-        <div class="activity-details">
-          <div class="activity-time" th:text="${#temporals.format(activity.time, 'HH:mm')}">08:30</div>
-          <div class="activity-note" th:text="${activity.note} ?: ${activity.type}">Morning Walk</div>
-        </div>
-        <div class="activity-stats">
-          <div class="activity-duration" th:text="${activity.durationMinutes} + ' min'">30 min</div>
-        </div>
-      </div>
+<!--      <div th:each="activity : ${activities}"-->
+<!--           th:if="${activity.type != T(com.example.pethelper.entity.PetActivityType).NUTRITION}"-->
+<!--           class="activity-item">-->
+
+<!--        <div class="activity-icon">-->
+<!--          <i th:class="${-->
+<!--    activity.type == T(com.example.pethelper.entity.PetActivityType).WALKING ? 'fas fa-walking' :-->
+<!--    activity.type == T(com.example.pethelper.entity.PetActivityType).TRAINING ? 'fas fa-dumbbell' :-->
+<!--    activity.type == T(com.example.pethelper.entity.PetActivityType).GROOMING ? 'fas fa-cut' :-->
+<!--    'fas fa-paw'-->
+<!--}"></i>-->
+<!--        </div>-->
+
+<!--        <div class="activity-details">-->
+<!--          <div class="activity-time">-->
+<!--            <span th:text="${#temporals.format(activity.time, 'HH:mm')}"></span>-->
+<!--            - -->
+<!--            <span th:if="${activity.endTime != null}"-->
+<!--                  th:text="${#temporals.format(activity.endTime, 'HH:mm')}"></span>-->
+<!--          </div>-->
+
+<!--          <div class="activity-note"-->
+<!--               th:text="${activity.note != null ? activity.note : activity.type}">Walk</div>-->
+<!--        </div>-->
+
+<!--        <div class="activity-stats">-->
+<!--          <div class="activity-duration"-->
+<!--               th:text="${activity.durationMinutes != null ? activity.durationMinutes + ' min' : ''}">-->
+<!--            30 min-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
 
       <a th:href="@{activities/add}" class="btn btn-primary" style="margin-top: 1rem;">Add Activity</a>
 
@@ -523,70 +582,5 @@
   setInterval(updateTime, 60000);
   updateTime();
 </script>
-
-
-<!--<h2 th:text="'Daily Activities for ' + ${pet.petName}"></h2>-->
-
-<!--<form method="get" th:action="@{|/pets/${pet.petId}/activities/daily|}">-->
-<!--  <label>Select date:</label>-->
-<!--  <input type="date" name="date" th:value="${date}">-->
-<!--  <button type="submit">Show</button>-->
-<!--</form>-->
-
-
-<!--<div class="stats-box">-->
-<!--  <h3>Summary for <span th:text="${date}"></span></h3>-->
-
-<!--  <p>-->
-<!--    <b>Calories consumed:</b>-->
-<!--    <span th:text="${dailyCalories}"></span> kcal-->
-<!--    /-->
-<!--    <span th:text="${recommendedCalories}"></span> kcal recommended-->
-<!--    <span th:if="${dailyCalories <= recommendedCalories}" class="good">✓ OK</span>-->
-<!--    <span th:if="${dailyCalories > recommendedCalories}" class="bad">✗ Too much</span>-->
-<!--  </p>-->
-
-<!--  <p>-->
-<!--    <b>Activity time:</b>-->
-<!--    <span th:text="${dailyActivityMinutes}"></span> min-->
-<!--    /-->
-<!--    <span th:text="${recommendedMinutes}"></span> min recommended-->
-<!--    <span th:if="${dailyActivityMinutes >= recommendedMinutes}" class="good">✓ Good</span>-->
-<!--    <span th:if="${dailyActivityMinutes < recommendedMinutes}" class="bad">✗ Not enough</span>-->
-<!--  </p>-->
-<!--</div>-->
-
-<!--<a th:href="@{activities/add}" class="btn btn-primary">Add Activity</a>-->
-
-
-
-<!--<h3>Activities</h3>-->
-
-<!--<table>-->
-<!--  <thead>-->
-<!--  <tr>-->
-<!--    <th>Type</th>-->
-<!--    <th>Time</th>-->
-<!--    <th>End</th>-->
-<!--    <th>Calories</th>-->
-<!--    <th>Duration</th>-->
-<!--    <th>Note</th>-->
-<!--  </tr>-->
-<!--  </thead>-->
-
-<!--  <tbody>-->
-<!--  <tr th:each="a : ${activities}">-->
-<!--    <td th:text="${a.type}"></td>-->
-<!--    <td th:text="${a.time}"></td>-->
-<!--    <td th:text="${a.endTime} ?: '-'"></td>-->
-<!--    <td th:text="${a.calories} ?: '-'"></td>-->
-<!--    <td th:text="${a.durationMinutes} ?: '-'"></td>-->
-<!--    <td th:text="${a.note}"></td>-->
-<!--  </tr>-->
-<!--  </tbody>-->
-<!--</table>-->
-
-
-
 </body>
 </html>

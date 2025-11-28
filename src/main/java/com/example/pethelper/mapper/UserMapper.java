@@ -22,11 +22,11 @@ public class UserMapper {
                 petIds,
                 user.getProfilePicture(),
                 null,
-                // ✅ БЕЗОПАСНОЕ ПОЛУЧЕНИЕ ЗНАЧЕНИЙ С ПРОВЕРКОЙ НА NULL
                 user.getExperiencePoints() != null ? user.getExperiencePoints() : 0,
                 user.getLevel() != null ? user.getLevel() : 1,
                 null,
-                null
+                null,
+                user.getRank()
         );
 
         userDto.calculateProgress();
@@ -42,8 +42,6 @@ public class UserMapper {
         user.setPassword(userDto.getPassword());
         user.setRole(userDto.getRole() != null ? userDto.getRole() : "ROLE_USER");
         user.setProfilePicture(userDto.getProfilePicture());
-
-        // ✅ БЕЗОПАСНОЕ УСТАНОВЛЕНИЕ ЗНАЧЕНИЙ
         user.setExperiencePoints(userDto.getExperiencePoints() != null ? userDto.getExperiencePoints() : 0);
         user.setLevel(userDto.getLevel() != null ? userDto.getLevel() : 1);
 

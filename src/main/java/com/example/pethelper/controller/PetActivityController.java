@@ -1,6 +1,8 @@
 package com.example.pethelper.controller;
 
 import com.example.pethelper.dto.PetActivityDto;
+import com.example.pethelper.dto.PetDto;
+import com.example.pethelper.entity.Pet;
 import com.example.pethelper.entity.PetActivity;
 import com.example.pethelper.entity.PetActivityType;
 import com.example.pethelper.service.PetActivityService;
@@ -18,6 +20,8 @@ import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+
 @Controller
 @RequestMapping("/pets/{petId}/activities")
 @RequiredArgsConstructor
@@ -26,9 +30,6 @@ public class PetActivityController {
     private final PetActivityService activityService;
     private final PetService petService;
 
-    // -----------------------------------------------------
-    // MAIN PAGE — only today unless date is passed manually
-    // -----------------------------------------------------
     @GetMapping
     public String viewActivities(@PathVariable Long petId,
                                  @RequestParam(required = false) LocalDate date,
@@ -44,7 +45,6 @@ public class PetActivityController {
         model.addAttribute("activities",
                 activityService.getActivitiesForDate(petId, date));
 
-        // today's stats
         int dailyCalories = activityService.getDailyCalories(petId, date);
         int dailyMinutes = activityService.getDailyActivityMinutes(petId, date);
 
