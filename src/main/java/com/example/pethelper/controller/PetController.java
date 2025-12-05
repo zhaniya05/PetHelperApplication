@@ -45,11 +45,14 @@ public class PetController {
 
     @PostMapping("/add/pet")
     public String addPet(Authentication authentication,
-                              @RequestParam String name,
-                              @RequestParam int age,
-                              @RequestParam LocalDate birthday,
-                              @RequestParam String breed,
-                              @RequestParam String type, Model model){
+                         @RequestParam String name,
+                         @RequestParam int age,
+                         @RequestParam LocalDate birthday,
+                         @RequestParam String breed,
+                         @RequestParam String type,
+                         @RequestParam(required = false) Integer recommendedDailyCalories,
+                         @RequestParam(required = false) Integer recommendedDailyActivityMinutes,
+                         Model model){
         String email = authentication.getName();
         UserDto user = userService.findByEmail(email);
         PetDto p = new PetDto();
@@ -58,6 +61,8 @@ public class PetController {
         p.setPetBd(birthday);
         p.setPetBreed(breed);
         p.setPetType(type);
+        p.setRecommendedDailyCalories(recommendedDailyCalories);
+        p.setRecommendedDailyActivityMinutes(recommendedDailyActivityMinutes);
         p.setUserId(user.getUserId());
         petService.createPet(p);
 

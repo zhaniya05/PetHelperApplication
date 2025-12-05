@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/statistics")
@@ -35,6 +37,19 @@ public class StatisticsController {
         StatisticsDto statistics = statisticsService.getPlatformStatistics();
         model.addAttribute("stats", statistics);
 
+        // Формируем списки для JS-графиков
+        List<String> typeLabels = statistics.getTypeStats()
+                .stream()
+                .map(t -> t.getType()) // исправлено: t — элемент списка
+                .collect(Collectors.toList());
+
+        List<Long> typeData = statistics.getTypeStats()
+                .stream()
+                .map(t -> t.getCount()) // исправлено
+                .collect(Collectors.toList());
+
+        model.addAttribute("typeLabels", typeLabels);
+        model.addAttribute("typeData", typeData);
 
         if (authentication != null && authentication.isAuthenticated()) {
             UserDto currentUser = userService.findByEmail(authentication.getName());
@@ -43,6 +58,7 @@ public class StatisticsController {
 
         return "stats";
     }
+
 
 
     // ✅ ДЛЯ DASHBOARD DATA (AJAX/API)

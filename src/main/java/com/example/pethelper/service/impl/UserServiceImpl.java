@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final ExperienceService experienceService;
     //private final String uploadDir = "C:\\Users\\baite\\IdeaProjects\\PetHelper\\src\\main\\resources\\static\\css\\uploads\\";
-    private final String uploadDir = "C:\\Users\\baite\\IdeaProjects\\PetHelper\\uploads\\";
+    private final String uploadDir = "C:\\Users\\whyco\\Downloads\\PetHelperApplication-main\\PetHelperApplication-main\\uploads\\";
 
 
     @Override

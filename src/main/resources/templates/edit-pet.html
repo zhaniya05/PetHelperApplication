@@ -58,6 +58,16 @@
         <label for="petHealth">Pet Health Condition</label>
         <input type="text" id="petHealth" th:field="*{petHealth}" placeholder="e.g. Healthy, Needs care">
 
+            <label>Recommended Daily Calories</label>
+            <input type="number" th:field="*{recommendedDailyCalories}" placeholder="e.g. 800">
+
+
+
+            <label>Recommended Daily Activity (minutes)</label>
+            <input type="number" th:field="*{recommendedDailyActivityMinutes}" placeholder="e.g. 45">
+
+
+
         <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-save"></i> Save

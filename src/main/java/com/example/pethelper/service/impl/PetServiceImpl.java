@@ -97,12 +97,15 @@ public class PetServiceImpl implements PetService {
         pet.setPetType(updatedPet.getPetType());
         pet.setPetBreed(updatedPet.getPetBreed());
         pet.setPetHealth(updatedPet.getPetHealth());
+        pet.setRecommendedDailyCalories(updatedPet.getRecommendedDailyCalories());
+        pet.setRecommendedDailyActivityMinutes(updatedPet.getRecommendedDailyActivityMinutes());
 
         Pet updatedPetObj = petRepository.save(pet);
 
+        Long userId = updatedPet.getUserId() != null ? updatedPet.getUserId() : pet.getUser().getUserId();
         // ✅ ИСПРАВЛЕННЫЙ СПОСОБ ПОИСКА ПОЛЬЗОВАТЕЛЯ
-        User user = userRepository.findById(updatedPet.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + updatedPet.getUserId()));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         userActivityService.logActivity(
                 user,
