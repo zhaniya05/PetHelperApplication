@@ -13,6 +13,8 @@
         <a th:href="@{/posts}" class="nav-brand">Posts</a>
         <a th:href="@{/pets/main}" class="nav-brand">PawPal</a>
         <a th:href="@{/api/users/main}" class="nav-brand">Users</a>
+        <a th:href="@{/places}" class="nav-brand">Places</a>
+
 
         <div class="notif-icon">
             <a th:href="@{/notifications}" title="Notifications">
@@ -195,7 +197,87 @@
 <!--                 font-size:14px;">-->
 <!--    </span>-->
 <!--        </div>-->
+        <!-- Блок с опросом -->
+        <div th:if="${post.poll != null}" class="poll-container" style="margin-top:15px; padding:20px; background:#f8f9fa; border-radius:10px; border:1px solid #e9ecef;">
 
+            <!-- Заголовок опроса -->
+            <h4 th:text="${post.poll.question}" style="margin-bottom:20px; color:#333; font-weight:600;"></h4>
+
+            <!-- Форма для голосования (если пользователь еще не голосовал) -->
+            <form th:unless="${post.poll.userVoted}"
+                  method="post"
+                  th:action="@{'/polls/' + ${post.poll.id} + '/vote'}"
+                  class="poll-form">
+
+                <!-- Добавляем скрытое поле для перенаправления обратно на посты -->
+                <input type="hidden" name="redirect" value="/posts">
+
+                <div class="poll-options" style="margin-bottom:20px;">
+                    <div th:each="option, iterStat : ${post.poll.options}"
+                         style="margin-bottom:12px; padding:10px; background:white; border-radius:8px; border:1px solid #dee2e6;">
+                        <label style="display:flex; align-items:center; cursor:pointer; margin:0;">
+                            <input type="radio"
+                                   th:id="'option_' + ${post.poll.id} + '_' + ${iterStat.index}"
+                                   th:name="optionId"
+                                   th:value="${post.poll.getOptionId(iterStat.index)}"
+                                   style="margin-right:12px;"
+                                   required>
+                            <span th:text="${option}" style="font-size:16px; flex-grow:1;"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit"
+                        class="btn btn-primary"
+                        style="padding:10px 24px; font-size:16px; font-weight:600; border-radius:8px;">
+                    <i class="fa-solid fa-check"></i> Vote
+                </button>
+
+            </form>
+
+            <!-- Результаты (если пользователь уже голосовал) -->
+            <div th:if="${post.poll.userVoted}" class="poll-results">
+                <div th:each="option, iterStat : ${post.poll.options}"
+                     style="margin-bottom:16px;">
+
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                        <span th:text="${option}" style="font-size:16px; font-weight:500;"></span>
+                        <span th:data-option-id="${post.poll.getOptionId(iterStat.index)}"
+                              class="vote-count"
+                              style="font-weight:600; color:#ff6390;">
+                            <span th:text="${post.poll.voteCounts[iterStat.index]}"></span> votes
+                        </span>
+                    </div>
+
+                    <!-- Прогресс-бар -->
+                    <div style="height:10px; background:#e9ecef; border-radius:5px; overflow:hidden;">
+                        <div th:style="'width:' + ${post.poll.getPercentage(iterStat.index)} + '%; height:100%; background:#ff6390; border-radius:5px; transition:width 0.5s;'"></div>
+                    </div>
+
+                    <!-- Процент голосов -->
+                    <div style="text-align:right; margin-top:4px;">
+                        <span th:text="${post.poll.getPercentage(iterStat.index)} + '%'"
+                              style="font-size:14px; color:#666;"></span>
+                    </div>
+
+                </div>
+
+                <!-- Статистика -->
+                <div style="margin-top:20px; padding-top:15px; border-top:1px dashed #dee2e6;">
+                    <p style="margin:0; color:#666; font-size:14px;">
+                        <i class="fa-solid fa-users" style="margin-right:6px;"></i>
+                        Total votes:
+                        <span th:text="${post.poll.getTotalVotes()}"
+                              class="total-votes"
+                              style="font-weight:600; color:#ff6390;"></span>
+                    </p>
+                    <p th:if="${post.poll.selectedOptionId != null}"
+                       style="margin:8px 0 0 0; color:#28a745; font-size:14px;">
+                        <i class="fa-solid fa-check-circle" style="margin-right:6px;"></i>
+                        You voted for this option
+                    </p>
+                </div>
+            </div>
         <div class="tags">
             <a th:each="tag : ${post.tagNames}"
                th:href="@{/tags/{name}(name=${tag})}"
@@ -214,10 +296,30 @@
 
 
         <!-- Галерея фотографий -->
-        <div th:if="${post.postPhotos != null && !post.postPhotos.isEmpty()}" class="post-photos">
-            <div th:each="photo : ${post.postPhotos}">
-                <img th:src="@{${photo}}" alt="Post Photo" class="post-photo"
+        <div th:if="${post.postPhotos != null && !post.postPhotos.isEmpty()}" class="media-photos">
+            <div th:each="photo : ${post.postPhotos}" class="photo-item">
+                <img th:src="@{${photo}}" alt="Photo" class="photo"
                      onerror="this.style.display='none'"/>
+            </div>
+        </div>
+
+        <!-- Видео -->
+        <div th:if="${post.postVideos != null && !post.postVideos.isEmpty()}" class="media-videos">
+            <div th:each="video : ${post.postVideos}" class="video-item">
+                <video class="video" controls>
+                    <source th:src="@{${video}}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+
+        <!-- Аудио -->
+        <div th:if="${post.postAudios != null && !post.postAudios.isEmpty()}" class="media-audios">
+            <div th:each="audio : ${post.postAudios}" class="audio-item">
+                <audio class="audio" controls>
+                    <source th:src="@{${audio}}" type="audio/mpeg">
+                    Your browser does not support the audio tag.
+                </audio>
             </div>
         </div>
 

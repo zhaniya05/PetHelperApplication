@@ -35,6 +35,22 @@ public class Post {
     @Column(name = "photo_url")
     private List<String> postPhotos = new ArrayList<>();
 
+    @ElementCollection
+    @CollectionTable(
+            name = "post_videos",
+            joinColumns = @JoinColumn(name = "post_id")
+    )
+    @Column(name = "video_url")
+    private List<String> postVideos = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(
+            name = "post_audios",
+            joinColumns = @JoinColumn(name = "post_id")
+    )
+    @Column(name = "audio_url")
+    private List<String> postAudios = new ArrayList<>();
+
     private int postLikes = 0;
 
     private LocalDate postDate;
@@ -74,4 +90,6 @@ public class Post {
     public int getLikeCount() {
         return likes.size();
     }
+    @OneToOne(mappedBy = "post", cascade = CascadeType.ALL)
+    private Poll poll;
 }

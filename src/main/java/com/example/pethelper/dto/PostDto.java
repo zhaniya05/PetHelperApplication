@@ -14,6 +14,8 @@ public class PostDto {
     private Long postId;
     private String postContent;
     private List<String> postPhotos;
+    private List<String> postVideos;
+    private List<String> postAudios;
     private int postLikes;
     private LocalDate postDate;
     private String userName;
@@ -23,5 +25,8 @@ public class PostDto {
     private String visibility;
     private Set<String> tagNames;
     private Set<Long> tagIds;
+    private boolean userVoted;
+    private PollDto poll;
+    private Long pollId;
 
 }

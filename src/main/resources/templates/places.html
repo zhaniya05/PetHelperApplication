@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Places</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+<h1>Places</h1>
+
+<!-- SEARCH FORM -->
+<form th:action="@{/places}" method="get">
+    Latitude: <input type="text" name="lat" />
+    Longitude: <input type="text" name="lng" />
+    Radius (km): <input type="number" name="radius" value="5" />
+    <button type="submit">Search Nearby</button>
+</form>
+
+<!-- CREATE NEW PLACE -->
+<h2>Add New Place</h2>
+<form th:action="@{/places/save}" th:object="${newPlace}" method="post">
+    Name: <input type="text" th:field="*{name}" required /><br/>
+    Description: <input type="text" th:field="*{description}" /><br/>
+    Latitude: <input type="text" th:field="*{latitude}" required /><br/>
+    Longitude: <input type="text" th:field="*{longitude}" required /><br/>
+    <button type="submit">Save Place</button>
+</form>
+
+<!-- MAP -->
+<div id="map" style="height: 500px;"></div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    let items = /*[[${places}]]*/ [];
+
+    let map = L.map('map').setView([43.238785, 76.915889], 12);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19
+    }).addTo(map);
+
+    items.forEach((item) => {
+        if(item.latitude && item.longitude){
+            L.marker([item.latitude, item.longitude])
+                .addTo(map)
+                .bindPopup(`<b>${item.name}</b><br/>${item.description != null ? item.description : ''}`);
+        }
+    });
+
+    // Fit map bounds to show all markers
+    if(items.length > 0){
+        let group = new L.featureGroup(items.map(item => L.marker([item.latitude, item.longitude])));
+        map.fitBounds(group.getBounds().pad(0.5));
+    }
+    /*]]>*/
+</script>
+</body>
+</html>
+

@@ -1,9 +1,6 @@
 package com.example.pethelper.controller;
 
-import com.example.pethelper.dto.FollowDto;
-import com.example.pethelper.dto.PostDto;
-import com.example.pethelper.dto.PostFilterRequest;
-import com.example.pethelper.dto.UserDto;
+import com.example.pethelper.dto.*;
 import com.example.pethelper.entity.Tag;
 import com.example.pethelper.service.*;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -106,41 +101,23 @@ public class PostController {
     @PostMapping("/add")
     public String createPost(@ModelAttribute("post") PostDto postDto,
                              @RequestParam(value = "photos", required = false) MultipartFile[] photos,
+                             @RequestParam(value = "videos", required = false) MultipartFile[] videos,
+                             @RequestParam(value = "audios", required = false) MultipartFile[] audios,
                              @RequestParam(value = "selectedTags", required = false) List<String> selectedTags,
                              @RequestParam(value = "newTags", required = false) String newTags,
+                             @RequestParam(value = "pollQuestion", required = false) String pollQuestion,
+                             @RequestParam(value = "pollOptionsRaw", required = false) String pollOptionsRaw,
                              Authentication authentication) {
 
         try {
-            // ✅ Получаем текущего пользователя
             UserDto currentUser = userService.findByEmail(authentication.getName());
             postDto.setUserId(currentUser.getUserId());
             postDto.setUserName(currentUser.getUserName());
             postDto.setPostDate(LocalDate.now());
 
-            // ✅ Обработка загруженных фото
-            List<String> photoUrls = new ArrayList<>();
-            if (photos != null && photos.length > 0) {
-                String uploadDir = "post_photos";
-                Path uploadPath = Paths.get(System.getProperty("user.dir"), uploadDir);
-
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
-                }
-
-                for (MultipartFile photo : photos) {
-                    if (!photo.isEmpty() && photo.getOriginalFilename() != null && !photo.getOriginalFilename().isEmpty()) {
-                        String contentType = photo.getContentType();
-                        if (contentType == null || !contentType.startsWith("image/")) continue;
-
-                        String fileName = System.currentTimeMillis() + "_" +
-                                photo.getOriginalFilename().replace(" ", "_");
-                        Path path = uploadPath.resolve(fileName);
-                        Files.copy(photo.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-                        photoUrls.add("/post_photos/" + fileName);
-                    }
-                }
-            }
-            postDto.setPostPhotos(photoUrls);
+            postDto.setPostPhotos(saveFiles(photos, "post_photos", "image/"));
+            postDto.setPostVideos(saveFiles(videos, "post_videos", "video/"));
+            postDto.setPostAudios(saveFiles(audios, "post_audios", "audio/"));
 
             // ✅ Обработка тегов
             Set<String> tagNames = new HashSet<>();
@@ -159,8 +136,25 @@ public class PostController {
             System.out.println("Final tagNames: " + postDto.getTagNames());
 
 
-            // ✅ Сохраняем пост
-            PostDto createdPost = postService.createPost(postDto);
+            if (pollQuestion != null && !pollQuestion.isBlank() &&
+                    pollOptionsRaw != null && !pollOptionsRaw.isBlank()) {
+
+                List<String> pollOptionsList = Arrays.stream(pollOptionsRaw.split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .collect(Collectors.toList());
+
+                if (pollOptionsList.size() >= 2) {
+                    PollDto pollDto = new PollDto();
+                    pollDto.setQuestion(pollQuestion);
+                    pollDto.setOptions(pollOptionsList);
+                    postDto.setPoll(pollDto);
+                }
+            }
+
+            // Используем новый метод для создания поста с опросом
+            PostDto createdPost = postService.createPostWithPoll(postDto);
+
 
             // ✅ Отправляем уведомления фолловерам
             List<FollowDto> followers = followService.getFollowers(currentUser);
@@ -205,4 +199,35 @@ public class PostController {
         postService.toggleLike(postId, email);
         return "redirect:/posts";
     }
+
+    private List<String> saveFiles(MultipartFile[] files, String folder, String contentTypePrefix) throws IOException {
+        List<String> urls = new ArrayList<>();
+
+        if (files == null || files.length == 0) return urls;
+
+        Path uploadPath = Paths.get(System.getProperty("user.dir"), folder);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        for (MultipartFile file : files) {
+            if (!file.isEmpty() && file.getOriginalFilename() != null) {
+                String contentType = file.getContentType();
+                if (contentType == null || !contentType.startsWith(contentTypePrefix)) {
+                    continue;
+                }
+
+                String fileName = System.currentTimeMillis() + "_" +
+                        file.getOriginalFilename().replace(" ", "_");
+
+                Path path = uploadPath.resolve(fileName);
+                Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+                urls.add("/" + folder + "/" + fileName);
+            }
+        }
+
+        return urls;
+    }
+
 }

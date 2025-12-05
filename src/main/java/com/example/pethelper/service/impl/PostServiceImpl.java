@@ -3,11 +3,7 @@ package com.example.pethelper.service.impl;
 import com.example.pethelper.dto.PostDto;
 import com.example.pethelper.dto.PostFilterRequest;
 import com.example.pethelper.dto.UserDto;
-import com.example.pethelper.entity.Post;
-import com.example.pethelper.entity.PostLike;
-import com.example.pethelper.entity.User;
-import com.example.pethelper.entity.Tag;
-import com.example.pethelper.entity.Visibility;
+import com.example.pethelper.entity.*;
 import com.example.pethelper.exception.ResourceNotFoundException;
 import com.example.pethelper.mapper.PostMapper;
 import com.example.pethelper.mapper.UserMapper;
@@ -22,6 +18,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.temporal.ChronoUnit;
+import com.example.pethelper.dto.PollDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -30,7 +27,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import com.example.pethelper.entity.ActivityType;
 
 @Service
 @AllArgsConstructor
@@ -42,6 +38,7 @@ public class PostServiceImpl implements PostService {
     private final UserActivityService userActivityService;
     private final TagService tagService;
     private final ExperienceService experienceService;
+    private final PollService pollService;
 
     private final FollowService followService;
 
@@ -65,7 +62,20 @@ public class PostServiceImpl implements PostService {
             PostDto dto = PostMapper.mapToPostDto(post);
             dto.setLikeCount(post.getLikeCount());
             if (currentUser != null) {
+                // Устанавливаем лайк пользователя
                 dto.setLikedByCurrentUser(post.isLikedByUser(currentUser));
+
+                // Устанавливаем информацию о голосовании в опросе
+                if (dto.getPoll() != null && post.getPoll() != null) {
+                    // Проверяем, голосовал ли пользователь
+                    dto.getPoll().setUserVoted(post.getPoll().hasUserVoted(currentUser.getUserId()));
+
+                    // Находим выбранную пользователем опцию
+                    PollOption userVote = post.getPoll().getUserVote(currentUser.getUserId());
+                    if (userVote != null) {
+                        dto.getPoll().setSelectedOptionId(userVote.getId());
+                    }
+                }
             }
             return dto;
         }).collect(Collectors.toList());
@@ -392,6 +402,63 @@ public class PostServiceImpl implements PostService {
             }
             return dto;
         }).collect(Collectors.toList());
+    }
+    @Transactional
+    @Override
+    public PostDto createPostWithPoll(PostDto postDto) {
+        // 1️⃣ Находим пользователя
+        User user = userRepository.findByUserName(postDto.getUserName())
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + postDto.getUserName()));
+
+        // 2️⃣ Маппим DTO → Entity
+        Post post = PostMapper.mapToPost(postDto, user);
+
+        // 3️⃣ Обрабатываем теги, если есть
+        if (postDto.getTagNames() != null && !postDto.getTagNames().isEmpty()) {
+            Set<Tag> tags = tagService.findOrCreateTags(postDto.getTagNames());
+            post.setTags(tags);
+
+            // Двусторонняя связь
+            tags.forEach(tag -> tag.getPosts().add(post));
+        }
+
+        // 4️⃣ Сохраняем пост
+        Post savedPost = postRepository.save(post);
+
+        if (postDto.getPoll() != null &&
+                postDto.getPoll().getQuestion() != null &&
+                !postDto.getPoll().getQuestion().isBlank() &&
+                postDto.getPoll().getOptions() != null &&
+                postDto.getPoll().getOptions().size() >= 2) {
+
+            PollDto pollDto = postDto.getPoll();
+
+            // ✅ ПРАВИЛЬНЫЙ вызов - передаем три параметра
+            Poll poll = pollService.createPoll(
+                    savedPost,
+                    pollDto.getQuestion(),
+                    pollDto.getOptions()
+            );
+
+            // Устанавливаем связь
+            savedPost.setPoll(poll);
+            postRepository.save(savedPost);
+        }
+
+        // 6️⃣ Логируем активность пользователя
+        userActivityService.logActivity(
+                user,
+                ActivityType.POST_CREATED,
+                "Created new post: " + (postDto.getPostContent().length() > 50 ?
+                        postDto.getPostContent().substring(0, 50) + "..." : postDto.getPostContent()),
+                "POST",
+                savedPost.getPostId()
+        );
+
+        experienceService.awardExperience(user.getUserId(), "POST_CREATED");
+
+        // 7️⃣ Возвращаем DTO
+        return PostMapper.mapToPostDto(savedPost);
     }
 
 }

@@ -1,709 +1,541 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"/>
     <title>Create Post - PawPal</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     <style>
-        .create-post-container {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 0 20px;
+        :root{
+            --accent1:#ff6390;
+            --accent2:#ff8fab;
+            --muted:#888;
+            --bg:#fffafc;
+            --card:#ffffff;
+            --radius:14px;
+            --shadow:0 10px 30px rgba(255,107,149,0.08);
+            --max-width:900px;
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0;
+            font-family:Inter,system-ui,Arial,sans-serif;
+            background:linear-gradient(180deg,#fffefe 0%, #fff7fb 100%);
+            color:#222;
+            padding:24px;
+            display:flex;
+            justify-content:center;
+        }
+        .container{
+            width:100%;
+            max-width:var(--max-width);
+            margin:20px;
         }
 
-        .header-container {
-            text-align: center;
-            margin-bottom: 50px;
-            position: relative;
+        .card{
+            background:var(--card);
+            border-radius:var(--radius);
+            padding:26px;
+            box-shadow:var(--shadow);
+            border:1px solid rgba(255,183,206,0.12);
         }
 
-        .header-icon {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #ffb7ce, #ff8fab);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 25px;
-            box-shadow: 0 8px 25px rgba(255, 107, 149, 0.3);
-            animation: float 3s ease-in-out infinite;
+        .header{
+            display:flex;
+            gap:18px;
+            align-items:center;
+            margin-bottom:18px;
+        }
+        .logo{
+            width:68px;
+            height:68px;
+            border-radius:50%;
+            background:linear-gradient(135deg,var(--accent1),var(--accent2));
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            color:white;
+            font-size:26px;
+            box-shadow:0 6px 18px rgba(255,107,149,0.12);
+        }
+        h1{margin:0;font-size:24px}
+        p.lead{margin:0;color:var(--muted);font-size:14px}
+
+        form .field{margin-top:18px}
+        label.field-label{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            font-weight:600;
+            color:var(--accent1);
+            font-size:13px;
+            text-transform:uppercase;
+            letter-spacing:0.8px;
+            margin-bottom:10px;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+        textarea#postContent{
+            width:100%;
+            min-height:140px;
+            padding:16px;
+            border-radius:12px;
+            border:1px solid #ffeef4;
+            background:rgba(255,255,255,0.9);
+            resize:vertical;
+            font-size:15px;
+            line-height:1.5;
+            box-shadow:inset 0 6px 18px rgba(255,183,206,0.03);
+        }
+        .meta-row{
+            display:flex;
+            gap:12px;
+            align-items:center;
+            justify-content:space-between;
+            margin-top:8px;
+        }
+        .char-count{color:var(--muted);font-size:13px}
+
+        /* Upload blocks */
+        .uploads{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:14px;
+            margin-top:6px;
+        }
+        .upload-block{
+            border-radius:12px;
+            border:2px dashed rgba(255,183,206,0.5);
+            padding:10px;
+            min-height:150px;
+            background:linear-gradient(180deg, #fffaff, #fff5f8);
+            position:relative;
+            transition:all .18s ease;
+            display:flex;
+            flex-direction:column;
+        }
+        .upload-block.dragover{
+            transform:translateY(-4px);
+            border-color:var(--accent1);
+            box-shadow:0 12px 30px rgba(255,107,149,0.08);
+        }
+        .upload-block .hint{
+            text-align:center;
+            color:var(--muted);
+            font-size:13px;
+            margin-top:6px;
+        }
+        .upload-block .input-wrap{
+            position:relative;
+            flex:1;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+        .upload-block input[type=file]{
+            position:absolute;
+            inset:0;
+            width:100%;
+            height:100%;
+            opacity:0;
+            cursor:pointer;
         }
 
-        .header-icon i {
-            font-size: 40px;
-            color: white;
+        .preview-grid{
+            margin-top:12px;
+            display:grid;
+            grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+            gap:10px;
+        }
+        .preview-item{
+            border-radius:10px;
+            overflow:hidden;
+            background:#fff;
+            border:1px solid #fff5f8;
+            box-shadow:0 6px 18px rgba(0,0,0,0.04);
+            position:relative;
+            min-height:80px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+        .preview-item img,
+        .preview-item video{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            display:block;
+        }
+        .preview-item audio{
+            width:100%;
+            padding:6px;
+        }
+        .preview-remove{
+            position:absolute;
+            top:6px;
+            right:6px;
+            width:30px;
+            height:30px;
+            border-radius:8px;
+            background:linear-gradient(135deg,#ff6b6b,#ff5252);
+            color:#fff;
+            border:none;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            cursor:pointer;
+            font-size:13px;
+            box-shadow:0 6px 14px rgba(255,80,120,0.12);
         }
 
-        .header-container h1 {
-            font-size: 42px;
-            background: linear-gradient(135deg, #ff6390, #ff8fab);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 15px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
+        /* tags row */
+        .tags-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+        select[multiple]{
+            width:100%;
+            padding:10px;
+            border-radius:10px;
+            border:1px solid #ffeef4;
+            background:rgba(255,255,255,0.9);
+            min-height:44px;
+            font-size:14px;
+        }
+        input[type=text].new-tags{
+            padding:10px;border-radius:10px;border:1px solid #ffeef4;width:100%;
         }
 
-        .header-subtitle {
-            color: #666;
-            font-size: 18px;
-            margin: 0;
-            line-height: 1.5;
+        .actions{
+            display:flex;
+            gap:12px;
+            justify-content:flex-end;
+            margin-top:18px;
+        }
+        .btn{
+            padding:10px 18px;border-radius:10px;border:none;cursor:pointer;font-weight:700;
+        }
+        .btn.primary{
+            background:linear-gradient(135deg,var(--accent1),var(--accent2));
+            color:white;
+            box-shadow:0 10px 30px rgba(255,107,149,0.18);
+        }
+        .btn.ghost{
+            background:transparent;border:1px solid #eee;color:#333;
         }
 
-        /* Форма */
-        .post-form {
-            background: linear-gradient(135deg, #ffffff, #fffafc);
-            padding: 50px;
-            border-radius: 25px;
-            box-shadow: 0 15px 40px rgba(255, 107, 149, 0.1);
-            border: 2px solid #fff0f5;
-            backdrop-filter: blur(10px);
+        /* Responsive */
+        @media (max-width:880px){
+            .uploads{grid-template-columns:1fr; }
         }
 
-        .form-group {
-            margin-bottom: 40px;
+        @media (max-width:520px){
+            body{padding:14px}
+            .header{gap:12px}
+            h1{font-size:20px}
         }
 
-        .form-label {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 700;
-            color: #ff6390;
-            margin-bottom: 15px;
-            font-size: 18px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-label i {
-            font-size: 20px;
-            background: linear-gradient(135deg, #ffb7ce, #ff8fab);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .form-textarea {
-            width: 100%;
-            padding: 25px;
-            border: 2px solid #ffeef4;
-            border-radius: 20px;
-            font-size: 16px;
-            line-height: 1.7;
-            resize: vertical;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.8);
-            font-family: 'Arial', sans-serif;
-            min-height: 150px;
-            box-shadow: inset 0 2px 10px rgba(255, 183, 206, 0.1);
-        }
-
-        .form-textarea:focus {
-            outline: none;
-            border-color: #ffb7ce;
-            background: #ffffff;
-            box-shadow: 0 0 0 4px rgba(255, 183, 206, 0.2),
-            inset 0 2px 10px rgba(255, 183, 206, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .form-textarea::placeholder {
-            color: #ccc;
-            font-style: italic;
-        }
-
-        .character-count {
-            text-align: right;
-            margin-top: 12px;
-            font-size: 14px;
-            color: #999;
-            font-weight: 500;
-        }
-
-        .character-count .count {
-            color: #ff6390;
-            font-weight: 700;
-            font-size: 16px;
-        }
-
-        /* Область загрузки файлов */
-        .file-upload-area {
-            border: 3px dashed #ffb7ce;
-            border-radius: 20px;
-            padding: 60px 30px;
-            text-align: center;
-            background: linear-gradient(135deg, #fffafc, #fff5f8);
-            transition: all 0.4s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .file-upload-area::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transition: left 0.5s;
-        }
-
-        .file-upload-area:hover::before {
-            left: 100%;
-        }
-
-        .file-upload-area:hover {
-            border-color: #ff8fab;
-            background: linear-gradient(135deg, #fff5f8, #ffeef4);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(255, 107, 149, 0.15);
-        }
-
-        .file-upload-area.dragover {
-            border-color: #ff6390;
-            background: linear-gradient(135deg, #ffeef4, #ffe4ec);
-            transform: scale(1.02);
-        }
-
-        .upload-placeholder i {
-            font-size: 64px;
-            background: linear-gradient(135deg, #ffb7ce, #ff8fab);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 20px;
-            display: block;
-        }
-
-        .upload-placeholder h3 {
-            color: #ff6390;
-            margin-bottom: 12px;
-            font-size: 22px;
-            font-weight: 700;
-        }
-
-        .upload-placeholder p {
-            color: #888;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-
-        .upload-support {
-            font-size: 14px;
-            color: #aaa;
-            font-style: italic;
-        }
-
-        .file-input {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        /* Превью файлов */
-        .file-preview {
-            margin-top: 25px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 20px;
-        }
-
-        .preview-item {
-            position: relative;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            border: 3px solid #fff5f8;
-        }
-
-        .preview-item:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 10px 25px rgba(255, 107, 149, 0.3);
-        }
-
-        .preview-image {
-            width: 100%;
-            height: 140px;
-            object-fit: cover;
-            display: block;
-            transition: transform 0.3s ease;
-        }
-
-        .preview-item:hover .preview-image {
-            transform: scale(1.1);
-        }
-
-        .preview-remove {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: linear-gradient(135deg, #ff6b6b, #ff5252);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            opacity: 0;
-            transform: scale(0.8);
-        }
-
-        .preview-item:hover .preview-remove {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .preview-remove:hover {
-            background: linear-gradient(135deg, #ff5252, #ff3838);
-            transform: scale(1.1);
-        }
-
-        /* Кнопки действий */
-        .form-actions {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin-top: 50px;
-            flex-wrap: wrap;
-        }
-
-        .btn-large {
-            padding: 18px 36px;
-            font-size: 18px;
-            font-weight: 700;
-            border-radius: 15px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            transition: all 0.4s ease;
-            border: none;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-large::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn-large:hover::before {
-            left: 100%;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #ffb7ce, #ff8fab);
-            color: white;
-            box-shadow: 0 8px 25px rgba(255, 107, 149, 0.4);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 35px rgba(255, 107, 149, 0.6);
-            background: linear-gradient(135deg, #ff8fab, #ff6b95);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            color: #666;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-secondary:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
-            background: linear-gradient(135deg, #e9ecef, #dee2e6);
-            color: #333;
-        }
-
-        /* Анимации */
-        .post-form {
-            animation: slideUp 0.6s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Адаптивность */
-        @media (max-width: 768px) {
-            .create-post-container {
-                padding: 0 15px;
-                margin: 20px auto;
-            }
-
-            .post-form {
-                padding: 30px 20px;
-            }
-
-            .header-container h1 {
-                font-size: 32px;
-            }
-
-            .header-icon {
-                width: 80px;
-                height: 80px;
-            }
-
-            .header-icon i {
-                font-size: 32px;
-            }
-
-            .form-actions {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .btn-large {
-                width: 100%;
-                justify-content: center;
-                padding: 16px 24px;
-            }
-
-            .file-preview {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-                gap: 15px;
-            }
-
-            .file-upload-area {
-                padding: 40px 20px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header-container h1 {
-                font-size: 28px;
-            }
-
-            .header-subtitle {
-                font-size: 16px;
-            }
-
-            .form-label {
-                font-size: 16px;
-            }
-
-            .form-textarea {
-                padding: 20px;
-                font-size: 15px;
-            }
-        }
     </style>
 </head>
 <body>
-<nav class="navbar">
-    <div class="nav-container">
-        <a th:href="@{/posts}" class="nav-brand">Posts</a>
-        <a th:href="@{/pets/main}" class="nav-brand">PawPal</a>
-        <a th:href="@{/api/users/main}" class="nav-brand">Users</a>
-        <div class="notif-icon">
-            <a th:href="@{/notifications}" title="Notifications">
-                <i class="fa-solid fa-bell" style="font-size: 20px; color: pink;"></i>
-                <span th:if="${#lists.size(requests) + #lists.size(postNotifications) > 0}"
-                      th:text="${#lists.size(requests) + #lists.size(postNotifications)}"
-                      class="notif-badge"></span>
-            </a>
-        </div>
-        <div class="nav-profile">
-            <a th:href="@{/api/users/viewProfile/{id}(id=${user.userId})}">
-                <img th:src="@{${user.profilePicture != null ? user.profilePicture : '/css/images/default-avatar.jpg'}}"
-                     alt="Profile"
-                     class="avatar"
-                     onerror="this.src='/css/images/default-avatar.jpg'">
-            </a>
-        </div>
-    </div>
-</nav>
-
-<div class="create-post-container">
-    <div class="header-container">
-        <h1>Create New Post</h1>
-        <p class="header-subtitle">Share your pet's special moments with the community 🐾</p>
-    </div>
-
-    <form th:action="@{/posts/add}"
-          th:object="${post}"
-          method="post"
-          enctype="multipart/form-data"
-          class="post-form">
-
-        <!-- Контент поста -->
-        <div class="form-group">
-            <label for="postContent" class="form-label">
-                <i class="fa-solid fa-pen-fancy"></i>
-                Your Story
-            </label>
-            <textarea id="postContent"
-                      th:field="*{postContent}"
-                      rows="5"
-                      placeholder="What's on your mind? Share your pet's story, ask for advice, or just show off their cuteness... 🐶🐱"
-                      class="form-textarea"
-                      maxlength="500"
-                      required></textarea>
-            <div class="character-count">
-                <span class="count">0</span>/500 characters
+<div class="container">
+    <div class="card">
+        <div class="header">
+            <div class="logo"><i class="fa-solid fa-paw"></i></div>
+            <div>
+                <h1>Create New Post</h1>
+                <p class="lead">Share photos, videos or audio about your pet — choose tags and hit Publish.</p>
             </div>
         </div>
 
-        <div class="form-group">
-            <label for="photos" class="form-label">
-                <i class="fa-solid fa-camera-retro"></i>
-                Photo Gallery
-            </label>
-            <div class="file-upload-area" id="fileUploadArea">
-                <div class="upload-placeholder">
-                    <i class="fa-solid fa-cloud-arrow-up"></i>
-                    <h3>Drag & Drop Your Memories Here</h3>
-                    <p>or click to browse your files</p>
-                    <span class="upload-support">Supports: JPG, PNG, GIF • Maximum 10 files</span>
+        <!-- Thymeleaf form -->
+        <form th:action="@{/posts/add}" th:object="${post}" method="post" enctype="multipart/form-data" id="createPostForm">
+            <!-- Content -->
+            <div class="field">
+                <label class="field-label" for="postContent"><i class="fa-solid fa-pen-fancy"></i> Your Story</label>
+                <textarea id="postContent" th:field="*{postContent}" maxlength="1000"
+                          placeholder="What's on your mind? Tell a story or share a memory..." required></textarea>
+                <div class="meta-row">
+                    <div class="char-count"><span id="charCount">0</span>/1000</div>
+                    <div style="color:var(--muted);font-size:13px">You can attach photos, videos, and audio files.</div>
                 </div>
-                <input type="file"
-                       id="photos"
-                       name="photos"
-                       multiple
-                       accept="image/*"
-                       class="file-input">
             </div>
-            <div class="file-preview" id="filePreview"></div>
-        </div>
-        <!-- Выбор тегов -->
-        <div class="form-group">
-            <label for="tags" class="form-label">
-                <i class="fa-solid fa-tags"></i>
-                Choose Tags
-            </label>
-<!--            <select id="tags" th:field="*{tagIds}" multiple class="form-select" style="-->
-<!--        width: 100%;-->
-<!--        padding: 12px;-->
-<!--        border-radius: 12px;-->
-<!--        border: 2px solid #ffeef4;-->
-<!--        font-size: 16px;-->
-<!--        background: rgba(255,255,255,0.8);-->
-<!--    ">-->
 
-<!--                <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.name}"></option>-->
-<!--            </select>-->
+            <!-- Uploads -->
+            <div class="field">
+                <div class="field-label"><i class="fa-solid fa-photo-film"></i> Attach Media</div>
 
-            <select id="tags" name="selectedTags" multiple class="form-select" style="
-        width: 100%;
-        padding: 12px;
-        border-radius: 12px;
-        border: 2px solid #ffeef4;
-        font-size: 16px;
-        background: rgba(255,255,255,0.8);
-    ">
-                <option th:each="tag : ${tags}" th:value="${tag.name}" th:text="${tag.name}"></option>
-            </select>
+                <div class="uploads">
+                    <!-- Photos -->
+                    <div class="upload-block" id="photosBlock" data-type="image">
+                        <div class="input-wrap">
+                            <div style="text-align:center;">
+                                <strong>Photos</strong>
+                                <div class="hint">Drag & drop or click to select (max <span id="maxPhotos">10</span>)</div>
+                            </div>
+                            <input type="file" id="photosInput" name="photos" accept="image/*" multiple>
+                        </div>
+                        <div class="preview-grid" id="photosPreview"></div>
+                    </div>
 
-            <small style="color: #999; font-style: italic;">Hold Ctrl (Windows) or Cmd (Mac) to select multiple tags</small>
-        </div>
+                    <!-- Videos -->
+                    <div class="upload-block" id="videosBlock" data-type="video">
+                        <div class="input-wrap">
+                            <div style="text-align:center;">
+                                <strong>Videos</strong>
+                                <div class="hint">Drag & drop or click (max <span id="maxVideos">3</span>)</div>
+                            </div>
+                            <input type="file" id="videosInput" name="videos" accept="video/*" multiple>
+                        </div>
+                        <div class="preview-grid" id="videosPreview"></div>
+                    </div>
+
+                    <!-- Audios -->
+                    <div class="upload-block" id="audiosBlock" data-type="audio">
+                        <div class="input-wrap">
+                            <div style="text-align:center;">
+                                <strong>Audio</strong>
+                                <div class="hint">Drag & drop or click (max <span id="maxAudios">5</span>)</div>
+                            </div>
+                            <input type="file" id="audiosInput" name="audios" accept="audio/*" multiple>
+                        </div>
+                        <div class="preview-grid" id="audiosPreview"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tags -->
+            <div class="field">
+                <label class="field-label"><i class="fa-solid fa-tags"></i> Tags</label>
+                <div class="tags-row">
+                    <select id="tagsSelect" name="selectedTags" multiple th:each="tag : ${tags}">
+                        <option th:value="${tag.name}" th:text="${tag.name}"></option>
+                    </select>
+                </div>
+                <div style="margin-top:8px">
+                    <input type="text" name="newTags" class="new-tags" placeholder="Add new tags separated by commas (optional)">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="pollQuestion" class="form-label">
+                    <i class="fa-solid fa-poll"></i>
+                    Poll Question (Optional)
+                </label>
+                <input type="text"
+                       id="pollQuestion"
+                       name="pollQuestion"
+                       placeholder="Ask a question for your poll"
+                       class="form-textarea">
+            </div>
+
+            <div class="form-group">
+                <label for="pollOptionsRaw" class="form-label">
+                    <i class="fa-solid fa-list"></i>
+                    Poll Options (comma separated)
+                </label>
+                <input type="text"
+                       id="pollOptionsRaw"
+                       name="pollOptionsRaw"
+                       placeholder="Option1, Option2, Option3"
+                       class="form-textarea">
+                <small style="color:#999; font-style:italic;">
+                    Separate options with commas. Minimum 2 options required if question is set.
+                </small>
+            </div>
 
 
-        <!-- Кнопки действий -->
-        <div class="form-actions">
-            <button type="submit" class="btn btn-primary btn-large">
-                <i class="fa-solid fa-rocket"></i>
-                Publish Post
-            </button>
-            <a th:href="@{/posts}" class="btn btn-secondary btn-large">
-                <i class="fa-solid fa-arrow-left"></i>
-                Back to Feed
-            </a>
-        </div>
-    </form>
+            <div class="actions">
+                <a th:href="@{/posts}" class="btn ghost"><i class="fa-solid fa-arrow-left"></i>&nbsp;Back</a>
+                <button type="submit" class="btn primary"><i class="fa-solid fa-rocket"></i>&nbsp;Publish Post</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    (function(){
+        // Config
+        const MAX_PHOTOS = 10;
+        const MAX_VIDEOS = 3;
+        const MAX_AUDIOS = 5;
+
+        // Elements
         const textarea = document.getElementById('postContent');
-        const characterCount = document.querySelector('.character-count .count');
-        const fileInput = document.getElementById('photos');
-        const fileUploadArea = document.getElementById('fileUploadArea');
-        const filePreview = document.getElementById('filePreview');
+        const charCount = document.getElementById('charCount');
 
-        // Инициализация счетчика символов
-        characterCount.textContent = textarea.value.length;
+        const photosBlock = document.getElementById('photosBlock');
+        const videosBlock = document.getElementById('videosBlock');
+        const audiosBlock = document.getElementById('audiosBlock');
 
-        // Счетчик символов
-        textarea.addEventListener('input', function() {
-            const count = this.value.length;
-            characterCount.textContent = count;
+        const photosInput = document.getElementById('photosInput');
+        const videosInput = document.getElementById('videosInput');
+        const audiosInput = document.getElementById('audiosInput');
 
-            if (count > 450) {
-                characterCount.style.color = '#ff6b6b';
-            } else if (count > 400) {
-                characterCount.style.color = '#ff8fab';
-            } else {
-                characterCount.style.color = '#ff6390';
-            }
+        const photosPreview = document.getElementById('photosPreview');
+        const videosPreview = document.getElementById('videosPreview');
+        const audiosPreview = document.getElementById('audiosPreview');
+
+        // DataTransfer objects to manage files programmatically
+        const dtPhotos = new DataTransfer();
+        const dtVideos = new DataTransfer();
+        const dtAudios = new DataTransfer();
+
+        // Init count
+        charCount.textContent = textarea.value.length || 0;
+
+        // Char counter
+        textarea.addEventListener('input', () => {
+            const len = textarea.value.length;
+            charCount.textContent = len;
         });
 
-        // Drag & Drop функциональность
-        ['dragover', 'dragenter'].forEach(event => {
-            fileUploadArea.addEventListener(event, function(e) {
+        // Generic handlers
+        function setupBlock(blockEl, inputEl, previewEl, dtObj, maxCount, acceptPrefix) {
+            // drag events
+            ['dragenter','dragover'].forEach(ev => {
+                blockEl.addEventListener(ev, (e) => {
+                    e.preventDefault();
+                    blockEl.classList.add('dragover');
+                });
+            });
+            ['dragleave','dragend','drop'].forEach(ev => {
+                blockEl.addEventListener(ev, (e) => {
+                    e.preventDefault();
+                    blockEl.classList.remove('dragover');
+                });
+            });
+
+            blockEl.addEventListener('drop', (e) => {
                 e.preventDefault();
-                this.classList.add('dragover');
-            });
-        });
-
-        ['dragleave', 'dragend', 'drop'].forEach(event => {
-            fileUploadArea.addEventListener(event, function(e) {
-                e.preventDefault();
-                this.classList.remove('dragover');
-            });
-        });
-
-        fileUploadArea.addEventListener('drop', function(e) {
-            e.preventDefault();
-            const files = e.dataTransfer.files;
-            handleFiles(files);
-        });
-
-        fileInput.addEventListener('change', function(e) {
-            handleFiles(this.files);
-        });
-
-        function handleFiles(files) {
-            // Ограничение на количество файлов
-            if (files.length > 10) {
-                alert('🚫 Maximum 10 files allowed. Please select fewer files.');
-                return;
-            }
-
-            // Проверка типов файлов
-            const validFiles = Array.from(files).filter(file => {
-                if (!file.type.startsWith('image/')) {
-                    alert(`⚠️ File "${file.name}" is not an image and will be skipped.`);
-                    return false;
-                }
-                return true;
+                const files = Array.from(e.dataTransfer.files || []);
+                handleFilesAdd(files, inputEl, previewEl, dtObj, maxCount, acceptPrefix);
             });
 
-            // Обновляем input files
-            const dt = new DataTransfer();
-            validFiles.forEach(file => dt.items.add(file));
-            fileInput.files = dt.files;
-
-            updateFilePreview();
+            inputEl.addEventListener('change', () => {
+                const files = Array.from(inputEl.files || []);
+                handleFilesAdd(files, inputEl, previewEl, dtObj, maxCount, acceptPrefix);
+            });
         }
 
-        function updateFilePreview() {
-            filePreview.innerHTML = '';
-            const files = fileInput.files;
-
-            if (files.length > 0) {
-                fileUploadArea.style.borderStyle = 'solid';
-                fileUploadArea.style.background = 'linear-gradient(135deg, #f0fff4, #f0f8ff)';
-
-                // Обновляем текст в области загрузки
-                const placeholder = fileUploadArea.querySelector('.upload-placeholder');
-                if (placeholder) {
-                    placeholder.innerHTML = `
-                    <i class="fa-solid fa-check-circle"></i>
-                    <h3>${files.length} file(s) selected</h3>
-                    <p>Click to change or drag & drop new files</p>
-                    <span class="upload-support">Supports: JPG, PNG, GIF • Maximum 10 files</span>
-                `;
+        function handleFilesAdd(files, inputEl, previewEl, dtObj, maxCount, acceptPrefix) {
+            // filter and validate
+            for (const file of files) {
+                if (dtObj.files.length >= maxCount) {
+                    alert(`Maximum ${maxCount} files allowed for this type.`);
+                    break;
                 }
+
+                if (!file.type) continue;
+
+                if (!file.type.startsWith(acceptPrefix)) {
+                    // allow some common mismatches (e.g., mp4 videos often video/mp4) but we require prefix
+                    alert(`File "${file.name}" skipped — invalid type (${file.type}).`);
+                    continue;
+                }
+
+                dtObj.items.add(file);
+            }
+
+            // sync to input
+            inputEl.files = dtObj.files;
+            renderPreviews(previewEl, dtObj, inputEl === photosInput ? 'image' : (inputEl === videosInput ? 'video' : 'audio'));
+        }
+
+        function renderPreviews(previewEl, dtObj, kind) {
+            previewEl.innerHTML = '';
+            Array.from(dtObj.files).forEach((file, idx) => {
+                const item = document.createElement('div');
+                item.className = 'preview-item';
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'preview-remove';
+                removeBtn.type = 'button';
+                removeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                removeBtn.addEventListener('click', () => {
+                    removeFileAt(dtObj, idx, previewEl, kind);
+                });
+
+                if (kind === 'image') {
+                    const img = document.createElement('img');
+                    const reader = new FileReader();
+                    reader.onload = (e) => img.src = e.target.result;
+                    reader.readAsDataURL(file);
+                    item.appendChild(img);
+                } else if (kind === 'video') {
+                    const video = document.createElement('video');
+                    video.controls = true;
+                    video.muted = true;
+                    video.playsInline = true;
+                    const reader = new FileReader();
+                    reader.onload = (e) => { video.src = e.target.result; };
+                    reader.readAsDataURL(file);
+                    item.appendChild(video);
+                } else { // audio
+                    const audio = document.createElement('audio');
+                    audio.controls = true;
+                    const reader = new FileReader();
+                    reader.onload = (e) => { audio.src = e.target.result; };
+                    reader.readAsDataURL(file);
+                    item.appendChild(audio);
+                }
+
+                item.appendChild(removeBtn);
+                previewEl.appendChild(item);
+            });
+        }
+
+        function removeFileAt(dtObj, index, previewEl, kind) {
+            // create new DataTransfer without the index
+            const newDt = new DataTransfer();
+            Array.from(dtObj.files).forEach((f, i) => { if (i !== index) newDt.items.add(f); });
+            // copy back
+            while (dtObj.items.length) dtObj.items.remove(0); // clear old (some browsers allow assignment but we keep dtObj reference)
+            // dtObj is local DataTransfer and can't be mutated easily; instead set corresponding DataTransfer variable
+            if (kind === 'image') {
+                // replace dtPhotos content
+                replaceDataTransfer(dtPhotos, newDt);
+                photosInput.files = dtPhotos.files;
+                renderPreviews(photosPreview, dtPhotos, 'image');
+            } else if (kind === 'video') {
+                replaceDataTransfer(dtVideos, newDt);
+                videosInput.files = dtVideos.files;
+                renderPreviews(videosPreview, dtVideos, 'video');
             } else {
-                fileUploadArea.style.borderStyle = 'dashed';
-                fileUploadArea.style.background = 'linear-gradient(135deg, #fffafc, #fff5f8)';
-
-                // Возвращаем оригинальный текст
-                const placeholder = fileUploadArea.querySelector('.upload-placeholder');
-                if (placeholder) {
-                    placeholder.innerHTML = `
-                    <i class="fa-solid fa-cloud-arrow-up"></i>
-                    <h3>Drag & Drop Your Memories Here</h3>
-                    <p>or click to browse your files</p>
-                    <span class="upload-support">Supports: JPG, PNG, GIF • Maximum 10 files</span>
-                `;
-                }
+                replaceDataTransfer(dtAudios, newDt);
+                audiosInput.files = dtAudios.files;
+                renderPreviews(audiosPreview, dtAudios, 'audio');
             }
-
-            // Создаем превью для каждого файла
-            Array.from(files).forEach((file, index) => {
-                const reader = new FileReader();
-
-                reader.onload = function(e) {
-                    const previewItem = document.createElement('div');
-                    previewItem.className = 'preview-item';
-                    previewItem.innerHTML = `
-                    <img src="${e.target.result}" alt="Preview" class="preview-image">
-                    <button type="button" class="preview-remove" data-index="${index}">
-                        <i class="fa-solid fa-times"></i>
-                    </button>
-                `;
-                    filePreview.appendChild(previewItem);
-
-                    // Удаление превью
-                    previewItem.querySelector('.preview-remove').addEventListener('click', function() {
-                        removeFile(index);
-                    });
-                };
-
-                reader.readAsDataURL(file);
-            });
         }
 
-        function removeFile(index) {
-            const dt = new DataTransfer();
-            const files = fileInput.files;
-
-            // Собираем все файлы кроме удаленного
-            for (let i = 0; i < files.length; i++) {
-                if (i !== index) {
-                    dt.items.add(files[i]);
-                }
-            }
-
-            fileInput.files = dt.files;
-            updateFilePreview();
+        // Helper to copy files from one DataTransfer to another
+        function replaceDataTransfer(targetDt, sourceDt) {
+            // clear target
+            while (targetDt.items.length) targetDt.items.remove(0);
+            Array.from(sourceDt.files).forEach(f => targetDt.items.add(f));
         }
 
-        // Добавляем обработчик клика на всю область загрузки
-        fileUploadArea.addEventListener('click', function(e) {
-            if (e.target === this || e.target.closest('.upload-placeholder')) {
-                fileInput.click();
+        // Initialization
+        setupBlock(photosBlock, photosInput, photosPreview, dtPhotos, MAX_PHOTOS, 'image');
+        setupBlock(videosBlock, videosInput, videosPreview, dtVideos, MAX_VIDEOS, 'video');
+        setupBlock(audiosBlock, audiosInput, audiosPreview, dtAudios, MAX_AUDIOS, 'audio');
+
+        // On submit: ensure form inputs are populated with current DataTransfer (already synced on add/remove)
+        const form = document.getElementById('createPostForm');
+        form.addEventListener('submit', (e) => {
+            // example final validation: require at least one media or textual content
+            const hasText = textarea.value && textarea.value.trim().length > 0;
+            const hasAnyMedia = dtPhotos.files.length || dtVideos.files.length || dtAudios.files.length;
+            if (!hasText && !hasAnyMedia) {
+                e.preventDefault();
+                alert('Please add text or at least one media file before posting.');
+                return false;
             }
+            // inputs already have files bound (we updated them on each change)
+            return true;
         });
-    });
+
+        // Set numeric labels
+        document.getElementById('maxPhotos').textContent = MAX_PHOTOS;
+        document.getElementById('maxVideos').textContent = MAX_VIDEOS;
+        document.getElementById('maxAudios').textContent = MAX_AUDIOS;
+
+    })();
 </script>
 </body>
 </html>

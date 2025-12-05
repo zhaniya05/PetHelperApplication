@@ -11,7 +11,15 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:C:\\Users\\whyco\\Downloads\\PetHelperApplication-main\\PetHelperApplication-main\\uploads\\");
 
         registry.addResourceHandler("/post_photos/**")
-                .addResourceLocations("file:post_photos/");
+                .addResourceLocations("file:" + System.getProperty("user.dir") + "/post_photos/");
+
+        // Видео постов
+        registry.addResourceHandler("/post_videos/**")
+                .addResourceLocations("file:" + System.getProperty("user.dir") + "/post_videos/");
+
+        // Аудио постов
+        registry.addResourceHandler("/post_audios/**")
+                .addResourceLocations("file:" + System.getProperty("user.dir") + "/post_audios/");
     }
 
 }
